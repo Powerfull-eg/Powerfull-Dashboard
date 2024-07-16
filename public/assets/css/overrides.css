@@ -1,0 +1,52 @@
+/* ---------------------------------
+ * TinyMCE
+ * --------------------------------- */
+
+/* Fix tinymce background */
+.tox .tox-edit-area__iframe {
+    background-color: unset !important;
+}
+
+/* ---------------------------------
+ * Tabler & Bootstrap
+ * --------------------------------- */
+
+/* Allow pagination to wrap */
+ul.pagination {
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+/* Fix tabler dropdown menu arrow in rtl */
+[dir="rtl"] .dropdown-menu-arrow:before {
+    transform: rotate(45deg);
+}
+
+/* ---------------------------------
+ * Tom Select
+ * --------------------------------- */
+
+/* Fix for tom-select placeholder appear if value is set */
+[data-ts-item] + input::placeholder {
+    opacity: 0;
+}
+
+/* ---------------------------------
+ * Litepicker
+ * --------------------------------- */
+
+/* Fix for litepicker gap in rtl */
+.litepicker .container__months .month-item-header div > .month-item-name {
+    margin-inline: 0 5px;
+}
+
+/* Fix for litepicker icons reversed in rtl */
+[dir="rtl"] .month-item-header .button-previous-month,
+[dir="rtl"] .month-item-header .button-next-month {
+    transform: rotate(180deg);
+}
+
+/* Add pointer to litepicker .button-previous-month */
+.litepicker .button-previous-month {
+    cursor: pointer !important;
+}
