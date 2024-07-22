@@ -1,11 +1,11 @@
 <form id="date">
 
     <label>
-        <input name="startDate" type="date"/>
+        <input name="startDate" type="date" value="{{ $_GET['startDate'] ?? null}} "/>
         <span>{{ __('Start Date') }}</span>
     </label>
     <label>
-        <input name="endDate" type="date"/>
+        <input name="endDate" type="date" value="{{ $_GET['endDate'] ?? null }} "/>
         <span>{{ __('End Date') }}</span>
     </label>
     <input type="submit" class="btn btn-primary" value="Submit">
@@ -63,4 +63,10 @@ form#date label > input:focus {
   box-shadow: 0 1px 0 0 #3F51B5;
 }
 </style>
+@endpush
+@push('scripts')
+<script>
+  const inputs = document.querySelectorAll('input[type=date]');
+  inputs.forEach(input => input.value = String(input.getAttribute('value')).trim())
+</script>
 @endpush

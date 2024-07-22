@@ -37,7 +37,7 @@ class Shop extends Model
 
     public function gifts() : HasMany
     {
-        return $this->hasMany(GiftUser::class,"shop_id","provider_id");
+        return $this->hasMany(GiftUser::class);
     }
 
     public function operations() : HasManyThrough 
