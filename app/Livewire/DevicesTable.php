@@ -74,13 +74,13 @@ class DevicesTable extends Datatable
             Column::make('Shop',"shop_id")
                 ->searchable()
                 ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a>"]) : ''),
-            Column::make('Live',"device_id")
+            Column::make('Live',"id")
             ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? "<i class='text text-success fs-1 ti ti-checkbox'></i>":"<i class='text text-danger fs-1 ti ti-circle-x'></i>" )  : null) ),
-            Column::make('Type',"device_id")
+            Column::make('Type',"id")
             ->format(fn($device) => ($this->devices[$device] ? 'Type: ' . (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["type"] : null)  : null) ),
             Column::make('Slots',"slots")
                 ->sortable(),
-            Column::make('Empty Slots',"device_id")
+            Column::make('Empty Slots',"id")
                 ->sortable()
                 ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["emptySlots"]: null) : null) ),
             Column::make('Added At',"created_at")
