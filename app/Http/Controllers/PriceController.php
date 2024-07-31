@@ -27,6 +27,10 @@ class PriceController extends Controller
             'free_time' => 'required|numeric',
             'max_hours' => 'required|numeric',
             'insurance' => 'required|numeric',
+            'app_description_ar' => 'string',
+            'app_description_detailed_ar' => 'string',
+            'app_description_en' => 'string',
+            'app_description_detailed_en' => 'string',
         ]);
         // Create prices json
         $prices = [];
@@ -45,6 +49,11 @@ class PriceController extends Controller
             'max_hours' => $validated['max_hours'],
             'insurance' => $validated['insurance'],
             'prices' => json_encode($prices),
+
+            'app_description_ar' => $validated['app_description_ar'],
+            'app_description_detailed_ar' => $validated['app_description_detailed_ar'],
+            'app_description_en' => $validated['app_description_en'],
+            'app_description_detailed_en' => $validated['app_description_detailed_en'],
             "created_by" => auth('admins')->user()->id,
             "updated_by" => auth('admins')->user()->id,
         ]);
@@ -52,7 +61,9 @@ class PriceController extends Controller
         return redirect()->route('dashboard.prices.index')->with('success',__('Prices Updated Successfully'));
     }
     
+
     // get Price Description
+
     public function getPriceDescription(){
         $priceData = Price::latest()->first();
         $prices = json_decode($priceData->prices,true);
@@ -61,6 +72,10 @@ class PriceController extends Controller
         if($priceData["free_time"] > 0){
             $description[] = " مجانا لمدة " . $priceData["free_time"] . ($priceData["free_time"] > 10 ? " دقيقة " : " دقائق") . " | ";
         }
+        
+        $description[] = $priceData->app_description_ar;
+        $description[] = $priceData->app_description_ar;
+        
         // Dynamic Prices
         $description[] = $priceData->app_description_en;
         $description[] = $priceData->app_description_en;
@@ -76,6 +91,12 @@ class PriceController extends Controller
             $description[] = " في حالة عدم الإرجاع قبل ". $priceData["max_hours"] . " ساعة سيتم دفع مبلغ تأمين بقيمة " . $priceData["insurance"];
         }
         return response()->json([$description]);
+    }
+    
+    // New Price Description
+    public function getPriceDescriptionNew(){
+        $description = Price::latest()->first(["app_description_ar","app_description_detailed_ar","app_description_en","app_description_detailed_en"]);
+        return response()->json($description);
     }
     
     // Calculate Price

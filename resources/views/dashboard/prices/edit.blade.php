@@ -4,17 +4,38 @@
     <form action="{{ route('dashboard.prices.update',$price->id) }}" method="POST">
         @csrf
         @method("PUT")
+        <div class="row m-3">    
+            <div class="mb-3 col">
+                <label class="form-label">{{__('Arabic App Description')}}</label>
+                <input type="text" class="form-control" name="app_description_ar" value="{{$price->app_description_ar}}" placeholder="{{__('Enter')}} {{__('Arabic App Description')}}" />
+            </div>
+            <div class="mb-3 col">
+                <label class="form-label">{{__('English App Description')}}</label>
+                <input type="text" class="form-control" name="app_description_en" value="{{$price->app_description_en}}" placeholder="{{__('Enter')}} {{__('English App Description')}}" />
+            </div>
+        </div>
+        </div>
+        <div class="row m-3">
+            <div class="mb-3 col">
+                <label class="form-label">{{__('Arabic App Description Detailed')}}</label>
+                <textarea type="text" class="form-control" name="app_description_detailed_ar" value="{{$price->app_description_detailed_ar}}" placeholder="{{__('Enter')}} {{__('Arabic App Description Detailed')}}">{{$price->app_description_detailed_ar}}</textarea>
+            </div>
+            <div class="mb-3 col">
+                <label class="form-label">{{__('English App Description Detailed')}}</label>
+                <textarea type="text" class="form-control" name="app_description_detailed_en" placeholder="{{__('Enter')}} {{__('English App Description Detailed')}}">{{$price->app_description_detailed_en}}</textarea>
+            </div>
+        </div>
         <div class="mb-3">
             <label class="form-label">{{__('Free Time')}}</label>
-            <input type="number" class="form-control" name="free_time" required value="{{$price->free_time}}" placeholder="Enter {{__('Free Time')}}" />
+            <input type="number" class="form-control" name="free_time" required value="{{$price->free_time}}" placeholder="{{__('Enter')}} {{__('Free Time')}}" />
         </div>
         <div class="mb-3">
             <label class="form-label">{{__('Max Hours')}}</label>
-            <input type="number" class="form-control" name="max_hours" required value="{{$price->max_hours}}" placeholder="Enter {{__('Max Hours')}}" />
+            <input type="number" class="form-control" name="max_hours" required value="{{$price->max_hours}}" placeholder="{{__('Enter')}} {{__('Max Hours')}}" />
         </div>
         <div class="mb-3">
             <label class="form-label">{{__('Insurance Amount')}}</label>
-            <input type="number" class="form-control" name="insurance" required value="{{$price->insurance}}" placeholder="Enter {{__('Insurance Amount')}}" />
+            <input type="number" class="form-control" name="insurance" required value="{{$price->insurance}}" placeholder="{{__('Enter')}} {{__('Insurance Amount')}}" />
         </div>
         {{-- Price details --}}
         <div class="mb-3">
