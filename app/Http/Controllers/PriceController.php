@@ -61,8 +61,31 @@ class PriceController extends Controller
         return redirect()->route('dashboard.prices.index')->with('success',__('Prices Updated Successfully'));
     }
     
-    // get Price Description
     public function getPriceDescription(){
+        $priceData = Price::latest()->first();
+        $prices = json_decode($priceData->prices,true);
+        $description = [];
+        // Free Time
+        if($priceData["free_time"] > 0){
+            $description[] = " مجانا لمدة " . $priceData["free_time"] . ($priceData["free_time"] > 10 ? " دقيقة " : " دقائق") . " | ";
+        }
+        // Dynamic Prices
+        foreach($prices['dynamic'] as $price){
+            $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه لكل ساعة | ';
+        }
+        // Static Prices
+        foreach($prices['static'] as $price){
+            $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه ';
+        }
+        // insurance if exceeded the max_hours
+        if($priceData["insurance"]){
+            $description[] = " في حالة عدم الإرجاع قبل ". $priceData["max_hours"] . " ساعة سيتم دفع مبلغ تأمين بقيمة " . $priceData["insurance"];
+        }
+        return response()->json([$description]);
+    }
+    
+    // New Price Description
+    public function getPriceDescriptionNew(){
         $description = Price::latest()->first(["app_description_ar","app_description_detailed_ar","app_description_en","app_description_detailed_en"]);
         return response()->json($description);
     }
