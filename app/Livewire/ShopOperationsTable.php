@@ -31,7 +31,13 @@ class ShopOperationsTable extends Datatable
         $this->date = [$startDate,$endDate];
 
     }
-
+    
+    // Convert time to Cairo time 
+    protected function timezoneConvert($time){
+        $newTime = strtotime($time) - ( 60 * 60 * 2);
+        return $newTime;
+    }
+    
     /**
      * Query builder.
      */
@@ -70,18 +76,18 @@ class ShopOperationsTable extends Datatable
                 ->searchable()
                 ->searchUsing(function ($query, $search){
                     $query->whereHas('user', function($query) use ($search){
-                        $query->where('first_name', 'like', "%$search%");
+                        $query->where('phone', 'like', "%$search%");
                     });
                 })
                 ->format(fn ($phone) => $phone ? "+20" . $phone : ''),
             Column::make(__("Borrow Time"),'borrowTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? new Carbon($this->timezoneConvert($time)) : null),
             Column::make(__("Return Time"),'returnTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? new Carbon($this->timezoneConvert($time)) : null),
             Column::make(__("Amount"),'amount')
                 ->sortable()    
                 ->searchable()

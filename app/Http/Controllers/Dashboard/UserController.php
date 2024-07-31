@@ -16,7 +16,11 @@ class UserController extends Controller
     {
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-        return view('dashboard.users.index', compact('startDate','endDate'));
+        $allUsers = new User;
+        $users = $startDate ? $allUsers->where("created_at",'>=',$startDate) : $allUsers;
+        $users = $endDate ? $users->where("created_at",'<=',$endDate) : $users;
+        $top10 = $users->withCount('operations')->orderByDesc('operations_count')->limit(10)->get();
+        return view('dashboard.users.index', compact('startDate','endDate','users','allUsers','top10'));
     }
     
     /**
@@ -29,14 +33,26 @@ class UserController extends Controller
         $endDate = $request->endDate ?? null;
 
         $user = User::with('operations')->find($id);
-        $totalAmount = 0;
-        $totalHours = 0;
+        $amountTimeData = [0,0,0,0,0,0]; // [totalAmount, totalHours, amountPerPeriod, timePerPeriod, amountForLastMonth, TimeForLastMonth]
         foreach($user->operations as $operation){
-            $totalAmount += ($operation->amount ?? 0);
-            $totalHours += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
+            $amountTimeData[0] += ($operation->amount ?? 0);
+            $amountTimeData[1] += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
+            
+            // Amount And Hours per Selected period
+            if($operation->borrowTime && ($startDate || $endDate)){
+                if(($startDate && $operation->borrowTime >= $startDate) || ($endDate && $operation->borrowTime <= $endDate)){
+                    $amountTimeData[2] += ($operation->amount ?? 0);   
+                    $amountTimeData[3] += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
+                }
+            }
+            // Amount And Hours per Last Month
+            if($operation->borrowTime >= now()->previous('Month')){
+                $amountTimeData[4] += ($operation->amount ?? 0);   
+                $amountTimeData[5] += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
+            }
         }
 
-        return view('dashboard.users.user-operation',compact('user','totalAmount','totalHours','startDate','endDate'));
+        return view('dashboard.users.user-operation',compact('user','amountTimeData','startDate','endDate'));
     }
     /**
      * Show the form for editing the specified resource.

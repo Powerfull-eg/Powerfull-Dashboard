@@ -44,12 +44,12 @@ class PriceController extends Controller
                 }
             }
         }
-
         $price = Price::find($id)->update([
             'free_time' => $validated['free_time'],
             'max_hours' => $validated['max_hours'],
             'insurance' => $validated['insurance'],
             'prices' => json_encode($prices),
+
             'app_description_ar' => $validated['app_description_ar'],
             'app_description_detailed_ar' => $validated['app_description_detailed_ar'],
             'app_description_en' => $validated['app_description_en'],
@@ -61,6 +61,9 @@ class PriceController extends Controller
         return redirect()->route('dashboard.prices.index')->with('success',__('Prices Updated Successfully'));
     }
     
+
+    // get Price Description
+
     public function getPriceDescription(){
         $priceData = Price::latest()->first();
         $prices = json_decode($priceData->prices,true);
@@ -74,10 +77,11 @@ class PriceController extends Controller
         $description[] = $priceData->app_description_ar;
         
         // Dynamic Prices
+        $description[] = $priceData->app_description_en;
+        $description[] = $priceData->app_description_en;
         // foreach($prices['dynamic'] as $price){
         //     $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه لكل ساعة | ';
         // }
-        
         // Static Prices
         foreach($prices['static'] as $price){
             $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه ';
