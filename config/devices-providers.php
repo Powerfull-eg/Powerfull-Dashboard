@@ -1,5 +1,5 @@
 <?php 
 
 return [
-    'bajie' => new App\Http\Controllers\Api\BajieController,
+    'bajie' => new \App\Http\Controllers\Api\BajieController,
 ];
