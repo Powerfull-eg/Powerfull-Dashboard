@@ -27,12 +27,6 @@ class GiftsUsageTable extends Datatable
         $this->shop = $shop ?? null;
     }
 
-    private function getUser(string $id)
-    {
-        $user = User::find($id);
-        return $user;
-    }
-
     private function getGift(string $id)
     {
         $gift = Gift::find($id);
@@ -58,8 +52,9 @@ class GiftsUsageTable extends Datatable
     {
         return [
             Column::make('#','id'),
-            Column::make(__('User'), 'user_id')
-                ->format(fn ($id) => $id ? $this->getUser($id)->fullName  : null )
+
+            Column::make(__('User'), 'user')
+                ->format(fn($user) => $user->fullName )
                 ->searchable()
                 ->sortable()
                 ->searchUsing(function ($query, $search){
@@ -68,8 +63,9 @@ class GiftsUsageTable extends Datatable
                         ->orWhere('last_name', 'like', "%$search%");
                     });
                 }),
-            Column::make(__('User Phone'), 'user_id')
-                ->format(fn ($id) => $id ? $this->getUser($id)->phone  : null )
+
+            Column::make(__('User Phone'), 'user')
+                ->format(fn($user) => "0" . $user->phone )
                 ->searchable()
                 ->sortable()
                 ->searchUsing(function ($query, $search){
@@ -107,3 +103,4 @@ class GiftsUsageTable extends Datatable
         return [];
     }
 }
+

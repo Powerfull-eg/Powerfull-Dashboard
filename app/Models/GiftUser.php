@@ -26,9 +26,9 @@ class GiftUser extends Model
         return $this->belongsTo(Gift::class);
     }
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function shop() : BelongsTo
