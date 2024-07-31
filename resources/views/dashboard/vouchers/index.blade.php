@@ -1,4 +1,4 @@
 <x-layouts::dashboard>
     <x-components::status />
-    <livewire:merchants-table />
+    <livewire:vouchers-table />
 </x-layouts::dashboard>

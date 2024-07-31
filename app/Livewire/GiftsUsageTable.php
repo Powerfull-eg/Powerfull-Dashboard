@@ -52,6 +52,7 @@ class GiftsUsageTable extends Datatable
     {
         return [
             Column::make('#','id'),
+
             Column::make(__('User'), 'user')
                 ->format(fn($user) => $user->fullName )
                 ->searchable()
@@ -62,6 +63,7 @@ class GiftsUsageTable extends Datatable
                         ->orWhere('last_name', 'like', "%$search%");
                     });
                 }),
+
             Column::make(__('User Phone'), 'user')
                 ->format(fn($user) => "0" . $user->phone )
                 ->searchable()
@@ -101,3 +103,4 @@ class GiftsUsageTable extends Datatable
         return [];
     }
 }
+

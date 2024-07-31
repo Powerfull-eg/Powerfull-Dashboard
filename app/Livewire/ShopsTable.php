@@ -66,6 +66,14 @@ class ShopsTable extends Datatable
             Column::make(__("Shop ID"),'provider_id')
                 ->sortable()
                 ->searchable(),
+            Column::make(__("Device ID"),'device.device_id')
+                ->sortable()
+                ->searchable()
+                ->searchUsing(function ($query, $search){
+                    $query->whereHas('device', function($query) use ($search){
+                        $query->where('device_id', 'like', "%$search%");
+                    });
+                }),
             Column::make(__("Logo"),'logo')
                 ->format(fn ($logo) => $logo ? view('components.icon', ['icon' => "<img style='width:50px;' src='" . $logo . "' />"]) : ''),
             // Column::make(__('Address'), 'address')
@@ -91,6 +99,8 @@ class ShopsTable extends Datatable
      */
     public function actions(): array
     {
-        return [];
+        return [
+                        Action::edit('dashboard.shops.edit')->can('dashboard.shops.edit'),
+                ];
     }
 }

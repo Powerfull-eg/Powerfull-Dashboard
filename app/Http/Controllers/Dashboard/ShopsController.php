@@ -51,8 +51,12 @@ class ShopsController extends Controller
         $shop = Shop::with(['device','operations','gifts'])->find($id);
         $totalAmount = 0;
         $totalHours = 0;
-        $totalGifts = $shop->gifts->count();
-        foreach($shop->device->operations as $operation){
+        $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
+        
+        $operations = $startDate || $endDate ? $shop->device->operations->where('created_at','>=',$startDate)->where('created_at','<=',$endDate) : $shop->device->operations;
+        // $operations[] = $endDate ? $shop->device->operations->where('created_at','<=',$endDate) : null;
+        
+        foreach($operations as $operation){
             $totalAmount += ($operation->amount ?? 0);
             $totalHours += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
         }
@@ -72,9 +76,20 @@ class ShopsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateShopRequest $request,Shop $shop)
+    public function update(Request $request,string $id)
     {
-        // 
+        $validated = $request->validate([
+                "name" => "required|string|max:255",
+                "phone" => "required|string|starts_with:010,011,012,015|size:11",
+        ]);
+        $admin = auth('admins')->user()->id;
+        $validated["updated_by"] = $admin;
+        
+        $shop = Shop::findOrfail($id)->update($validated);
+        
+        return $shop 
+        ? redirect(route('dashboard.shops.index'))->with('success', __("Shop Updated Successfully"))
+        : redirect()->back()->with('error', __("Failed Update Shop")); 
     }
 
     /**

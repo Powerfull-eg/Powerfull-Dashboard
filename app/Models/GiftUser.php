@@ -13,6 +13,7 @@ class GiftUser extends Model
     public $fillable = [
         "gift_id",
         "user_id",
+        "operation_id",
         "code",
         "expire",
         "used_at",

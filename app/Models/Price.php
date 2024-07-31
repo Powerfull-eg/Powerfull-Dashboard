@@ -10,6 +10,9 @@ class Price extends Model
     use HasFactory;
 
     public $fillable = [
+        "free_time",
+        "max_hours",
+        "insurance",
         "prices",
         "created_by",
         "updated_by",

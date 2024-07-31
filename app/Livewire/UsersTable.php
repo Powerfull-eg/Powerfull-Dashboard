@@ -47,20 +47,17 @@ class UsersTable extends Datatable
         $this->fixedHeader = true;
 
         return [
-            Column::make(__("Customer Name"),'fullName')
-            //     ->sortable()
-            //     ->searchable()
-            //     ->searchUsing(function ($query, $search){
-            //         $query->whereHas('user', function($query) use ($search){
-            //             $query->where('first_name', 'like', "%$search%")->orWhere('last_name', 'like', "%$search%");
-            //         });
-            // })
-            ,
+            Column::make(__("First Name"),'first_name')
+                ->sortable()
+                ->searchable(),
+            Column::make(__("Last Name"),'last_name')
+                ->sortable()
+                ->searchable(),
             Column::make(__("Customer Phone"),'phone')
                 ->searchable(),
                 // ->format(fn ($phone) => $phone ? "+20" . $phone : ''),
             Column::make(__('Email'), 'email')
-                ->searchable()
+                ->searchable()  
                 ->format(fn ($email) => $email ? view('components.icon', ['icon' => "<a href=mailto:'" . $email . "' class='btn btn-primary' style='width:50px;'><i class='fs-1 ti ti-mail'></i></a>"]) . " " . $email: ''),
             Column::make(__('Operations'), 'id')
                 ->format(fn ($id) => $id ? view('components.icon', ['icon' => "<a href='" . route("dashboard.users.operations",$id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-1 ti ti-battery-charging'></i></a>"]) : ''),

@@ -20,11 +20,11 @@ class VoucherOrder extends Model
     ];
 
     public function order() {
-        return $this->hasOne(Operation::class);
+        return $this->belongsTo(Operation::class);
     }
 
     public function voucher() {
-        return $this->hasOne(voucher::class);
+        return $this->belongsTo(Voucher::class);
     }
 
     public function user() {

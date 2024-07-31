@@ -44,7 +44,7 @@ class SupportController extends Controller
         ]);
 
         Message::create($validated);
-        Ticket::find($validated["ticket_id"])->update(["updated_at" => Carbon::now()]);
+        Ticket::find($validated["ticket_id"])->update(["updated_at" => Carbon::now(),'status' => 1]);
         return redirect()->back()->with('status','success');
     }
 }
