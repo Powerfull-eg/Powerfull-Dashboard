@@ -62,9 +62,11 @@ class PriceController extends Controller
             $description[] = " مجانا لمدة " . $priceData["free_time"] . ($priceData["free_time"] > 10 ? " دقيقة " : " دقائق") . " | ";
         }
         // Dynamic Prices
-        foreach($prices['dynamic'] as $price){
-            $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه لكل ساعة | ';
-        }
+        $description[] = $priceData->app_description_en;
+        $description[] = $priceData->app_description_en;
+        // foreach($prices['dynamic'] as $price){
+        //     $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه لكل ساعة | ';
+        // }
         // Static Prices
         foreach($prices['static'] as $price){
             $description[] = $price['description'] . ' - ' .$price["price"] . ' جنيه ';
