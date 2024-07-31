@@ -13,6 +13,7 @@ class GiftUser extends Model
     public $fillable = [
         "gift_id",
         "user_id",
+        "operation_id",
         "code",
         "expire",
         "used_at",
@@ -25,9 +26,9 @@ class GiftUser extends Model
         return $this->belongsTo(Gift::class);
     }
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function shop() : BelongsTo

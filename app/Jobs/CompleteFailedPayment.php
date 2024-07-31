@@ -36,8 +36,7 @@ class CompleteFailedPayment implements ShouldQueue
         $request = new Request();
         foreach($orders as $order){
             $request->merge(["orderId" => $order->id]);
-            // $actions->completePayment($request);
-        
+            $actions->completePayment($request);
         }
     }
 }

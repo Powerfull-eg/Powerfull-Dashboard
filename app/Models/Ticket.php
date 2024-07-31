@@ -24,10 +24,10 @@ class Ticket extends Model
         return $this->hasMany(Message::class);
     }
 
-    // Get user of the ticket
-    public function user() : BelongsTo
+    // Get user of the ticket    
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function lastMessage(){

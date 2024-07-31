@@ -18,6 +18,8 @@ return new class extends Migration
             $table->char("card_type");
             $table->char("identifier_token");
             $table->longText("paymob_response");
+            $table->char("provider")->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

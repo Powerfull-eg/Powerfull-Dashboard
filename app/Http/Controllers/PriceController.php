@@ -8,6 +8,50 @@ use Illuminate\Http\Request;
 
 class PriceController extends Controller
 {
+    // Show prices for dashboard
+    public function index(){
+        $prices = Price::all();
+        return view('dashboard.prices.index',compact('prices'));
+    }
+
+    // Edit Prices
+    public function edit(string $id){
+        $price = Price::find($id);
+        return view('dashboard.prices.edit',compact('price'));
+    }
+    
+    // Update Prices
+    public function update(Request $request, string $id){
+        $validated = $request->validate([
+            'prices.*.*.*' => 'required',
+            'free_time' => 'required|numeric',
+            'max_hours' => 'required|numeric',
+            'insurance' => 'required|numeric',
+        ]);
+        // Create prices json
+        $prices = [];
+        foreach($request->prices as $type => $priceDeatails){
+            $i = 0;
+            $prices[$type][$i] = [];
+            foreach($priceDeatails as $value){
+                if(in_array(array_key_first($value),array_keys($prices[$type][$i]))){ $i++; }
+                foreach($value as $k => $v){
+                    $prices[$type][$i][$k] = $v;
+                }
+            }
+        }
+        $price = Price::find($id)->update([
+            'free_time' => $validated['free_time'],
+            'max_hours' => $validated['max_hours'],
+            'insurance' => $validated['insurance'],
+            'prices' => json_encode($prices),
+            "created_by" => auth('admins')->user()->id,
+            "updated_by" => auth('admins')->user()->id,
+        ]);
+
+        return redirect()->route('dashboard.prices.index')->with('success',__('Prices Updated Successfully'));
+    }
+    
     // get Price Description
     public function getPriceDescription(){
         $priceData = Price::latest()->first();

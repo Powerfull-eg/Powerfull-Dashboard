@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Http\Controllers\Api\BajieController;
 use App\Models\Device;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
+use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $startDate = $request->startDate ?? null;
+        $endDate = $request->endDate ?? null;
+        $allDevices = new Device;
+        $devices = $startDate ? $allDevices->where("created_at",'>=',$startDate) : $allDevices;
+        $devices = $endDate ? $devices->where("created_at",'<=',$endDate) : $devices;
+        return view("dashboard.devices.index", compact('startDate','endDate','devices','allDevices'));
     }
 
     /**
@@ -30,6 +37,16 @@ class DeviceController extends Controller
     public function store(StoreDeviceRequest $request)
     {
         //
+    }
+
+    /**
+     * Get data of specified device.
+     */
+    public function getDeviceData(Request $request)
+    {
+        $provider = new BajieController;
+        $data = $provider->getDeviceData($request->deviceID);
+        return json_encode($data);
     }
 
     /**
