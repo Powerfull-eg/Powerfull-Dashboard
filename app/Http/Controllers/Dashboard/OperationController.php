@@ -18,18 +18,25 @@ class OperationController extends Controller
 
         $this->operations = Operation::all();
         $this->devices = $bajie->getDevices()->original;
-        // $shops = json_decode($bajie->getShops()->original[1],true)["data"] ?? null;
-        // dd($this->devices);
     }
 
-    public function index(){
+    public function index(Request $request){
         $operations = $this->operations;
-        $operationsperDevice = $operations->groupBy("station_id");
-        $labels = Arr::get();
-        $devices = $this->devices;
-        // $shops = $this->shops;
-        return view("dashboard.operations.index", compact('operations','operationsperDevice','devices'));
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+        $operations = $request->startDate ? $operations->where("created_at",">",$request->startDate) : $operations;
+        $operations = $request->endDate ? $operations->where("created_at","<",$request->endDate) : $operations;
+        
+        $operationsPerDevice = [];
+        foreach($operations as $operation){
+            if(in_array($operation->station_id,array_keys($operationsPerDevice)))
+            {
+                array_push($operationsPerDevice[$operation->station_id], $operation);
+                continue;
+            }
+            $operationsPerDevice[$operation->station_id] = [$operation];
+        }
+        
+        return view("dashboard.operations.index", compact('operations','operationsPerDevice','startDate','endDate'));
     }
-
-    
 }

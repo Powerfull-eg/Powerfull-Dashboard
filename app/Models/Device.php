@@ -28,7 +28,7 @@ class Device extends Model
 
     public function operations(): HasMany
     {
-        return $this->hasMany(Operation::class,"device_id","station_id");
+        return $this->hasMany(Operation::class,"station_id","device_id");
     }
 
 }

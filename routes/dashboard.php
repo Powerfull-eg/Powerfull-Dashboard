@@ -17,19 +17,33 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('/', \App\Http\Controllers\Dashboard\DashboardController::class)->name('index');
 
     /* --------- Operations Management --------- */
-    Route::get('operations', [\App\Http\Controllers\Dashboard\OperationController::class,'index'])->name("operations");
+    Route::resource('operations',\App\Http\Controllers\Dashboard\OperationController::class);
 
     /* --------- Website Management --------- */
     Route::resource('users', \App\Http\Controllers\Dashboard\UserController::class);
     Route::get('users/operations/{id}', [\App\Http\Controllers\Dashboard\UserController::class,"showOperations"])->name("users.operations");
     
     Route::resource('devices', \App\Http\Controllers\Dashboard\DeviceController::class);
+    Route::get('devices/data/{deviceID}', [\App\Http\Controllers\Dashboard\DeviceController::class,"getDeviceData"]);
+
     Route::resource('shops', \App\Http\Controllers\Dashboard\ShopsController::class);
     
     /* --------- Support Management --------- */
     Route::resource('support', \App\Http\Controllers\Dashboard\SupportController::class);
+    /* --------- Prices Management --------- */
+    Route::resource('prices', \App\Http\Controllers\PriceController::class);
     /* --------- Gifts Management --------- */
     Route::resource('gifts', \App\Http\Controllers\Dashboard\GiftsController::class);
+    Route::get('gifts-show/{id}', [\App\Http\Controllers\Dashboard\GiftsController::class,'showGiftUsage'])->name('gifts-show');
+    Route::get('gifts-deliver/{id}', [\App\Http\Controllers\Dashboard\GiftsController::class,'deliver'])->name('gifts-deliver');
+
+    /* --------- Vouchers Management --------- */
+    Route::resource('vouchers', \App\Http\Controllers\Dashboard\VoucherController::class);
+    
+    /* --------- Control Management --------- */
+    Route::get('control',function(){ return view('dashboard.control.index'); })->name('control.index');
+    Route::resource('powerbank', \App\Http\Controllers\Dashboard\PowerbanksController::class);
+    Route::post('powerbank/eject', [\App\Http\Controllers\Dashboard\PowerbanksController::class,'eject'])->name('powerbank.eject');
 
     /* --------- Utilities --------- */
     Route::resource('memos', \App\Http\Controllers\Dashboard\MemoController::class);

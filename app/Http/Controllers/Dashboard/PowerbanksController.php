@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Dashboard;
 use App\Models\powerbanks;
 use App\Http\Requests\StorepowerbanksRequest;
 use App\Http\Requests\UpdatepowerbanksRequest;
+use App\Models\Shop;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Request;
 
 class PowerbanksController extends Controller
 {
@@ -13,7 +16,26 @@ class PowerbanksController extends Controller
      */
     public function index()
     {
-        //
+        $shops = Shop::all();
+        return view('dashboard.powerbank.index',compact('shops'));
+    }
+
+    /**
+     * Ejecting the targeted powerbank.
+     */
+    public function eject(Request $request)
+    {
+        $validated = $request->validate([
+            'device_name' => 'required',
+            'powerbank' => 'required',
+        ]);
+
+        $url = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/ejectByRepair?cabinetid=". $validated['device_name'] ."&slotNum=".$validated['powerbank'];
+        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->post($url);
+        if($response->status() == 200){
+            return redirect()->back()->with('success',__('PowerBank Ejected Successfully'));
+        }
+        return redirect()->back()->with('error',__('Failed to eject PowerBank'));
     }
 
     /**

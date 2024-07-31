@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
+use App\Models\User;
+use App\Models\Voucher;
+use App\Models\VoucherOrder;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class VoucherController extends Controller
 {
@@ -11,7 +15,7 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        //
+        return view('dashboard.vouchers.index');
     }
 
     /**
@@ -19,7 +23,8 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        //
+        $users = new User();
+        return view('dashboard.vouchers.create',compact('users'));
     }
 
     /**
@@ -27,7 +32,18 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'code' => 'required',
+            'type' => 'required',
+            'value' => 'required',
+            'user_id' => 'required',
+            'min_amount' => 'required|numeric',
+            'max_discount' => 'required|numeric',
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        $voucher = Voucher::create($validated);
+        return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
     }
 
     /**
@@ -35,7 +51,8 @@ class VoucherController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $voucher = Voucher::find($id);
+        return view('dashboard.vouchers.show',compact('voucher'));
     }
 
     /**
@@ -43,7 +60,9 @@ class VoucherController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $voucher = Voucher::find($id);
+        $users = new User();
+        return view('dashboard.vouchers.edit',compact('voucher','users'));
     }
 
     /**
@@ -51,7 +70,19 @@ class VoucherController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'code' => 'required',
+            'type' => 'required',
+            'value' => 'required',
+            'user_id' => 'required',
+            'min_amount' => 'required|numeric',
+            'max_discount' => 'required|numeric',
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        $voucher = Voucher::find($id);
+        $voucher->update($validated);
+        return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Updated Successfully'));
     }
 
     /**

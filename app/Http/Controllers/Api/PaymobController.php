@@ -119,9 +119,10 @@ class PaymobController extends \App\Http\Controllers\Controller
         if($request->input("type") == "TOKEN"){
             $payment = Payment::where("payment_order_id",intval($request->input('obj.order_id')))->first();
             // Check for repeated card
-            $cardExist = Card::where([["card_number", $request->input("obj.masked_pan")],["user_id", $payment->user_id]])->count();
-            if($cardExist){
-                Card::where([["card_number", $request->input("obj.masked_pan")],["user_id", $payment->user_id]])->update([
+            $card = Card::withTrashed()->where([["card_number", $request->input("obj.masked_pan")],["user_id", $payment->user_id]])->first();
+            if($card){
+                ($card->trashed() ? $card->restore(): '');
+                $card->update([
                     "identifier_token" => $request->input("obj.token"),
                     "paymob_response" => json_encode($request->input())
                     ]);
@@ -134,7 +135,6 @@ class PaymobController extends \App\Http\Controllers\Controller
                     "paymob_response" => json_encode($request->input())
                 ]);
             }
-          
         }
         
         if($request->input("type") == "TRANSACTION"){

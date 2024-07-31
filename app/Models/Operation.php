@@ -32,9 +32,9 @@ class Operation extends Model
         return $this->belongsTo(Device::class,"station_id","device_id");
     }
 
-    public function user(): BelongsTo
+     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function operationTimeInSeconds()
