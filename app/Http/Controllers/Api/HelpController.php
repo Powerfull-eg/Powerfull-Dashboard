@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\WhatsappController;
 
 class HelpController extends \App\Http\Controllers\Controller
 {
@@ -44,11 +45,17 @@ class HelpController extends \App\Http\Controllers\Controller
         // Send Autoreply for 1st message
         if($ticket->messages->count() <= 1){
             $this->autoReply($ticket->id);
+        
+        // send Whatsapp notification
+                $user = User::find($ticket->user_id);
+                $url = route("dashboard.support.edit", $ticket->id);
+                $notificationMessage = "لديك طلب تواصل جديد من $user->fullName" . "\r\n" . $url;
+                $whatsRequest = new Request();
+                $whatsRequest->merge(["mobile" => "01069170097", "message" => $notificationMessage]);
+                $whatsapp = new WhatsappController();
+                $whats = $whatsapp->sendTextMessage($whatsRequest);
         }
         
-        // Send Notify Email
-        // $user = User::find($ticket->user_id);
-        // Mail::to(env("SUPPORT_EMAIL"))->send(new NotifySupportMail($user,$validated["message"]));
         return response()->json(["ticket_id" => $ticket->id]);
     }
     
@@ -84,7 +91,7 @@ class HelpController extends \App\Http\Controllers\Controller
         ]);
         // Update Ticket
         $ticket->update(["updated_at" => Carbon::now()]);
-
+        
         return response()->json(["message" => $message]);
     }
 
