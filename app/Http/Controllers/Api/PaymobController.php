@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\User;
 use App\Models\Card;
 use App\Models\Payment;
+use App\Models\Operation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Sleep;
@@ -115,7 +116,6 @@ class PaymobController extends \App\Http\Controllers\Controller
     
     // the callback function when payment done
     public function iframeCallback(Request $request){
-
         if($request->input("type") == "TOKEN"){
             $payment = Payment::where("payment_order_id",intval($request->input('obj.order_id')))->first();
             // Check for repeated card
@@ -135,20 +135,36 @@ class PaymobController extends \App\Http\Controllers\Controller
                     "paymob_response" => json_encode($request->input())
                 ]);
             }
+          
         }
         
         if($request->input("type") == "TRANSACTION"){
             $payment = Payment::where("payment_order_id",$request->input('obj.order.id'))->first();
             $payment->update(["response_data" => $request->input('obj'),"type" => "ADD-CARD"]);
+            $paymobOrderId = $payment->payment_order_id;
+            $card = Card::where("paymob_response","LIKE","%\"order_id\":\"$paymobOrderId\"%")->first();
+            
               try
-            {
-                $voidRequest = new Request();               
-                $voidRequest->merge(["authToken" =>  $payment->token,"transactionID" =>  $request->input('obj.id')]);
-                $this->voidPayment($voidRequest);
-            }catch(Exception $e){
-                DB::table('test')->insert(["request" => $e->getMessage()]);
+                {
+                    // void payment
+                    $voidRequest = new Request();               
+                    $voidRequest->merge(["authToken" =>  $payment->token,"transactionID" =>  $request->input('obj.id')]);
+                    $this->voidPayment($voidRequest);
+                    
+                }catch(Exception $e){
+                    DB::table('test')->insert(["request" => $e->getMessage()]);
+                }
+                // Handle failed transactions
+                if($request->input('obj.success') == true){
+                        ($card->trashed() ? $card->restore(): '');
+                }else{
+                        $relatedOrder = Operation::whereIn("status",[1, 2, 4])->where("card_id",$card->id)->count();
+                        if(!$card->trashed() && !$relatedOrder){
+                            $card->delete();
+                        };
+
+                }
             }
-        }
         return;
     }
     
