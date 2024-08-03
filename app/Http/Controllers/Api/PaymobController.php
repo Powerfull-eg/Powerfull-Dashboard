@@ -116,7 +116,6 @@ class PaymobController extends \App\Http\Controllers\Controller
     
     // the callback function when payment done
     public function iframeCallback(Request $request){
-        DB::table("test")->insert(["request" => json_encode($request->input())]);
         if($request->input("type") == "TOKEN"){
             $payment = Payment::where("payment_order_id",intval($request->input('obj.order_id')))->first();
             // Check for repeated card
@@ -157,11 +156,9 @@ class PaymobController extends \App\Http\Controllers\Controller
                 }
                 // Handle failed transactions
                 if($request->input('obj.success') == true){
-                        DB::table('test')->insert(["request" => "true"]);
                         ($card->trashed() ? $card->restore(): '');
                 }else{
                         $relatedOrder = Operation::whereIn("status",[1, 2, 4])->where("card_id",$card->id)->count();
-                        DB::table('test')->insert(["request" => "false"]);
                         if(!$card->trashed() && !$relatedOrder){
                             $card->delete();
                         };
