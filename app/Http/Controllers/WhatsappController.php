@@ -1,0 +1,76 @@
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+class WhatsappController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public static function sendTextMessage(Request $request)
+    {
+        $validated = $request->validate([
+            "mobile" => "required",
+            "message" => "required",
+        ]);
+        
+        // $validated['message'] = rawurlencode($validated['message']);
+        $url = "https://app.arrivewhats.com/api/send?number=2".$validated["mobile"]."&type=text&message=".$validated["message"]."&instance_id=". env('ARRIVEWHATS_INSTANCE_ID')."&access_token=". env('ARRIVEWHATS_ACCESS_TOKEN');
+        $response = Http::post($url);
+        $body = json_decode($response->body(), true);
+        if($body["status"] == "success"){
+            return [true, $body["status"]];
+        }
+        return [false, $body["message"]];
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}
