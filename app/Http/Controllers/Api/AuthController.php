@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\SMSController;
+use App\Http\Controllers\WhatsappController;
 
 class AuthController extends \App\Http\Controllers\Controller
 {
@@ -50,14 +53,37 @@ class AuthController extends \App\Http\Controllers\Controller
             $expiresAt = now()->addMinutes(5);
             Cache::put('otp', $randomNumber, $expiresAt);
     
-            $url = "https://smsmisr.com/api/OTP/?environment=1&username=" . env("SMS_MISR_USERNAME") . "&password=" . env("SMS_MISR_PASSWORD") . "&sender=" . env("SMS_MISR_SENDER_TOKEN_LIVE") . "&mobile=20" . $validate["phone"] . "&template=" . env("SMS_MISR_TEMPLATE_TOKEN") . "&otp=$randomNumber";
-            $response = Http::post($url);
+        //     $url = "https://smsmisr.com/api/OTP/?environment=1&username=" . env("SMS_MISR_USERNAME") . "&password=" . env("SMS_MISR_PASSWORD") . "&sender=" . env("SMS_MISR_SENDER_TOKEN_LIVE") . "&mobile=20" . $validate["phone"] . "&template=" . env("SMS_MISR_TEMPLATE_TOKEN") . "&otp=$randomNumber";
+        //     $response = Http::post($url);
     
-            if (json_decode($response->body(), true)["Code"] != "4901") {
-                return response()->json([$response->status(), $response->body()], 401);
-            }
-        return response()->json([$response->status(), $response->body()]);
+        //     if (json_decode($response->body(), true)["Code"] != "4901") {
+        //         return response()->json([$response->status(), $response->body()], 401);
+        //     }
+        // return response()->json([$response->status(), $response->body()]);
+            
+                
+            $message = <<<EOT
+Your Powerfull Verification OTP is $randomNumber. 
+Please don't share it with anyone.
+EOT;
+            $otpRequest = new Request();
+            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2]);
+            // $whatsapp = $validate["phone"] ? WhatsappController::sendTextMessage($otpRequest) : false;
+            // Sms
+            if($validate["phone"]){
+                // Whatsapp
+                $whatsapp = new WhatsappController();
+                $whats = $whatsapp->sendTextMessage($otpRequest);
+                $sms = new SMSController();
+                $success = $sms->store($otpRequest);
+                $success = $success ?? ($whatsapp[0] ? true : false);
+            }else{
+                $success = false;
+            } 
+
+            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
         }
+
         return response("OTP Isn't Active");
     }
 
@@ -186,18 +212,24 @@ class AuthController extends \App\Http\Controllers\Controller
     public function login(Request $request)
     {
 
-        $validate = $request->validate([
-            'email' => ['required_without:phone'],
-            'phone' => ['required_without:email'],
-            'password' => ['required']
-        ]);
-
-        $credentials = $request->only('phone', 'password');
-        if (!$token = Auth::guard("api")->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $validations = [
+            'email' => 'required_without:phone',
+            'phone' => 'required_without:email',
+            // 'password' => ['required']
+        ];
+        if(!env("OTP_ACTIVE")) $validations["password"] = 'required';
+        $validate = $request->validate($validations);
+        
+        if(env("OTP_ACTIVE")){
+            $user = User::where('phone',$request->phone)->first();
+            $token = Auth::guard('api')->login($user);
+        }else{
+            $user = Auth::guard('api')->getuser();
+            $credentials = $request->only('phone', 'password');
+            if (!$token = Auth::guard("api")->attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
         }
-
-        $user = Auth::guard('api')->getuser();
 
         $userData = [
             'id' => $user->id,
