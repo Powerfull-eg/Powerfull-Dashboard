@@ -35,6 +35,7 @@ Route::get('settings', function () {
                 "lat" => 30.222656,
                 "lng" => 31.477425,
                 "zoom" => 12,
+                "mapId" => "a55a8dd1e435899e"
             ],
         "maintenance" => false
         ]);
