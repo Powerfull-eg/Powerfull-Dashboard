@@ -43,7 +43,8 @@ Route::get('settings', function () {
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
 // Register
 Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::post('loginNew', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'loginLegacy']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 Route::post('otp', [AuthController::class, 'otp']);
 Route::post('check-otp', [AuthController::class, 'checkOtp']);

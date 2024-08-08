@@ -224,11 +224,11 @@ EOT;
             $user = User::where('phone',$request->phone)->first();
             $token = Auth::guard('api')->login($user);
         }else{
-            $user = Auth::guard('api')->getuser();
             $credentials = $request->only('phone', 'password');
             if (!$token = Auth::guard("api")->attempt($credentials)) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
+            $user = Auth::guard('api')->getuser();
         }
 
         $userData = [
@@ -243,6 +243,38 @@ EOT;
         return response()->json(["token" => $this->respondWithToken($token)->original, "user" => $userData]);
     }
 
+    /**
+     * Login for old app versions.
+     *
+     * @return \Illuminate\Http\JsonResponse
+    */
+    public function loginLegacy(Request $request)
+    {
+
+        $validate = $request->validate([
+            'email' => ['required_without:phone'],
+            'phone' => ['required_without:email'],
+            'password' => ['required']
+        ]);
+
+        $credentials = $request->only('phone', 'password');
+        if (!$token = Auth::guard("api")->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = Auth::guard('api')->getuser();
+
+        $userData = [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'photo' => $user->avatar ?? '',
+            'cards' => $user->cards ?? []
+        ];
+        return response()->json(["token" => $this->respondWithToken($token)->original, "user" => $userData]);
+    }
     public function get_user(Request $request)
     {
         $user = Auth::guard("api")->getuser();
