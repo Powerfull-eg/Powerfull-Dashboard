@@ -67,12 +67,14 @@ EOT;
                 $whats = $whatsapp->sendTextMessage($otpRequest);
                 $sms = new SMSController();
                 $success = $sms->store($otpRequest);
-                $success = $success ?? ($whatsapp[0] ? true : false);
+                $success = ($success == true ? $success : ($whats[0] ? true : false));
+                return response()->json($whats);
             }else{
                 $success = false;
-            } 
-
-            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+            }
+            
+            // return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+            return response()->json([($success ? "Message sent successfully" : "Failed to send message")]);
         }
         
         if($request->type && $request->type == "email"){
@@ -82,6 +84,7 @@ EOT;
                             $message->to($user->email)
                             ->subject('PowerFull OTP');
                     });
+                    return response()->json(["Message sent successfully"]);
                 }catch(\Exception $e){
                     return response()->json(["Failed to send message: " . $e->getMessage()],401);
                 }

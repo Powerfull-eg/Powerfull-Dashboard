@@ -36,10 +36,10 @@ class WhatsappController extends Controller
         $url = "https://app.arrivewhats.com/api/send?number=2".$validated["mobile"]."&type=text&message=".$validated["message"]."&instance_id=". env('ARRIVEWHATS_INSTANCE_ID')."&access_token=". env('ARRIVEWHATS_ACCESS_TOKEN');
         $response = Http::post($url);
         $body = json_decode($response->body(), true);
-        if($body["status"] == "success"){
-            return [true, $body["status"]];
+        if(isset($body["status"]) && $body["status"] == "success"){
+            return [true, $body];
         }
-        return [false, $body["message"]];
+        return [false, $response];
     }
 
     /**
