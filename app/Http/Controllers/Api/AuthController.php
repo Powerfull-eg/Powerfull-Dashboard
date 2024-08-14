@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\SMSController;
+use App\Http\Controllers\WhatsappController;
 
 class AuthController extends \App\Http\Controllers\Controller
 {
@@ -45,18 +49,43 @@ class AuthController extends \App\Http\Controllers\Controller
             "phone" => "required",
         ]);
 
-        if(env("OTP_ACTIVE")){
             $randomNumber = random_int(1000, 9999);
             $expiresAt = now()->addMinutes(5);
             Cache::put('otp', $randomNumber, $expiresAt);
-    
-            $url = "https://smsmisr.com/api/OTP/?environment=1&username=" . env("SMS_MISR_USERNAME") . "&password=" . env("SMS_MISR_PASSWORD") . "&sender=" . env("SMS_MISR_SENDER_TOKEN_LIVE") . "&mobile=20" . $validate["phone"] . "&template=" . env("SMS_MISR_TEMPLATE_TOKEN") . "&otp=$randomNumber";
-            $response = Http::post($url);
-    
-            if (json_decode($response->body(), true)["Code"] != "4901") {
-                return response()->json([$response->status(), $response->body()], 401);
-            }
-        return response()->json([$response->status(), $response->body()]);
+            $message = <<<EOT
+    Your Powerfull Verification OTP is $randomNumber. 
+    Please don't share it with anyone.
+EOT;
+        if(env("OTP_ACTIVE")){
+            $otpRequest = new Request();
+            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2]);
+            // $whatsapp = $validate["phone"] ? WhatsappController::sendTextMessage($otpRequest) : false;
+            // Sms
+            if($validate["phone"]){
+                // Whatsapp
+                $whatsapp = new WhatsappController();
+                $whats = $whatsapp->sendTextMessage($otpRequest);
+                $sms = new SMSController();
+                $success = $sms->store($otpRequest);
+                $success = $success ?? ($whatsapp[0] ? true : false);
+            }else{
+                $success = false;
+            } 
+
+            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+        }
+        
+        if($request->type && $request->type == "email"){
+                try{
+                    $user = User::where('phone',$validate["phone"])->first();
+                    Mail::raw($message, function ($message) use ($user) {
+                            $message->to($user->email)
+                            ->subject('PowerFull OTP');
+                    });
+                }catch(\Exception $e){
+                    return response()->json(["Failed to send message: " . $e->getMessage()],401);
+                }
+
         }
         return response("OTP Isn't Active");
     }
@@ -186,6 +215,45 @@ class AuthController extends \App\Http\Controllers\Controller
     public function login(Request $request)
     {
 
+        $validations = [
+            'email' => 'required_without:phone',
+            'phone' => 'required_without:email',
+            // 'password' => ['required']
+        ];
+        if(!env("OTP_ACTIVE")) $validations["password"] = 'required';
+        $validate = $request->validate($validations);
+        
+        if(env("OTP_ACTIVE")){
+            $user = User::where('phone',$request->phone)->first();
+            $token = Auth::guard('api')->login($user);
+        }else{
+            $credentials = $request->only('phone', 'password');
+            if (!$token = Auth::guard("api")->attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            $user = Auth::guard('api')->getuser();
+        }
+
+        $userData = [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'photo' => $user->avatar ?? '',
+            'cards' => $user->cards ?? []
+        ];
+        return response()->json(["token" => $this->respondWithToken($token)->original, "user" => $userData]);
+    }
+
+    /**
+     * Login for old app versions.
+     *
+     * @return \Illuminate\Http\JsonResponse
+    */
+    public function loginLegacy(Request $request)
+    {
+
         $validate = $request->validate([
             'email' => ['required_without:phone'],
             'phone' => ['required_without:email'],
@@ -210,7 +278,6 @@ class AuthController extends \App\Http\Controllers\Controller
         ];
         return response()->json(["token" => $this->respondWithToken($token)->original, "user" => $userData]);
     }
-
     public function get_user(Request $request)
     {
         $user = Auth::guard("api")->getuser();

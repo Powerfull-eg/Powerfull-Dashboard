@@ -35,6 +35,7 @@ Route::get('settings', function () {
                 "lat" => 30.222656,
                 "lng" => 31.477425,
                 "zoom" => 12,
+                "mapId" => "a55a8dd1e435899e"
             ],
         "maintenance" => false
         ]);
@@ -43,7 +44,8 @@ Route::get('settings', function () {
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
 // Register
 Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::post('loginNew', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'loginLegacy']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 Route::post('otp', [AuthController::class, 'otp']);
 Route::post('check-otp', [AuthController::class, 'checkOtp']);
