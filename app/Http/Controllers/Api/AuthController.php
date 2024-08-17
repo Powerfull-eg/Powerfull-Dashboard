@@ -27,10 +27,9 @@ class AuthController extends \App\Http\Controllers\Controller
         $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp', 'checkOtp','otpActivate','resetPassword']]);
     }
 
-     
     /**
      * send otp to user
-     */
+    */
     public function otpActivate(Request $request)
     {
         $user = null;
@@ -58,17 +57,16 @@ class AuthController extends \App\Http\Controllers\Controller
 EOT;
         if(env("OTP_ACTIVE")){
             $otpRequest = new Request();
-            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2]);
+            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2,"otp" => $randomNumber]);
             // $whatsapp = $validate["phone"] ? WhatsappController::sendTextMessage($otpRequest) : false;
             // Sms
             if($validate["phone"]){
                 // Whatsapp
                 $whatsapp = new WhatsappController();
                 $whats = $whatsapp->sendTextMessage($otpRequest);
-                $sms = new SMSController();
-                $success = $sms->store($otpRequest);
-                $success = ($success == true ? $success : ($whats[0] ? true : false));
-                return response()->json($whats);
+                $success = SMSController::sendOTP($otpRequest);
+                $success = $success ?? ($whats[0] ? true : false);
+             
             }else{
                 $success = false;
             }

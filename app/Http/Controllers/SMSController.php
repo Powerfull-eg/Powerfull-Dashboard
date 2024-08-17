@@ -56,7 +56,43 @@ class SMSController extends Controller
         }
         return false;
     }
+    
+    /**
+    * Send OTP to users
+    * SMS MISR
+    */
+    public static function sendOTP(Request $request)
+    {
+        $validated = $request->validate([
+            "mobile" => "required",
+            "otp" => "required|numeric",
+        ]);
+                
+        $template = "e83faf6025ec41d0f40256d2812629f5fa9291d05c8322f31eea834302501da8";
+        $sender = env('SMS_MISR_SENDER_TOKEN_LIVE');
+        $user = env('SMS_MISR_USERNAME');
+        $password = env('SMS_MISR_PASSWORD');
+        
+        $url = "https://smsmisr.com/api/OTP/?environment=2&username=$user&password=$password&sender=$sender&mobile=$validated[mobile]&template=$template&otp=$validated[otp]";
 
+        $response = Http::post($url);
+        $body = json_decode($response->body(), true);
+
+        // Add SMS and save response to DB -------
+        DB::table('channels')->insert( [
+            "type" => 1,
+            "content" => $validated['otp'],
+            "reciever" => $validated["mobile"],
+            "response" => $response->body(),
+            "status" => $body["Code"] == "4901" ? 1 : 2
+        ]);
+
+        // Success
+        if($body["Code"] == "4901"){
+                return true;
+        }
+        return false;
+    }
     /**
      * Display the specified resource.
      */
