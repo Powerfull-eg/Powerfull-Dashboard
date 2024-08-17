@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('admin_id')->constrained();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
-            $table->json('data');
             $table->string('type_ar');
             $table->string('type_en');
             $table->string('logo')->nullable();
