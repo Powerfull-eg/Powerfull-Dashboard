@@ -27,10 +27,9 @@ class AuthController extends \App\Http\Controllers\Controller
         $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp', 'checkOtp','otpActivate','resetPassword']]);
     }
 
-     
     /**
      * send otp to user
-     */
+    */
     public function otpActivate(Request $request)
     {
         $user = null;
@@ -58,21 +57,22 @@ class AuthController extends \App\Http\Controllers\Controller
 EOT;
         if(env("OTP_ACTIVE")){
             $otpRequest = new Request();
-            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2]);
+            $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2,"otp" => $randomNumber]);
             // $whatsapp = $validate["phone"] ? WhatsappController::sendTextMessage($otpRequest) : false;
             // Sms
             if($validate["phone"]){
                 // Whatsapp
                 $whatsapp = new WhatsappController();
                 $whats = $whatsapp->sendTextMessage($otpRequest);
-                $sms = new SMSController();
-                $success = $sms->store($otpRequest);
-                $success = $success ?? ($whatsapp[0] ? true : false);
+                $success = SMSController::sendOTP($otpRequest);
+                $success = $success ?? ($whats[0] ? true : false);
+             
             }else{
                 $success = false;
-            } 
-
-            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+            }
+            
+            // return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+            return response()->json([($success ? "Message sent successfully" : "Failed to send message")]);
         }
         
         if($request->type && $request->type == "email"){
@@ -82,6 +82,7 @@ EOT;
                             $message->to($user->email)
                             ->subject('PowerFull OTP');
                     });
+                    return response()->json(["Message sent successfully"]);
                 }catch(\Exception $e){
                     return response()->json(["Failed to send message: " . $e->getMessage()],401);
                 }
