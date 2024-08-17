@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('shops_rates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
-            $table->foreignId('shop_id')->constrained();
             $table->integer('rate')->nullable();
             $table->string('comment')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained();
             $table->enum('hidden', ['yes', 'no'])->default('no');
             $table->timestamps();
         });

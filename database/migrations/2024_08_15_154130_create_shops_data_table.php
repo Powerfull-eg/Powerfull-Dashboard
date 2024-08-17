@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('shops_data', function (Blueprint $table) {
             $table->id();
             $table->foreignId('admin_id')->constrained();
-            $table->foreignId('shop_id')->constrained();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
             $table->json('data');
             $table->string('type_ar');

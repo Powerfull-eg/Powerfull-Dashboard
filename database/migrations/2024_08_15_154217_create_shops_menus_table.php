@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('shops_menus', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
-            $table->foreignId('shop_id')->constrained();
             $table->string('image');
             $table->enum('is_hero', ['yes', 'no'])->default('no');       
             $table->timestamps();

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('shops_favourites', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->nullable();
-            $table->foreignId('shop_id')->constrained();
+            $table->unsignedBigInteger('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
             $table->timestamps();
         });
     }

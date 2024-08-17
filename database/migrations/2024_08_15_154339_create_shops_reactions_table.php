@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('shops_reactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
-            $table->foreignId('shop_id')->constrained();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained();
             $table->enum('reaction',['like', 'dislike','love','angry','sad','surprised'])->default('like');
             $table->timestamps();
         });
