@@ -11,6 +11,8 @@ class ShopsRate extends Model
 
     protected $fillable = ['rate', 'comment', 'hidden', 'user_id', 'shop_id'];
 
+    public $hidden = [ 'created_at', 'updated_at' , 'shop_id' , 'user_id' ];
+
     public function shop()
     {
         return $this->belongsTo(Shop::class);

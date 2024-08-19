@@ -19,7 +19,10 @@ class Device extends Model
         "slots",
         "created_by",
         "updated_by",
+        "provider_id"
     ];
+
+    public $hidden = [ 'provider_id', 'created_at', 'updated_at' ,'created_by', 'updated_by', 'deleted_at','shop_id' ];
 
     public function shop(): BelongsTo
     {
@@ -30,5 +33,4 @@ class Device extends Model
     {
         return $this->hasMany(Operation::class,"station_id","device_id");
     }
-
 }

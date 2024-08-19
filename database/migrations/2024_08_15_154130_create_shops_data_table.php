@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('type_ar');
             $table->string('type_en');
             $table->string('logo')->nullable();
-            $table->timestamp('opens_at')->nullable();
-            $table->timestamp('closes_at')->nullable();
+            $table->time('opens_at')->nullable();
+            $table->time('closes_at')->nullable();
             $table->string('lat')->nullable();
             $table->string('lng')->nullable();
             $table->string('place_access_ar')->nullable();

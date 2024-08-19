@@ -20,6 +20,7 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
+use App\Http\Controllers\Api\ShopsController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -54,7 +55,7 @@ Route::post('getuser', [AuthController::class, 'authUser']);
 Route::post('checkemail', [AuthController::class, 'checkEmail']);
 Route::post('checkphone', [AuthController::class, 'checkPhone']);
 Route::post('devices', [BajieController::class, 'getDevices']);
-Route::post('shops', [BajieController::class, 'getShops']);
+Route::get ('shops', [ShopsController::class, 'index']);
 Route::post('price', [PriceController::class, 'getPriceDescription']);
 // Register push token
 Route::post('push-token/upsert', [PushTokensController::class, 'upsertToken']);

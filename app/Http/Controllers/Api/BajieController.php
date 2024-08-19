@@ -183,4 +183,11 @@ class BajieController extends \App\Http\Controllers\Controller
         
         return response()->json(["order" => $operation]);
     }
+
+    public static function getDeviceData($device_id){
+        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get("https://developer.chargenow.top/cdb-open-api/v1/rent/cabinet/query?deviceId=$device_id");
+        if($response->status() == 20 && json_decode($response->body(),true)["code"] == 0){
+            return json_decode($response->body(),true)["data"];
+        }
+    }
 }
