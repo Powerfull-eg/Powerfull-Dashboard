@@ -110,4 +110,60 @@ class ShopsController extends Controller
         $shopSave = ShopsSave::where('shop_id', $shop->id)->where('user_id', $user->id)->first();
             return response()->json(['isSaved' => ($shopSave ? true : false)]);
     }
+
+    /**
+     * Add Shop comment
+     */
+    public function addComment(Request $request)
+    {
+        $request->validate([
+            'shop_id' => 'required|exists:shops,id',
+            'comment' => 'required|string|max:200',
+            'rate' => 'numeric|between:1,5'
+        ]);
+
+        $shop = Shop::findOrFail($request->shop_id);
+        $user = Auth::guard('api')->user();
+        
+        if(!$user) return response()->json('Unauthenticated', 401);
+        
+        $shop->rates()->create([
+            'shop_id' => $shop->id,
+            'user_id' => $user->id,
+            'comment' => $request->comment,
+            'rate' => $request->rate
+        ]);
+
+        return response()->json($shop->rates()->where('hidden', 'no')->get());
+    }
+
+    /**
+     * Add Shop Reaction
+     */
+    public function addReact(Request $request)
+    {
+        $request->validate([
+            'shop_id' => 'required|exists:shops,id',
+            'reaction' => 'required|string|in:like,dislike,love,angry,sad,surprised',
+        ]);
+
+        $shop = Shop::findOrFail($request->shop_id);
+        $user = Auth::guard('api')->user();
+        
+        if(!$user) return response()->json('Unauthenticated', 401);
+        // check if user already reacted
+        if($shop->reactions()->where('user_id', $user->id)->where('shop_id', $request->shop_id)->exists()) {
+            $shop->reactions()->where('user_id', $user->id)->where('shop_id', $request->shop_id)->update([
+                'reaction' => $request->reaction
+            ]);
+        }else{
+            $shop->reactions()->create([
+                'shop_id' => $shop->id,
+                'user_id' => $user->id,
+                'reaction' => $request->reaction
+            ]);
+        }
+
+        return response()->json($shop->reactions()->get());
+    }
 }

@@ -98,6 +98,10 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
         // Save shops
         Route::post('save', [ShopsController::class, 'save']);
         Route::post('check-save', [ShopsController::class, 'checkSave']);
+
+        // Add comment and react
+        Route::post('add-comment', [ShopsController::class, 'addComment']);
+        Route::post('add-react', [ShopsController::class, 'addReact']);
     });
 });
 
