@@ -32,7 +32,7 @@ class Shop extends Model
 
     public $appends = [
         "location",
-        "is_favourite",
+        "is_saved",
     ];
 
     public $hidden = [ 'location_latitude', 'location_longitude' , 'created_at', 'updated_at'];
@@ -106,12 +106,20 @@ class Shop extends Model
         return $this->HasMany(ShopsReaction::class);
     }
 
-    /**
-     * Check if the Shop is favorited
-     *
-     */
-    public function getIsFavouriteAttribute()
+
+    // get saved users
+    public function savedUsers() : HasMany
     {
-        return auth('api')->user() ? ShopsFavourite::where('user_id',auth('api')->user()->id)->where('shop_id',$this->id)->exists() : null;
+        return $this->hasMany(ShopsSave::class);
     }
+
+    /**
+     * Check if the Shop is saved
+     *
+    */
+    public function getIsSavedAttribute()
+    {
+        return auth('api')->user() ? ShopsSave::where('user_id',auth('api')->user()->id)->where('shop_id',$this->id)->exists() : false;
+    }
+
 }

@@ -88,6 +88,17 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
+    
+    // Shops Route Group
+    Route::group(['prefix' => 'shops'], function () {
+        Route::post('/', function(){
+            return response()->json(['message' => 'shops route is empty']);
+        });
+        
+        // Save shops
+        Route::post('save', [ShopsController::class, 'save']);
+        Route::post('check-save', [ShopsController::class, 'checkSave']);
+    });
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {

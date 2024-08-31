@@ -12,7 +12,7 @@ class ShopsData extends Model
 
     protected $guarded = [];
 
-    public $appends = [ 'location' ];
+    public $appends = [ 'location' , 'type'];
 
     public $hidden = [ 'lat', 'lng' , 'created_at', 'updated_at' , 'admin_id' , 'shop_id' ];
     
@@ -36,6 +36,11 @@ class ShopsData extends Model
         return Attribute::make(
             get: fn ($logo) => ($logo ? asset('storage/shops/' . $this->shop_id . '/' . $logo) : null),
         );
+    }
+
+    public function getTypeAttribute()
+    {
+        return ShopsType::where('shop_id',$this->shop_id)->first();
     }
 
 }
