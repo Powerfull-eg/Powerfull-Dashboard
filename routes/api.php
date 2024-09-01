@@ -98,6 +98,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
         // Save shops
         Route::post('save', [ShopsController::class, 'save']);
         Route::post('check-save', [ShopsController::class, 'checkSave']);
+        Route::get('get-save', [ShopsController::class, 'getSavingShops']);
 
         // Add comment and react
         Route::post('add-comment', [ShopsController::class, 'addComment']);

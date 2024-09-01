@@ -83,13 +83,13 @@ class ShopsController extends Controller
         $shopSave = ShopsSave::where('shop_id', $shop->id)->where('user_id', $user->id)->first();
         if ($shopSave) {
             $shopSave->delete();
-            return response()->json(['isSaved' => false]);
         } else {
             $shopSave = ShopsSave::create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id
             ]);
-            return response()->json(['isSaved' => true]);
+            
+            return response()->json(ShopsSave::where('user_id', $user->id)->pluck('shop_id'));
         }
     }
 
@@ -108,7 +108,17 @@ class ShopsController extends Controller
         if(!$user) return response()->json('Unauthenticated', 401);
         
         $shopSave = ShopsSave::where('shop_id', $shop->id)->where('user_id', $user->id)->first();
-            return response()->json(['isSaved' => ($shopSave ? true : false)]);
+        return response()->json(ShopsSave::where('user_id', $user->id)->pluck('shop_id'));
+    }
+
+    /**
+     * get Saving shops.
+     */
+    public function getSavingShops()
+    {
+        $user = Auth::guard('api')->user();        
+        if(!$user) return response()->json('Unauthenticated', 401);
+        return response()->json(ShopsSave::where('user_id', $user->id)->get());
     }
 
     /**
