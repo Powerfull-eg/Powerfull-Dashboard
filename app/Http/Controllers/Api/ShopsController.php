@@ -118,7 +118,7 @@ class ShopsController extends Controller
     {
         $user = Auth::guard('api')->user();        
         if(!$user) return response()->json('Unauthenticated', 401);
-        return response()->json(ShopsSave::where('user_id', $user->id)->get());
+        return response()->json(ShopsSave::where('user_id', $user->id)->with('shop')->get());
     }
 
     /**

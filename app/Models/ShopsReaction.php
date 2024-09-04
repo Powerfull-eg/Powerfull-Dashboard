@@ -11,7 +11,7 @@ class ShopsReaction extends Model
 
     protected $fillable = ['reaction', 'shop_id','user_id'];
 
-    public $hidden = [ 'created_at', 'updated_at' , 'shop_id', 'user_id' ];
+    public $hidden = [ 'created_at', 'updated_at' , 'shop_id' ];
 
     public function shop()
     {

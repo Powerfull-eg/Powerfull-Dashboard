@@ -38,7 +38,8 @@ Route::get('settings', function () {
                 "zoom" => 12,
                 "mapId" => "a55a8dd1e435899e"
             ],
-        "maintenance" => false
+        "maintenance" => false,
+        'timezone' => 'Africa/Cairo',
         ]);
 });
 // Activate Or Deactivate Otp
@@ -55,7 +56,8 @@ Route::post('getuser', [AuthController::class, 'authUser']);
 Route::post('checkemail', [AuthController::class, 'checkEmail']);
 Route::post('checkphone', [AuthController::class, 'checkPhone']);
 Route::post('devices', [BajieController::class, 'getDevices']);
-Route::get ('shops', [ShopsController::class, 'index']);
+Route::get ('shops', [BajieController::class, 'getShops']);
+Route::get ('shops/new', [ShopsController::class, 'index']);
 Route::post('price', [PriceController::class, 'getPriceDescription']);
 // Register push token
 Route::post('push-token/upsert', [PushTokensController::class, 'upsertToken']);
@@ -91,9 +93,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
-        Route::post('/', function(){
-            return response()->json(['message' => 'shops route is empty']);
-        });
         
         // Save shops
         Route::post('save', [ShopsController::class, 'save']);
