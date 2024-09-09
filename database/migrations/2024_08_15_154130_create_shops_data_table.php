@@ -15,16 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('admin_id')->constrained();
             $table->unsignedBigInteger('shop_id')->references('id')->on('shops')->cascadeOnDelete();
-            $table->string('type_ar');
-            $table->string('type_en');
             $table->string('logo')->nullable();
             $table->time('opens_at')->nullable();
             $table->time('closes_at')->nullable();
             $table->string('lat')->nullable();
             $table->string('lng')->nullable();
-            $table->string('place_access_ar')->nullable();
-            $table->string('place_access_en')->nullable();
             $table->string('price')->nullable();
+            $table->enum('is_open', ['yes', 'no'])->default('yes');
             $table->timestamps();
         });
     }

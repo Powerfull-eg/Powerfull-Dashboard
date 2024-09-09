@@ -30,6 +30,12 @@ class Shop extends Model
         "updated_by",
     ];
 
+    public $appends = [
+        "location",
+    ];
+
+    public $hidden = [ 'location_latitude', 'location_longitude' , 'created_at', 'updated_at'];
+
     public function device() : HasOne
     {
         return $this->hasOne(Device::class);
@@ -56,8 +62,63 @@ class Shop extends Model
     /** 
      * Get full Location.
      */
-    public function getFullLocation()
+    public function getLocationAttribute()
     {
         return $this->location_latitude . ',' . $this->location_longitude;
     }
+
+    /** 
+     * Get full data.
+     */
+    public function data()
+    {
+        return $this->hasOne(ShopsData::class);
+    }
+
+    /**
+     * Get the Menu of the Shop
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function menu()
+    {
+        return $this->HasMany(ShopsMenu::class);
+    }
+
+    /**
+     * Get the Rates of the Shop
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function rates()
+    {
+        return $this->HasMany(ShopsRate::class);
+    }
+
+    /**
+     * Get the Reactions of the Shop
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reactions()
+    {
+        return $this->HasMany(ShopsReaction::class);
+    }
+
+
+    // get saved users
+    public function savedUsers() : HasMany
+    {
+        return $this->hasMany(ShopsSave::class);
+    }
+
+    /**
+     * Check if the Shop is saved
+     *
+    */
+    // public function getIsSavedAttribute()
+    // {
+    //     return auth('api')->user() ? ShopsSave::where('user_id',auth('api')->user()->id)->where('shop_id',$this->id)->exists() : false;
+    // }
+
 }

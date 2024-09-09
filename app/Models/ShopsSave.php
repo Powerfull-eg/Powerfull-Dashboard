@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ShopsReaction extends Model
+class ShopsSave extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['reaction', 'shop_id','user_id'];
-
-    public $hidden = [ 'created_at', 'updated_at' , 'shop_id' ];
+    protected $fillable = [
+        "user_id",
+        "shop_id",
+    ];
 
     public function shop()
     {

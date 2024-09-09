@@ -20,6 +20,7 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
+use App\Http\Controllers\Api\ShopsController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,8 @@ Route::get('settings', function () {
                 "zoom" => 12,
                 "mapId" => "a55a8dd1e435899e"
             ],
-        "maintenance" => false
+        "maintenance" => false,
+        'timezone' => 'Africa/Cairo',
         ]);
 });
 // Activate Or Deactivate Otp
@@ -54,7 +56,8 @@ Route::post('getuser', [AuthController::class, 'authUser']);
 Route::post('checkemail', [AuthController::class, 'checkEmail']);
 Route::post('checkphone', [AuthController::class, 'checkPhone']);
 Route::post('devices', [BajieController::class, 'getDevices']);
-Route::post('shops', [BajieController::class, 'getShops']);
+Route::get ('shops', [BajieController::class, 'getShops']);
+Route::get ('shops/new', [ShopsController::class, 'index']);
 Route::post('price', [PriceController::class, 'getPriceDescription']);
 // Register push token
 Route::post('push-token/upsert', [PushTokensController::class, 'upsertToken']);
@@ -87,6 +90,19 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
+    
+    // Shops Route Group
+    Route::group(['prefix' => 'shops'], function () {
+        
+        // Save shops
+        Route::post('save', [ShopsController::class, 'save']);
+        Route::post('check-save', [ShopsController::class, 'checkSave']);
+        Route::get('get-save', [ShopsController::class, 'getSavingShops']);
+
+        // Add comment and react
+        Route::post('add-comment', [ShopsController::class, 'addComment']);
+        Route::post('add-react', [ShopsController::class, 'addReact']);
+    });
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
