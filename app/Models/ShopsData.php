@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ShopsData extends Model
 {
@@ -14,7 +15,7 @@ class ShopsData extends Model
 
     public $appends = [ 'location' , 'type'];
 
-    public $hidden = [ 'lat', 'lng' , 'created_at', 'updated_at' , 'admin_id' , 'shop_id' ];
+    public $hidden = [ 'lat', 'lng' , 'created_at', 'updated_at' , 'admin_id' , 'shop_id','type_id' ];
     
     public function shop()
     {
@@ -40,7 +41,7 @@ class ShopsData extends Model
 
     public function getTypeAttribute()
     {
-        return ShopsType::where('shop_id',$this->shop_id)->first();
+        return ShopsType::find($this->type_id);
     }
 
 }

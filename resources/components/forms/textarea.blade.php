@@ -1,4 +1,4 @@
-@props(['title' => null, 'id' => uniqid('textarea-'), 'autosize' => true])
+@props(['title' => null, 'id' => uniqid('textarea-'), 'autosize' => true, 'value' => ''])
 
 @php
     $name = $attributes->get('name') ?? false;
@@ -16,7 +16,7 @@
 @endif
 
 <textarea id="{{ $id }}" @if ($autosize) data-bs-toggle="autosize" @endif
-    {{ $attributes->merge(['class' => 'form-control']) }}>{{ $slot }}</textarea>
+    {{ $attributes->merge(['class' => 'form-control']) }} >{{ $value }} {{ $slot }}</textarea>
 
 @if ($name)
     <x-components::forms.invalid-feedback :name="$name" />

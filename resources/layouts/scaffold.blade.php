@@ -34,7 +34,8 @@
 
     {{-- Plugins --}}
     <link rel="stylesheet" href="{{ asset('/vendor/jquery-confirm/jquery-confirm.min.css') }}" />
-    
+    <link type="text/css" rel="stylesheet" href="/vendor/Img-Uploader/image-uploader.min.css">
+
     {{-- DataTable Style --}}
     <link rel="stylesheet" href="{{ asset('/vendor/jquery-dataTables/dataTables.min.css') }}" />
 
@@ -66,6 +67,8 @@
     <script src="{{ asset('/vendor/tom-select/tom-select.base.min.js') }}"></script>
     <script src="{{ asset('/vendor/jquery-dataTables/dataTables.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js" integrity="sha512-LsnSViqQyaXpD4mBBdRYeP6sRwJiJveh2ZIbW41EBrNmKxgr/LFZIiWT6yr+nycvhvauz8c2nYMhrP80YhG7Cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="/vendor/Img-Uploader/image-uploader.min.js"></script>
+
     {{-- Language Script --}}
     <script src="{{ route('global.translations.show', app()->getLocale()) }}"></script>
 
