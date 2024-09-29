@@ -21,8 +21,65 @@ use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
 use App\Http\Controllers\Api\ShopsController;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+
+// Hashing api 
+Route::get('hash', function () {
+    $merchantCode    = '770000017628';
+    $merchantRefNum  = '23124654641';
+    $merchant_cust_prof_id  = '777777';
+    $payment_method = 'CARD';
+    $amount = '580.55';
+    $cardNumber = '4242424242424242';
+    $cardExpiryYear = '25';
+    $cardExpiryMonth = '05';
+    $cvv = '123';
+    $merchant_sec_key =  'f7993241-0684-4172-a75c-4495edbee8a3'; // For the sake of demonstration
+    $signature = hash('sha256' , $merchantCode . $merchantRefNum . $merchant_cust_prof_id . $payment_method .
+                        $amount . $cardNumber . $cardExpiryYear . $cardExpiryMonth . $cvv . $merchant_sec_key);
+    $headers = [
+        'Content-Type' => 'application/json',
+        'Accept'       => 'application/json'
+    ];
+    $body_data = [
+        'merchantCode' => $merchantCode,
+        'merchantRefNum' => $merchantRefNum,
+        'customerMobile' => '01234567891',
+        'customerEmail' => 'example@gmail.com',
+        'customerProfileId'=> '777777',
+        'cardNumber' => $cardNumber,
+        'cardExpiryYear' => $cardExpiryYear,
+        'cardExpiryMonth' => $cardExpiryMonth,
+        'cvv' => $cvv,
+        'amount' => $amount,
+        'currencyCode' => 'EGP',
+        'language' => 'en-gb',
+        'chargeItems' => [
+                            [
+                                'itemId' => '897fa8e81be26df25db592e81c31c',
+                                'description' => 'Item Description',
+                                'price' => $amount,
+                                'quantity' => '1'
+                            ],
+                        ],
+        'signature' => $signature,
+        'paymentMethod' => 'CARD',
+        'description' => 'example description'
+                    ];
+    $body = json_encode( $body_data, true);
+    
+    $url = 'https://atfawry.fawrystaging.com/ECommerceWeb/Fawry/payments/charge';
+    $request_type = 'POST';
+
+    $response = Http::withHeaders($headers)->post($url,$body);
+
+    $response_arr = json_decode($response->getBody(), true);
+    echo "<pre>";
+        print_r(["url" => $url,"request_header" => $headers,"request_type" => $request_type,"request_body" => $body_data,"body" => $body, "response" => $response_arr]);
+    echo "</pre>";
+});
 
 // Connection Check 
 Route::get('connection', function () {
