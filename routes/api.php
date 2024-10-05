@@ -20,9 +20,10 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
+use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\Api\ShopsController;
-
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 // Connection Check 
 Route::get('connection', function () {
@@ -35,13 +36,15 @@ Route::get('settings', function () {
         "map" => [
                 "lat" => 30.222656,
                 "lng" => 31.477425,
-                "zoom" => 12,
+                "zoom" => 10,
                 "mapId" => "a55a8dd1e435899e"
+
             ],
         "maintenance" => false,
         'timezone' => 'Africa/Cairo',
         ]);
 });
+
 // Activate Or Deactivate Otp
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
 // Register
@@ -56,7 +59,7 @@ Route::post('getuser', [AuthController::class, 'authUser']);
 Route::post('checkemail', [AuthController::class, 'checkEmail']);
 Route::post('checkphone', [AuthController::class, 'checkPhone']);
 Route::post('devices', [BajieController::class, 'getDevices']);
-Route::get ('shops', [BajieController::class, 'getShops']);
+Route::post('shops', [BajieController::class, 'getShops']);
 Route::get ('shops/new', [ShopsController::class, 'index']);
 Route::post('price', [PriceController::class, 'getPriceDescription']);
 // Register push token
@@ -90,10 +93,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
-    
+        
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
-        
         // Save shops
         Route::post('save', [ShopsController::class, 'save']);
         Route::post('check-save', [ShopsController::class, 'checkSave']);
