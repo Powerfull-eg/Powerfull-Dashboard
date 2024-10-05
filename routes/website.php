@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,29 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){ return redirect()->route('dashboard.index'); })->name('index');
 Route::resource('language', \App\Http\Controllers\Website\LanguageController::class)->only(['show']);
-Route::get('/payment/response', function(Request $request){
-    $view = "payment.paymobPayementResponse";
-
-    if ($request->gateway) {
-        if ($request->gateway == "paymob") {
-            $view = "payment.paymobPayementResponse";
-        } elseif ($request->gateway == "fawry") {
-            $view = "payment.fawryPayementResponse";
-        }
-    }
-    // switch ($_GET['gateway']) {
-    //     case 'paymob':
-    //         $view = "payment.paymobPayementResponse";
-    //         break;
-    //     case 'fawry':
-    //         $view = "payment.fawryPayementResponse";
-    //         break;
-    //     default:
-    //         $view = "payment.paymobPayementResponse";
-    //         break;
-    // }
-    return  view($view);
-})->name('payment-response');
+Route::get('/payment/response', function(){ return  view("payment.paymobPaymentResponse");})->name('payment-response');
 Route::get('/test', function(){ return  view("payment.test");});
 /*
 |--------------------------------------------------------------------------
