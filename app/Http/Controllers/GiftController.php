@@ -42,7 +42,7 @@ class GiftController extends Controller
         $shop = Shop::find($device->first()->shop_id);
         DB::table('test')->insert(['request' => json_encode($shop->first())]);
         // $shop = $this->getShopData($device);
-        if(Operation::where("user_id",$user["id"])->count() > 0) return null;
+        if(Operation::where("user_id",$user["id"])->count() != 1) return null;
         $code = Str::random(6);
         $gift = GiftUser::create([
             "gift_id" => 1,

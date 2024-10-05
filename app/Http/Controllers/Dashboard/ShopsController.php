@@ -134,7 +134,7 @@ class ShopsController extends Controller
                     $image->delete();
                 }
             }
-        }
+        }else{ $shopMenu->delete(); }
 
         // New Upoladed Image
         if(isset($validated['menu_images']) && count($validated['menu_images']) > 0){

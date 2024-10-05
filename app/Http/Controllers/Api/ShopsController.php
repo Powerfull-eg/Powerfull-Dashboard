@@ -15,7 +15,12 @@ class ShopsController extends Controller
      */
     public function index()
     {
-        return response()->json(Shop::with('device','rates','reactions','data','menu')->get());
+        $shops = Shop::with('device','rates','reactions','data','menu')->get();
+        // HOT FIX -- provider_id -> newID --
+        foreach($shops as $i => $shop){
+            $shops[$i]['newID'] = $shop->provider_id;
+        }
+        return response()->json($shops);
     }
 
     /**
@@ -77,9 +82,9 @@ class ShopsController extends Controller
 
         $shop = Shop::findOrFail($request->shop_id);
         $user = Auth::guard('api')->user();
-        
+
         if(!$user) return response()->json('Unauthenticated', 401);
-        
+
         $shopSave = ShopsSave::where('shop_id', $shop->id)->where('user_id', $user->id)->first();
         if ($shopSave) {
             $shopSave->delete();
@@ -88,7 +93,7 @@ class ShopsController extends Controller
                 'shop_id' => $shop->id,
                 'user_id' => $user->id
             ]);
-            
+
             return response()->json(ShopsSave::where('user_id', $user->id)->pluck('shop_id'));
         }
     }
@@ -104,9 +109,9 @@ class ShopsController extends Controller
 
         $shop = Shop::findOrFail($request->shop_id);
         $user = Auth::guard('api')->user();
-        
+
         if(!$user) return response()->json('Unauthenticated', 401);
-        
+
         $shopSave = ShopsSave::where('shop_id', $shop->id)->where('user_id', $user->id)->first();
         return response()->json(ShopsSave::where('user_id', $user->id)->pluck('shop_id'));
     }
@@ -134,9 +139,9 @@ class ShopsController extends Controller
 
         $shop = Shop::findOrFail($request->shop_id);
         $user = Auth::guard('api')->user();
-        
+
         if(!$user) return response()->json('Unauthenticated', 401);
-        
+
         $shop->rates()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
@@ -159,7 +164,7 @@ class ShopsController extends Controller
 
         $shop = Shop::findOrFail($request->shop_id);
         $user = Auth::guard('api')->user();
-        
+
         if(!$user) return response()->json('Unauthenticated', 401);
         // check if user already reacted
         if($shop->reactions()->where('user_id', $user->id)->where('shop_id', $request->shop_id)->exists()) {
