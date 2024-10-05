@@ -34,9 +34,7 @@ class BajieController extends \App\Http\Controllers\Controller
         $deviceId = $request->device;
         $dataUrl = "https://developer.chargenow.top/cdb-open-api/v1/rent/order/create?callbackURL=$callbackUrl&deviceId=$deviceId";
         
-        // Add and check for gifts
-        $gift = new GiftController();
-        $gift = $gift->addAndCheckGifts($deviceId);
+
 
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->post($dataUrl);
         $responseBody = json_decode($response->body(),true);
@@ -48,6 +46,11 @@ class BajieController extends \App\Http\Controllers\Controller
                 "user_id" =>  $request->userId,
                 "card_id" => $request->card["id"],
             ]);
+            
+            // Add and check for gifts
+            $gift = new GiftController();
+            $gift = $gift->addAndCheckGifts($deviceId);
+            
             // add record for voucher if exist
             if($request->voucher && $request->voucher != "null") {
                 VoucherOrder::create([

@@ -100,7 +100,7 @@ class PaymobController extends \App\Http\Controllers\Controller
                     return true;
                 }    
             }
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::table('test')->insert(["request" => "inside void fail : " . $e->getMessage()]);
         }
         return false;
@@ -151,7 +151,7 @@ class PaymobController extends \App\Http\Controllers\Controller
                     $voidRequest->merge(["authToken" =>  $payment->token,"transactionID" =>  $request->input('obj.id')]);
                     $this->voidPayment($voidRequest);
                     
-                }catch(Exception $e){
+                }catch(\Exception $e){
                     DB::table('test')->insert(["request" => $e->getMessage()]);
                 }
                 // Handle failed transactions

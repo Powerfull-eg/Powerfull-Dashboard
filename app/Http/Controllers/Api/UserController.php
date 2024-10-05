@@ -114,6 +114,7 @@ class UserController extends \App\Http\Controllers\Controller
         
         // Update user
         User::find($user->id)->update($data);
+        $user = User::find($user->id);
         
         // get user returned data
         $userData = [
