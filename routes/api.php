@@ -20,66 +20,10 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
+use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\Api\ShopsController;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
-
-// Hashing api 
-Route::get('hash', function () {
-    $merchantCode    = '770000017628';
-    $merchantRefNum  = '23124654641';
-    $merchant_cust_prof_id  = '777777';
-    $payment_method = 'CARD';
-    $amount = '580.55';
-    $cardNumber = '4242424242424242';
-    $cardExpiryYear = '25';
-    $cardExpiryMonth = '05';
-    $cvv = '123';
-    $merchant_sec_key =  'f7993241-0684-4172-a75c-4495edbee8a3'; // For the sake of demonstration
-    $signature = hash('sha256' , $merchantCode . $merchantRefNum . $merchant_cust_prof_id . $payment_method .
-                        $amount . $cardNumber . $cardExpiryYear . $cardExpiryMonth . $cvv . $merchant_sec_key);
-    $headers = [
-        'Content-Type' => 'application/json',
-        'Accept'       => 'application/json'
-    ];
-    $body_data = [
-        'merchantCode' => $merchantCode,
-        'merchantRefNum' => $merchantRefNum,
-        'customerMobile' => '01234567891',
-        'customerEmail' => 'example@gmail.com',
-        'customerProfileId'=> '777777',
-        'cardNumber' => $cardNumber,
-        'cardExpiryYear' => $cardExpiryYear,
-        'cardExpiryMonth' => $cardExpiryMonth,
-        'cvv' => $cvv,
-        'amount' => $amount,
-        'currencyCode' => 'EGP',
-        'language' => 'en-gb',
-        'chargeItems' => [
-                            [
-                                'itemId' => '897fa8e81be26df25db592e81c31c',
-                                'description' => 'Item Description',
-                                'price' => $amount,
-                                'quantity' => '1'
-                            ],
-                        ],
-        'signature' => $signature,
-        'paymentMethod' => 'CARD',
-        'description' => 'example description'
-                    ];
-    $body = json_encode( $body_data, true);
-    
-    $url = 'https://atfawry.fawrystaging.com/ECommerceWeb/Fawry/payments/charge';
-    $request_type = 'POST';
-
-    $response = Http::withHeaders($headers)->post($url,$body);
-
-    $response_arr = json_decode($response->getBody(), true);
-    echo "<pre>";
-        print_r(["url" => $url,"request_header" => $headers,"request_type" => $request_type,"request_body" => $body_data,"body" => $body, "response" => $response_arr]);
-    echo "</pre>";
-});
+use Illuminate\Support\Facades\DB;
 
 // Connection Check 
 Route::get('connection', function () {
@@ -92,13 +36,15 @@ Route::get('settings', function () {
         "map" => [
                 "lat" => 30.222656,
                 "lng" => 31.477425,
-                "zoom" => 12,
+                "zoom" => 10,
                 "mapId" => "a55a8dd1e435899e"
+
             ],
         "maintenance" => false,
         'timezone' => 'Africa/Cairo',
         ]);
 });
+
 // Activate Or Deactivate Otp
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
 // Register
@@ -113,7 +59,7 @@ Route::post('getuser', [AuthController::class, 'authUser']);
 Route::post('checkemail', [AuthController::class, 'checkEmail']);
 Route::post('checkphone', [AuthController::class, 'checkPhone']);
 Route::post('devices', [BajieController::class, 'getDevices']);
-Route::get ('shops', [BajieController::class, 'getShops']);
+Route::post('shops', [BajieController::class, 'getShops']);
 Route::get ('shops/new', [ShopsController::class, 'index']);
 Route::post('price', [PriceController::class, 'getPriceDescription']);
 // Register push token
@@ -147,10 +93,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
-    
+        
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
-        
         // Save shops
         Route::post('save', [ShopsController::class, 'save']);
         Route::post('check-save', [ShopsController::class, 'checkSave']);
