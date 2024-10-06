@@ -61,7 +61,6 @@ class ShopsTypesTable extends Datatable
     {
         return [
                     Action::edit('dashboard.shop-types.edit')->can('dashboard.shop-types.edit'),
-                    Action::delete('dashboard.shop-types.destroy')->can('dashboard.shop-types.destroy'),
                 ];
     }
 }
