@@ -66,6 +66,9 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('language', \App\Http\Controllers\Dashboard\LanguageController::class)->only(['index', 'edit', 'update']);
     Route::resource('language', \App\Http\Controllers\Dashboard\LanguageController::class)->only(['show'])->withoutMiddleware(['auth:admins']);
     Route::get('language/{locale}/sync', [\App\Http\Controllers\Dashboard\SyncLanguageController::class, 'update'])->name('language.sync');
+    
+    // payment routes
+    Route::resource('payments', \App\Http\Controllers\Dashboard\PaymentController::class)->only(['create', 'store']);
 });
 
 /*
