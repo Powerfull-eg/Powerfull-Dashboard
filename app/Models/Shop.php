@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,6 +37,7 @@ class Shop extends Model
 
     public $hidden = [ 'location_latitude', 'location_longitude' , 'created_at', 'updated_at'];
 
+
     public function device() : HasOne
     {
         return $this->hasOne(Device::class);
@@ -46,7 +48,13 @@ class Shop extends Model
         return $this->hasMany(GiftUser::class);
     }
 
-    public function operations() : HasManyThrough 
+    /**
+     * Get all operations belongs to this shop.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    
+     public function operations() : HasManyThrough 
     {
         return $this->hasManyThrough(
             Operation::class, 
@@ -56,6 +64,14 @@ class Shop extends Model
             "id",
             "id"
 
+        );
+    }
+
+    public function logo() : Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => filter_var($value, FILTER_VALIDATE_URL) !== false ? $value 
+            : url('storage/shops/' . $this->id . '/' . $value),
         );
     }
 

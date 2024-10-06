@@ -6,6 +6,7 @@ use App\Livewire\ShopOperationsTable;
 use App\Models\Shop;
 use App\Http\Requests\StoreShopRequest;
 use App\Http\Requests\UpdateShopRequest;
+use App\Jobs\CloneShops;
 use App\Models\ShopsData;
 use App\Models\ShopsMenu;
 use App\Models\Station;
@@ -93,7 +94,17 @@ class ShopsController extends Controller
         ]);
         $admin = auth('admins')->user()->id;
         $validated["updated_by"] = $admin;
+        // logo
         $shop = Shop::findOrfail($id);
+        if($request->logo){
+            if(filter_var($request->logo, FILTER_VALIDATE_URL) !== false){
+                $validated['logo'] = $request->logo; 
+            }else{
+                $validated['logo'] = time() .'-' . $request->file('logo')->getClientOriginalName();
+                $request->file('logo')->storePubliclyAs("public/shops/" . $shop->id, $validated['logo']);
+            } 
+        }
+
         $updated = $shop->update($validated);
         
         $data = ShopsData::where('shop_id',$id)->first();
@@ -103,7 +114,6 @@ class ShopsController extends Controller
                 'admin_id' => $admin,
                 'shop_id' => $id,
                 'type_id' => $validated['type_id'],
-                'logo' => $shop->logo,
                 'opens_at' => $validated['opens_at'],
                 'closes_at' => $validated['closes_at'],
                 'lat' => $validated['location_latitude'],
@@ -115,7 +125,6 @@ class ShopsController extends Controller
                 'admin_id' => $admin,
                 'shop_id' => $id,
                 'type_id' => $validated['type_id'],
-                'logo' => $shop->logo,
                 'opens_at' => $validated['opens_at'],
                 'closes_at' => $validated['closes_at'],
                 'lat' => $validated['location_latitude'],
@@ -123,7 +132,14 @@ class ShopsController extends Controller
                 'price' => $validated['price'],
             ]);
         }
-        
+        // Add logo to shops data table
+        if($request->data_logo){
+            $data = ShopsData::where('shop_id',$id)->first();
+            $logo = time() .'-data-' . $request->file('data_logo')->getClientOriginalName();
+            $request->file('data_logo')->storePubliclyAs("public/shops/" . $id, $logo);
+            $data->logo = $logo;
+            $data->save();
+        }
         // Add menu
         $shopMenu = ShopsMenu::where('shop_id',$id);
         $images = $request->file('menu_images');
@@ -165,30 +181,14 @@ class ShopsController extends Controller
         return redirect()->back();
     }
 
-    // Create Shop type
-    public function createType(Request $request)
-    {
-        $validated = $request->validate([
-            "name" => "required|string|max:255",
-        ]);
-        $admin = auth('admins')->user()->id;
-        $validated["admin_id"] = $admin;
-        $validated["slug"] = Str::slug($validated["name"]);
-        $type = ShopType::create($validated);
-        return redirect()->back()->with('success', __("Shop Type Created Successfully"));
-    }
-
-    // Update Shop type
-    public function updateType(Request $request,string $id){
-        $validated = $request->validate([
-            "name" => "required|string|max:255",
-        ]);
-        $admin = auth('admins')->user()->id;
-        $validated["admin_id"] = $admin;
-        $validated["slug"] = Str::slug($validated["name"]);
-        $type = ShopType::findOrfail($id);
-        $updated = $type->update($validated);
-        return redirect()->back()->with('success', __("Shop Type Updated Successfully"));
+    // Fetch Shop data
+    public function syncShopData(){
+        try{
+           CloneShops::dispatch();
+           return redirect()->back()->with('success', __("Shops Fetched Successfully"));
+        }catch(\Exception $e){
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
     
 }

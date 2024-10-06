@@ -27,6 +27,9 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('devices/data/{deviceID}', [\App\Http\Controllers\Dashboard\DeviceController::class,"getDeviceData"]);
 
     Route::resource('shops', \App\Http\Controllers\Dashboard\ShopsController::class);
+    Route::post('shops/sync', [\App\Http\Controllers\Dashboard\ShopsController::class,'syncShopData'])->name('shops.sync');
+    // Shops Types
+    Route::resource('shop-types', \App\Http\Controllers\Dashboard\ShopTypesController::class);
     
     /* --------- Support Management --------- */
     Route::resource('support', \App\Http\Controllers\Dashboard\SupportController::class);
