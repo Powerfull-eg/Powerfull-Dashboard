@@ -8,7 +8,13 @@
 
         <div class="card-body">
             <div class="row">
-                <x-components::forms.input name="name" :title="__('Name')" :value="$shop->name" required />
+                <div class="mb-3 col col-md-6">
+                    <x-components::forms.input name="name" :title="__('Name')" :value="$shop->name" required />
+                </div>
+                <div class="mb-3 mx-2 col col-md-4 img-uploader">
+                    <img class="image-preview img-fluid"  src="{{$shop->logo}}" :alt="$shop->name . ' icon'">
+                    <x-components::forms.input name="logo" class="image-input d-none" type="file" :value="$shop->logo" />
+                </div>
             </div>
             <div class="row">
                 <x-components::forms.input name="phone" :title="__('Phone')" :value="$shop->phone" required />
@@ -53,7 +59,15 @@
               <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne">
                 <div class="accordion-body">
                     {{-- Shop Data Form --}}
-                    
+                    <div class="row mb-3">
+                        <div class="mb-3 mx-2 col col-md-4 img-uploader d-flex align-items-center justify-content-center gap-3">
+                            <div>
+                                <label for="logo">{{__('Logo')}}</label><span class="text-danger">*</span>
+                            </div>
+                            <img class="image-preview img-fluid"  src="{{$shop->data->logo}}" :alt="$shop->name . ' icon'">
+                            <x-components::forms.input id="logo"  name="data_logo" class="image-input d-none" type="file" :value="$shop->data->logo" />
+                        </div>
+                    </div>
                     <div class="row mb-3">
                         <div class="col col-6">
                             <label for="opens_at">{{__('Opens At')}}</label>
@@ -110,6 +124,30 @@
     </form>
 @push('scripts')
     <script>
+        // image uploader
+        const uploaders = document.querySelectorAll('.img-uploader');
+        uploaders.forEach(uploader => {
+            let imageInput = uploader.querySelector('.image-input');
+            let imagePreview = uploader.querySelector('.image-preview');
+
+            // Change Image Preview on input change
+            imageInput.addEventListener('change', (event) => { 
+                const file = event.target.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            // open input on click
+            imagePreview.addEventListener('click', () => { imageInput.click(); });
+        });
+
+        // Menu Images
         let menu = @json($shop->menu ?? [] );
         let images = [];
         menu.forEach((item) => {
@@ -123,11 +161,12 @@
         $('.menu-images').imageUploader(options);
     </script>
 @endpush
-
-     <style>
-        #image-preview {
-          max-width: 100px;
-          max-height: 100px;
-        }
-      </style>
+<style>
+    .image-preview {
+      max-width: 50px;
+      max-height: 50px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+</style>
 </x-layouts::dashboard>

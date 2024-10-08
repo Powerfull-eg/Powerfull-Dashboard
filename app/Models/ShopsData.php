@@ -35,7 +35,10 @@ class ShopsData extends Model
     public function logo() : Attribute
     {
         return Attribute::make(
-            get: fn ($logo) => ($logo ? asset('storage/shops/' . $this->shop_id . '/' . $logo) : null),
+            get: fn ($logo) => (
+                $logo 
+                ? (filter_var($logo, FILTER_VALIDATE_URL) !== false ? $logo : url('storage/shops/' . $this->shop_id . '/' . $logo)) 
+                : null)
         );
     }
 
