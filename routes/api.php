@@ -18,14 +18,26 @@ use App\Http\Controllers\Api\HelpController;
 use App\Http\Controllers\Api\PaymobController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
+use App\Http\Controllers\Api\FawryPayController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\Api\PushTokensController;
 use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\Api\ShopsController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
-// Connection Check 
+Route::get('/get-saved-tokens', [\App\Http\Controllers\Api\FawryPayController::class,'getUserSavedTokens']);
+Route::post('/delete-saved-tokens', [\App\Http\Controllers\Api\FawryPayController::class,'deleteUserSavedToken']);
+Route::post('/fawry-payment-response', [\App\Http\Controllers\Api\FawryPayController::class,'fawryIframeReturn']);
+Route::post('/fawry-notification', [\App\Http\Controllers\Api\FawryPayController::class,'fawryNotification']);
+Route::post('/pay-with-saved-token', [\App\Http\Controllers\Api\FawryPayController::class,'payWithSavedToken']);
+Route::post('/get-payment-data', [\App\Http\Controllers\Api\FawryPayController::class,'getPaymentData']);
+Route::post('/refund', [\App\Http\Controllers\Api\FawryPayController::class,'refund']);
+Route::post('/get-refrence-number',[FawryPayController::class,'createRefrenceNumber']);
+Route::post('/get-qr-code',[FawryPayController::class,'createQrCode']);
+
+// Connection Check
 Route::get('connection', function () {
     return;
 });
@@ -82,13 +94,17 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::post('orders', [UserController::class, 'getOrders']);
     Route::post('order/{id}', [UserController::class, 'getOrder']);
     Route::post('orderbytrade', [UserController::class, 'getOrderByTradeNo']);
+    
+    /** Payments Routues */
     Route::post('add-card', [UserController::class, 'addCard']);
     Route::post('remove-card', [UserController::class, 'removeCard']);
     Route::get('get-cards', [UserController::class, 'getCards']);
     Route::post('update-user', [UserController::class, 'updateUser']);
     // Get payment iframe url
-    Route::post('get-iframe-url', [PaymobController::class, 'getIframeUrl']);
+    Route::post('get-iframe-url', [PaymentController::class, 'getIframeUrl']);
     Route::post('payment-complete', [PaymobController::class, 'checkPaymentCompletion']);
+    // Fawry notifcation url
+    Route::post('fawry-notifications', [FawryPayController::class, 'fawryNotification']);
     // Vouchers
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts

@@ -1,3 +1,10 @@
+@php
+  if ($_POST) {
+    $request = new Illuminate\Http\Request($_POST);
+  \App\Http\Controllers\Api\FawryPayController::fawryIframeReturn($request);
+  }
+@endphp
+<!DOCTYPE html>
 <html>
   <head>
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function(){ return redirect()->route('dashboard.index'); })->name('index');
 Route::resource('language', \App\Http\Controllers\Website\LanguageController::class)->only(['show']);
 Route::get('/payment/response', function(){ return  view("payment.paymobPaymentResponse");})->name('payment-response');
+Route::get('/fawry-payment-response', function(){ return  view("payment.fawryPaymentResponse");})->name('fawry-payment-response');
 Route::get('/test', function(){ return  view("payment.test");});
 /*
 |--------------------------------------------------------------------------
