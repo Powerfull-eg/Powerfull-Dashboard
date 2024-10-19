@@ -2,8 +2,81 @@
     <x-components::status />
     <x-components::forms.customDatePicker />
     {{-- <x-components::chart :title="__('Devices')" :dataLabels="array_keys($operationsPerDevice)" :dataValues="$countPerDevice" /> --}}
+    <div class="header d-flex gap-2 justify-content-between">
+        <div class="d-flex align-items-end justify-content-center logo">
+            <img src="{{asset('assets/images/machine.png')}}" width="50" class="d-block mb-2 mx-3" alt="contol powerbank">
+            <h1>{{__("Device Control")}}</h1>
+        </div>
+        <div class="d-flex align-items-center controls gap-3">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-rounded-plus-filled" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 2l.324 .001l.318 .004l.616 .017l.299 .013l.579 .034l.553 .046c4.785 .464 6.732 2.411 7.196 7.196l.046 .553l.034 .579c.005 .098 .01 .198 .013 .299l.017 .616l.005 .642l-.005 .642l-.017 .616l-.013 .299l-.034 .579l-.046 .553c-.464 4.785 -2.411 6.732 -7.196 7.196l-.553 .046l-.579 .034c-.098 .005 -.198 .01 -.299 .013l-.616 .017l-.642 .005l-.642 -.005l-.616 -.017l-.299 -.013l-.579 -.034l-.553 -.046c-4.785 -.464 -6.732 -2.411 -7.196 -7.196l-.046 -.553l-.034 -.579a28.058 28.058 0 0 1 -.013 -.299l-.017 -.616c-.003 -.21 -.005 -.424 -.005 -.642l.001 -.324l.004 -.318l.017 -.616l.013 -.299l.034 -.579l.046 -.553c.464 -4.785 2.411 -6.732 7.196 -7.196l.553 -.046l.579 -.034c.098 -.005 .198 -.01 .299 -.013l.616 -.017c.21 -.003 .424 -.005 .642 -.005zm0 6a1 1 0 0 0 -1 1v2h-2l-.117 .007a1 1 0 0 0 .117 1.993h2v2l.007 .117a1 1 0 0 0 1.993 -.117v-2h2l.117 -.007a1 1 0 0 0 -.117 -1.993h-2v-2l-.007 -.117a1 1 0 0 0 -.993 -.883z" fill="currentColor" stroke-width="0" />
+                </svg>
+                <a href="#">{{__("Add Device")}}</a>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                </svg>
+                <a href="#">{{__("Edit Device")}}</a>
+            </div>
+        </div>
+    </div>
+    <hr class="mx-5">
+
     <div id="data">
-        <livewire:devices-table :startDate="$startDate" :endDate="$endDate"/>
+        {{-- Devices --}}
+        <div class="devices">
+            <div class="device d-flex">
+                <div class="device-data d-flex flex-column">
+                    <span class="title fs-1 fw-bold w-100 text-center" style="text-decoration: underline">BJM000000</span>
+                    <div class="info d-flex flex-row">
+                        <div class="shop-logo">
+                            <img src="{{asset('assets/images/machine.png')}}" width="30" class="d-block mb-2 mx-3" alt="contol powerbank">
+                        </div>
+                        <div class="shop-info d-flex flex-column w-50" style="font-size: 10px">
+                            <span class="shop-name">Yano Cafe</span>
+                            <!-- device status -->
+                            <div class="device-status" >
+                                <div class="font-weight-bold" style="padding:3px; background-color: #8ac78a; display: flex; width: 100%;"> 
+                                    <span style="border-radius:50%;width: 15px;display: block;margin-right: 3px; background-color: #004324;"></span>
+                                    <span style="font-size: 8px;">{{ __('DeviceReady') }}</span>
+                                </div>
+                                {{-- <div class="font-weight-bold" style="padding:3px; background-color: #fff; border: 1px solid; display: flex;"> 
+                                    <span style="border-radius:50%; width: 15px;height: 15px; display: block;margin-right: 3px; background-color: #ff0000;"></span>
+                                    <span>{{ __('Device Not Ready') }}</span>
+                                </div> --}}
+                            </div>
+                            <!-- Batteries Data-->
+                            <div class="batteries-data d-flex justify-content-between w-100 pt-3">
+                                <!-- Filled Batteries -->
+                                <div class="filled-batteries d-flex align-items-center justify-content-center">
+                                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 2rem;" alt="Filled Battery">
+                                    <span>{{__('full slots')}}</span>
+                                    <span style="color: var(--background-color);color: var(--background-color);font-size: 2rem;padding: 0 3px;margin-top: -10px;"> . </span>
+                                    <span>0</span>
+                                </div>
+                                <!-- Empty Batteries -->
+                                <div class="empty-batteries d-flex align-items-center justify-content-center">
+                                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 2rem;" alt="Empty Battery">
+                                    <span>{{__('empty slots')}}</span>
+                                    <span style="color: var(--background-color);color: var(--background);font-size: 2rem;padding: 0 3px;margin-top: -10px;"> . </span>
+                                    <span >{{6}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="device-image"></div>
+            </div>
+             {{-- @foreach ($devices as $device)
+                {{ $device->device_id }}
+            @endforeach --}}
+        </div>
+        {{-- <livewire:devices-table :startDate="$startDate" :endDate="$endDate"/> --}}
         <div class="table-responsive">
             <table class="table table-vcenter table-nowrap w-50">
                 <tr>
@@ -26,6 +99,39 @@
             <button onclick="excel.export()" class="btn btn-success"> {{ __("Export Excel") }} </button>
         </div>
     </div>
+@push("styles")
+    <style>
+        .controls > div > a :focus
+        {
+            text-decoration: none;
+        }
+        .controls > div > a {
+            text-decoration: none;
+            color: var(--text-color-2);
+        }
+        .controls > div{
+            padding: 5px;
+            background-color: var(--background-color);
+            color: var(--text-color-2);
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 0 5px;
+            padding: 5px 10px;
+
+        }
+
+        .device-status > div {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            font-size: .6rem;
+            max-width: 100% !important;
+        }
+    </style>
+@endpush
 </x-layouts::dashboard>
 <script>
     const excel = new Table2Excel("#data");

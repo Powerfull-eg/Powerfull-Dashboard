@@ -17,7 +17,7 @@ class DeviceController extends Controller
     {
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-        $allDevices = new Device;
+        $allDevices = Device::all();
         $devices = $startDate ? $allDevices->where("created_at",'>=',$startDate) : $allDevices;
         $devices = $endDate ? $devices->where("created_at",'<=',$endDate) : $devices;
         return view("dashboard.devices.index", compact('startDate','endDate','devices','allDevices'));

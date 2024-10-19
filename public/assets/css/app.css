@@ -1,3 +1,9 @@
+*{
+    --background-color: #ec711c;
+    --text-color: #fff;
+    --text-color-2: #000;
+}
+
 @font-face {
     display: swap;
     font-style: normal;
