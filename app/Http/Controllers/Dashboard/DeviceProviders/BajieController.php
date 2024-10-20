@@ -70,11 +70,20 @@ class BajieController extends Controller
     public function getDeviceById(string $device){
         $url = "https://developer.chargenow.top/cdb-open-api/v1/rent/cabinet/query";
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->withQueryParameters(["deviceId" => $device])->get($url);
-        $response = json_decode($response->body(),true)['data'];
+        $response = json_decode($response->body(),true);
 
-        return $response;
+        return $response['data'] ?? "Device Not Found OR not online";
     }
     
+    /*
+    * Get Device data to fixed functions name convention
+    * @param string $device
+    * @return array
+    */
+    public function getDeviceData(string $device){
+      return $this->getDeviceById($device);
+    }
+
     /*
     * Eject Powerbank
     * @param string $device

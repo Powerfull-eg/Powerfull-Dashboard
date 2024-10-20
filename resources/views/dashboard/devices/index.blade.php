@@ -29,52 +29,62 @@
 
     <div id="data">
         {{-- Devices --}}
-        <div class="devices">
-            <div class="device d-flex">
-                <div class="device-data d-flex flex-column">
-                    <span class="title fs-1 fw-bold w-100 text-center" style="text-decoration: underline">BJM000000</span>
-                    <div class="info d-flex flex-row">
-                        <div class="shop-logo">
-                            <img src="{{asset('assets/images/machine.png')}}" width="30" class="d-block mb-2 mx-3" alt="contol powerbank">
-                        </div>
-                        <div class="shop-info d-flex flex-column w-50" style="font-size: 10px">
-                            <span class="shop-name">Yano Cafe</span>
-                            <!-- device status -->
-                            <div class="device-status" >
-                                <div class="font-weight-bold" style="padding:3px; background-color: #8ac78a; display: flex; width: 100%;"> 
-                                    <span style="border-radius:50%;width: 15px;display: block;margin-right: 3px; background-color: #004324;"></span>
-                                    <span style="font-size: 8px;">{{ __('DeviceReady') }}</span>
-                                </div>
-                                {{-- <div class="font-weight-bold" style="padding:3px; background-color: #fff; border: 1px solid; display: flex;"> 
-                                    <span style="border-radius:50%; width: 15px;height: 15px; display: block;margin-right: 3px; background-color: #ff0000;"></span>
-                                    <span>{{ __('Device Not Ready') }}</span>
-                                </div> --}}
+        <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
+            @foreach ($devices as $device)
+            <div class="device col col-md-5 col-sm-5 me-2 d-flex flex-column text-center" attr-device="{{$device->device_id}}">
+                <div class="d-flex justify-content-between gap-1 p-2 position-relative">
+                    <div class="device-data d-flex flex-column">
+                        <span class="title fs-1 w-100 text-start" style="font-weight: 900; text-decoration: underline">{{$device->device_id}}</span>
+                        <div class="info d-flex flex-row">
+                            <div class="shop-logo me-3 d-flex align-items-end">
+                                <img src="{{$device->shop->data->logo ?? $device->shop->logo}}" width="50" style="border-radius: 50%; min-height: 50px" alt="contol powerbank">
                             </div>
-                            <!-- Batteries Data-->
-                            <div class="batteries-data d-flex justify-content-between w-100 pt-3">
-                                <!-- Filled Batteries -->
-                                <div class="filled-batteries d-flex align-items-center justify-content-center">
-                                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 2rem;" alt="Filled Battery">
-                                    <span>{{__('full slots')}}</span>
-                                    <span style="color: var(--background-color);color: var(--background-color);font-size: 2rem;padding: 0 3px;margin-top: -10px;"> . </span>
-                                    <span>0</span>
+                            <div class="shop-info d-flex flex-column w-50">
+                                <span class="shop-name text-truncate" style="font-size: 1rem;font-weight: 800">{{ $device->shop->name }}</span>
+                                <!-- device status -->
+                                <div class="device-status" >
+                                    {{-- Loader --}}
+                                    <div class="spinner-grow text-dark" role="status"></div>
+                                      {{-- Online --}}
+                                    <div class="online font-weight-bold" style="padding:3px; background-color: #8ac78a; display: flex; width: 100%; display: none;"> 
+                                        <span style="border-radius:50%;width: 15px;display: block;margin-right: 3px; background-color: #004324;"></span>
+                                        <span class="fw-bold">{{ __('Online') }}</span>
+                                    </div>
+                                    {{-- Offline --}}
+                                    <div class="offline font-weight-bold" style="padding:3px; background-color: #fff;  display: flex; width: 100%; display: none;"> 
+                                        <span style="border-radius:50%; width: 15px;height: 15px; display: block;margin-right: 3px; background-color: #ff0000;"></span>
+                                        <span>{{ __('Offline') }}</span>
+                                    </div>
                                 </div>
-                                <!-- Empty Batteries -->
-                                <div class="empty-batteries d-flex align-items-center justify-content-center">
-                                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 2rem;" alt="Empty Battery">
-                                    <span>{{__('empty slots')}}</span>
-                                    <span style="color: var(--background-color);color: var(--background);font-size: 2rem;padding: 0 3px;margin-top: -10px;"> . </span>
-                                    <span >{{6}}</span>
+                                <!-- Batteries Data-->
+                                <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+                                    {{-- Loader --}}
+                                    <div class="spinner-grow text-dark" role="status"></div>
+                                    <!-- Filled Batteries -->
+                                    <div class="filled-batteries d-flex align-items-center">
+
+                                        <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                                        <span>{{__('full slots')}}</span>
+                                        <span style="color: var(--background-color);color: var(--background-color);"> . </span>
+                                        <span class="num">0</span>
+                                    </div>
+                                    <!-- Empty Batteries -->
+                                    <div class="empty-batteries d-flex align-items-center">
+                                        <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
+                                        <span>{{__('empty slots')}}</span>
+                                        <span style="color: var(--background-color);color: var(--background);"> . </span>
+                                        <span class="num">{{6}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="device-image" style="width: 150px; min-width: 150px; position: absolute; right: 5px; top: 20px">
+                        <img src="{{asset('assets/images/device.png')}}" class="img-fluid" alt="contol powerbank">
+                    </div>
                 </div>
-                <div class="device-image"></div>
             </div>
-             {{-- @foreach ($devices as $device)
-                {{ $device->device_id }}
-            @endforeach --}}
+            @endforeach 
         </div>
         {{-- <livewire:devices-table :startDate="$startDate" :endDate="$endDate"/> --}}
         <div class="table-responsive">
@@ -130,7 +140,31 @@
             font-size: .6rem;
             max-width: 100% !important;
         }
+        .device {
+            border-radius: 5px;
+            border: var(--background-color) 1px solid;
+        }
+        .spinner-grow {
+            background: var(--background-color)
+        }
+
+        @media only screen and (max-width: 650px) {
+            .device-image {
+                display: none;
+            }
+        }
     </style>
+@endpush
+@push("scripts")
+<script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+        const devices = document.querySelectorAll(".device");
+        devices.forEach(device => {
+            bindDeviceSelector(device)  
+        }); 
+    });
+</script>
 @endpush
 </x-layouts::dashboard>
 <script>

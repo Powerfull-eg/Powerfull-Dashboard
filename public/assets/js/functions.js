@@ -124,3 +124,55 @@ function __(key, params = {}) {
 
     return translation;
 }
+
+/**
+ * Get Device Data
+ * @param {string} deviceID
+ * @returns {object | string}
+ *
+ */
+async function  getDeviceData(deviceID) {
+    if (!deviceID) {
+        throw new Error('Device ID is required');
+    }
+    let device = {};
+    // Fetch device data
+    await $.ajax({
+        type: 'GET',
+        url: `/dashboard/device-data/${deviceID}`,
+        success: function (data) {
+            if (data) {
+                device = data;
+                return data;
+            }
+        }
+    });
+
+    return device ?? {};
+}
+
+async function bindDeviceSelector(device) {
+    let deviceData,online,full,empty;
+    const deviceId = device.getAttribute("attr-device");
+    await getDeviceData(deviceId).then(data => deviceData = data);
+  
+    if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
+        online = deviceData["cabinet"]["online"];
+        full = deviceData["cabinet"]["busySlots"];
+        empty = deviceData["cabinet"]["emptySlots"];
+    }
+    // Remove loaders
+    device.querySelectorAll(".spinner-grow").forEach(el => el.style.display = "none");
+
+    if(online == 1){
+        device.querySelector(".device-status .online").style.display = "flex";
+        device.querySelector(".device-status .offline").style.display = "none";
+        device.querySelector(".filled-batteries .num").innerHTML = full;
+        device.querySelector(".empty-batteries .num").innerHTML = empty;   
+    }else{
+        device.querySelector(".device-status .online").style.display = "none";
+        device.querySelector(".device-status .offline").style.display = "flex";
+        device.querySelector(".filled-batteries .num").innerHTML = 0;
+        device.querySelector(".empty-batteries .num").innerHTML = 0;
+    }
+}

@@ -11,7 +11,6 @@ class Device extends Model
 {
     use HasFactory;
 
-
     public $fillable = [
         "device_id",
         "shop_id",
@@ -32,5 +31,10 @@ class Device extends Model
     public function operations(): HasMany
     {
         return $this->hasMany(Operation::class,"station_id","device_id");
+    }
+
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(Provider::class);
     }
 }

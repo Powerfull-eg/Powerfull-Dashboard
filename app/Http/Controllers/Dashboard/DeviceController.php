@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BajieController;
 use App\Models\Device;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
+use App\Models\Provider;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -17,7 +18,7 @@ class DeviceController extends Controller
     {
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-        $allDevices = Device::all();
+        $allDevices = Device::with('shop')->get();
         $devices = $startDate ? $allDevices->where("created_at",'>=',$startDate) : $allDevices;
         $devices = $endDate ? $devices->where("created_at",'<=',$endDate) : $devices;
         return view("dashboard.devices.index", compact('startDate','endDate','devices','allDevices'));
@@ -44,9 +45,11 @@ class DeviceController extends Controller
      */
     public function getDeviceData(Request $request)
     {
-        $provider = new BajieController;
+        $device = Device::where('device_id',$request->deviceID)->with('provider')->first();
+        $provider = new $device->provider->controller;
         $data = $provider->getDeviceData($request->deviceID);
-        return json_encode($data);
+        
+        return $data;
     }
 
     /**

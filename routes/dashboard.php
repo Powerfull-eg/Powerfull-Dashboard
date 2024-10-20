@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DeviceController;
 use App\Http\Controllers\Dashboard\DeviceProviders\BajieController;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +72,12 @@ Route::middleware('auth:admins')->group(function () {
     
     // payment routes
     Route::resource('payments', \App\Http\Controllers\Dashboard\PaymentController::class)->only(['create', 'store']);
+
+    // Device Routes
+    Route::group(['middleware' => 'auth:admins'], function () {
+        Route::get('/device-data/{deviceID}', [DeviceController::class,'getDeviceData'])->name('device-data');
+
+    });
 });
 
 /*
