@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Provider;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -29,15 +30,33 @@ class DeviceController extends Controller
      */
     public function create()
     {
-        //
+        $shops = Shop::pluck('name', 'id');
+        $providers = Provider::pluck('name', 'id');
+        return view("dashboard.devices.create", compact('shops','providers'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDeviceRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'shop_id' => 'required|exists:shops,id|unique:devices,shop_id',
+            'provider_id' => 'required|exists:providers,id',
+            'device_id' => 'required|string',
+            'status' => 'required',
+            'slots' => 'required|integer',
+        ]);
+
+        $device = Device::create([
+            'shop_id' => $request->shop_id,
+            'provider_id' => $request->provider_id,
+            'device_id' => $request->device_id,
+            'status' => $request->status,
+            'slots' => $request->slots,
+        ]);
+
+        return redirect()->route('dashboard.devices.index')->with('success', __('Device created successfully.'));
     }
 
     /**
