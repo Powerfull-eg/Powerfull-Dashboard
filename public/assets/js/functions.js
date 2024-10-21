@@ -125,6 +125,38 @@ function __(key, params = {}) {
     return translation;
 }
 
+// Generate qrcode
+function qrCodeGenerate(){
+    const qrCode = new QRCode(document.getElementById('qr-code'), {
+        width: 128,
+        height: 128,
+        colorDark: '#000',
+        colorLight: '#fff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    let input = $('#qr-code-text').val();
+
+    if (!input) {
+        return $('#qr-code img').attr('src', '');
+    }
+
+    qrCode.makeCode($('#qr-code-text').val());
+
+    $('[btn-save]').on('click', () => {
+        input = $('#qr-code-text').val();
+
+        if (!input) {
+            return toastify().error('Please enter text to generate QR code');
+        }
+
+        const canvas = $('#qr-code canvas').get(0);
+        const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+
+        $('<a></a>').attr('download', 'qr-code.png').attr('href', image).get(0).click();
+    });
+}
+
 /**
  * Get Device Data
  * @param {string} deviceID
@@ -151,6 +183,7 @@ async function  getDeviceData(deviceID) {
     return device ?? {};
 }
 
+// Bind device data for devices index page
 async function bindDeviceSelector(device) {
     let deviceData,online,full,empty;
     const deviceId = device.getAttribute("attr-device");
@@ -175,4 +208,30 @@ async function bindDeviceSelector(device) {
         device.querySelector(".filled-batteries .num").innerHTML = 0;
         device.querySelector(".empty-batteries .num").innerHTML = 0;
     }
+}
+
+// Bind device data for device show page
+async function bindDeviceData(device) {
+    let deviceData,online,full,empty;
+    await getDeviceData(device).then(data => deviceData = data);
+    console.log(deviceData);
+    if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
+        online = deviceData["cabinet"]["online"];
+        full = deviceData["cabinet"]["busySlots"];
+        empty = deviceData["cabinet"]["emptySlots"];
+    }
+
+    // Remove loaders
+    // device.querySelectorAll(".spinner-grow").forEach(el => el.style.display = "none");
+
+    document.querySelector(".device-status .online").style.display = online == 1 ? "flex" : "none";
+    document.querySelector(".device-status .offline").style.display = online == 1 ? "none" : "flex";
+    document.querySelector(".filled-batteries .num").innerHTML = online == 1 ? full : 0;
+    document.querySelector(".empty-batteries .num").innerHTML = online == 1 ? empty : 0;  
+
+    // handle radio inputs when offline
+    const slots = document.querySelectorAll("[name='slot']");
+    slots.forEach((slot)=> online !== 1 ? slot.setAttribute("disabled","disabled"): '');
+
+    
 }

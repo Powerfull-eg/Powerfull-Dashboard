@@ -18,23 +18,23 @@
 </div>
 
 {{-- Content --}}
-<div class="container container-fluid">
-    <div class="row gap-1">
+<div class="container">
+    <div class="row">
         {{-- Section 1 => device data --}}
-        <div class="device-data col-7">
+        <div class="device-data col-9">
             {{-- Names --}}
-            <div class="device-names mb-5">
-                <span class="d-block">{{__("ID") . " " . __(env('APP_NAME')) . ": " . $device->id }}</span>
+            <div class="device-names mb-4">
+                <span class="d-block">{{__("ID") . " " . __(env('APP_NAME')) . ": { " . $device->id . " }"}}</span>
                 <span class="d-block">{{__("ID") . " " . __($device->provider->name) . ": " . $device->device_id }}</span>
             </div>
 
             {{-- SIM --}}
-            <div class="device-sim mb-5">
+            <div class="device-sim mb-4">
                 <span class="d-block">{{__("SIM") . ": " . $device->sim }}</span>
             </div>
 
             {{-- Batteries --}}
-            <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+            <div class="batteries-data d-flex px-0 pt-2 gap-1 mb-3" style="font-size: .6rem;width: max-content">
                 <div class="fs-1 fw-bold">{{__("Battery")}}</div>
                 {{-- Filled Batteries  --}}
                 <div class="filled-batteries d-flex align-items-center">
@@ -54,7 +54,7 @@
             </div>
 
             {{-- Battery Slots & Actions --}}
-            <div class="w-100 d-flex flex-wrap flex-row">
+            <div class="w-100 d-flex flex-wrap flex-row slots">
                 {{-- Battry Slots --}}
                 <div class="w-50 d-flex flex-nowrap justify-content-evenly">
                     @for($i=0; $i < $device->slots; $i++)
@@ -93,7 +93,48 @@
         </div>
 
         {{-- Section 2 => device images & qr code --}}
-        <div class="device-images col-4"></div>
+        <div class="device-images col-3">
+            {{-- Device Image --}}
+            <div class="device-image" style="width: 150px; min-width: 150px;">
+                <img src="{{asset('assets/images/device.png')}}" class="img-fluid" alt="contol powerbank">
+            </div>
+
+            {{-- device status --}}
+            <div class="device-status w-100 mb-5" >
+                {{-- Online --}}
+                <div class="online font-weight-bold" style="background-color: #8ac78a;"> 
+                    <span style="background-color: #004324;"></span>
+                    <span class="fw-bold">{{ __('Online') }}</span>
+                </div>
+                {{-- Offline --}}
+                <div class="offline font-weight-bold" style="background-color: #e2dddd;"> 
+                    <span style="background-color: #ff0000;"></span>
+                    <span>{{ __('Offline') }}</span>
+                </div>
+            </div>
+
+            {{-- Qr Code --}}
+            <div class="qr-code d-flex justify-content-center align-items-center flex-column gap-2 mb-3">
+                <div class="qr-image" id="qr-code"></div>
+                <div class="fs-2 fw-bold ">QRcode</div>
+                <button btn-save class="btn" style="background: var(--background-color); border-radius:20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" stroke-width="2"> <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path> <path d="M13.5 6.5l4 4"></path> <path d="M16 19h6"></path> <path d="M19 16v6"></path></svg>
+                    &nbsp;
+                    {{__("Generate")}}
+                </button>
+                <textarea id="qr-code-text" class="d-none">{{"https://www.powerfull-eg.com?device=$device->device_id"}}</textarea>
+            </div>
+
+            {{-- Shop Logo & Name --}}
+            <div class="shop d-flex flex-column justify-content-center align-items-center gap-2">
+                <div class="shop-image">
+                    <img src="{{$device->shop->data->logo ?? $device->shop->logo}}" width="150" style="min-width: 150px" alt="{{$device->shop->name . " logo"}}">
+                </div>
+                <div class="shop-name">
+                    <span class="fw-bold fs-3 text-start text-truncate">{{$device->shop->name}}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @push('styles')
@@ -149,6 +190,17 @@
       outline: none;
       cursor: pointer;
     }
+    @media only screen and (max-width: 800px) {
+        div.slots {
+            flex-direction: column !important;
+            justify-content: space-evenly;
+            gap: 2rem;
+            font-size: .6rem;
+        }
+        div.slots > div {
+            width: 75% !important;
+        }
+    }
 
     input[type="radio"]:checked {
       border-color: var(--background-color); /* Change border color when checked */
@@ -159,6 +211,48 @@
       margin-right: 15px;
       font-size: 16px;
     }
+
+    div.device-status > div {
+        padding:0 3px;
+        display: flex;
+        width: 75%;
+        margin: 10px;
+        border-radius:20px;
+    }
+
+    div.device-status > div > span:first-of-type {
+        border-radius:50%;
+        width: 15px;
+        display: block;
+        margin-right: 3px; 
+    }
+
+    .qr-code .qr-image { 
+        width: 160px;
+        height: 160px;
+        border: var(--background-color) 2px solid;
+        border-radius: 5px;
+    }
+
+    #qr-code img {
+        margin: 10px auto;
+    }
 </style>
+@endpush
+@push('scripts')
+<script src="{{ asset('vendor/qrcode/qrcode.min.js') }}"></script>
+
+<script>
+let deviceData,online,full,empty,slots;
+
+
+$(document).ready(async () => {
+    
+    qrCodeGenerate();
+    
+    // Handle device data
+    bindDeviceData("{{$device->device_id}}");
+});
+</script>
 @endpush
 </x-layouts::dashboard>
