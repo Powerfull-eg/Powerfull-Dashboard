@@ -40,21 +40,18 @@ class DeviceController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'shop_id' => 'required|exists:shops,id|unique:devices,shop_id',
             'provider_id' => 'required|exists:providers,id',
-            'device_id' => 'required|string',
+            'device_id' => 'required|string|unique:devices,device_id',
             'status' => 'required',
             'slots' => 'required|integer',
         ]);
 
-        $device = Device::create([
-            'shop_id' => $request->shop_id,
-            'provider_id' => $request->provider_id,
-            'device_id' => $request->device_id,
-            'status' => $request->status,
-            'slots' => $request->slots,
-        ]);
+        $validated["created_by"] = auth()->user()->id;
+        $validated["updated_by"] = auth()->user()->id;
+
+        $device = Device::create($validated);
 
         return redirect()->route('dashboard.devices.index')->with('success', __('Device created successfully.'));
     }
@@ -76,23 +73,38 @@ class DeviceController extends Controller
      */
     public function show(Device $device)
     {
-        //
+        return view("dashboard.devices.show", compact('device'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Device $device)
+    public function edit(string $device)
     {
-        //
+        $shops = Shop::pluck('name', 'id');
+        $providers = Provider::pluck('name', 'id');
+        $device = Device::where('device_id',$device)->first();
+        return view("dashboard.devices.edit", compact('shops','providers','device'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDeviceRequest $request, Device $device)
+    public function update(Request $request, Device $device)
     {
-        //
+        $validated = $request->validate([
+            'shop_id' => 'required|exists:shops,id|unique:devices,shop_id,'.$device->id,
+            'provider_id' => 'required|exists:providers,id',
+            'device_id' => 'required|string|unique:devices,device_id,'.$device->id,
+            'status' => 'required',
+            'slots' => 'required|integer',
+        ]);
+        
+        $validated["updated_by"] = auth()->user()->id;
+
+        $device->update($validated);
+
+        return redirect()->back()->with('success', __('Device updated successfully.'));
     }
 
     /**

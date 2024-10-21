@@ -15,14 +15,6 @@
                 </svg>
                 <a href="{{route('dashboard.devices.create')}}">{{__("Add Device")}}</a>
             </div>
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                </svg>
-                <a href="#">{{__("Edit Device")}}</a>
-            </div>
         </div>
     </div>
     <hr class="mx-5">
@@ -32,57 +24,64 @@
         <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
             @foreach ($devices as $device)
             <div class="device col col-md-5 col-sm-5 me-2 d-flex flex-column text-center" attr-device="{{$device->device_id}}">
-                <div class="d-flex justify-content-between gap-1 p-2 position-relative">
-                    <div class="device-data d-flex flex-column">
-                        <span class="title fs-1 w-100 text-start" style="font-weight: 900; text-decoration: underline">{{$device->device_id}}</span>
-                        <div class="info d-flex flex-row">
-                            <div class="shop-logo me-3 d-flex align-items-end">
-                                <img src="{{$device->shop->data->logo ?? $device->shop->logo}}" width="50" style="border-radius: 50%; min-height: 50px" alt="contol powerbank">
-                            </div>
-                            <div class="shop-info d-flex flex-column w-50">
-                                <span class="shop-name text-truncate" style="font-size: 1rem;font-weight: 800">{{ $device->shop->name }}</span>
-                                <!-- device status -->
-                                <div class="device-status" >
-                                    {{-- Loader --}}
-                                    <div class="spinner-grow text-dark" role="status"></div>
-                                      {{-- Online --}}
-                                    <div class="online font-weight-bold" style="padding:3px; background-color: #8ac78a; display: flex; width: 100%; display: none;"> 
-                                        <span style="border-radius:50%;width: 15px;display: block;margin-right: 3px; background-color: #004324;"></span>
-                                        <span class="fw-bold">{{ __('Online') }}</span>
-                                    </div>
-                                    {{-- Offline --}}
-                                    <div class="offline font-weight-bold" style="padding:3px; background-color: #fff;  display: flex; width: 100%; display: none;"> 
-                                        <span style="border-radius:50%; width: 15px;height: 15px; display: block;margin-right: 3px; background-color: #ff0000;"></span>
-                                        <span>{{ __('Offline') }}</span>
-                                    </div>
+                    <a href="{{route('dashboard.devices.show', $device->id)}}" class="text-decoration-none">
+                    <div class="d-flex justify-content-between gap-1 p-2 position-relative">
+                        <div class="device-data d-flex flex-column">
+                            <span class="title fs-1 w-100 text-start" style="font-weight: 900; text-decoration: underline">{{$device->device_id}}</span>
+                            <div class="info d-flex flex-row">
+                                <div class="shop-logo me-3 d-flex align-items-end">
+                                    <img src="{{$device->shop->data->logo ?? $device->shop->logo}}" width="50" style="border-radius: 50%; min-height: 50px" alt="contol powerbank">
                                 </div>
-                                <!-- Batteries Data-->
-                                <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
-                                    {{-- Loader --}}
-                                    <div class="spinner-grow text-dark" role="status"></div>
-                                    <!-- Filled Batteries -->
-                                    <div class="filled-batteries d-flex align-items-center">
-
-                                        <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
-                                        <span>{{__('full slots')}}</span>
-                                        <span style="color: var(--background-color);color: var(--background-color);"> . </span>
-                                        <span class="num">0</span>
+                                <div class="shop-info d-flex flex-column w-50">
+                                    <span class="shop-name text-truncate" style="font-size: 1rem;font-weight: 800">{{ $device->shop->name }}</span>
+                                    <!-- device status -->
+                                    <div class="device-status" >
+                                        {{-- Loader --}}
+                                        <div class="spinner-grow text-dark" role="status"></div>
+                                        {{-- Online --}}
+                                        <div class="online font-weight-bold" style="padding:3px; background-color: #8ac78a; display: flex; width: 100%; display: none;"> 
+                                            <span style="border-radius:50%;width: 15px;display: block;margin-right: 3px; background-color: #004324;"></span>
+                                            <span class="fw-bold">{{ __('Online') }}</span>
+                                        </div>
+                                        {{-- Offline --}}
+                                        <div class="offline font-weight-bold" style="padding:3px; background-color: #fff;  display: flex; width: 100%; display: none;"> 
+                                            <span style="border-radius:50%; width: 15px;height: 15px; display: block;margin-right: 3px; background-color: #ff0000;"></span>
+                                            <span>{{ __('Offline') }}</span>
+                                        </div>
                                     </div>
-                                    <!-- Empty Batteries -->
-                                    <div class="empty-batteries d-flex align-items-center">
-                                        <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
-                                        <span>{{__('empty slots')}}</span>
-                                        <span style="color: var(--background-color);color: var(--background);"> . </span>
-                                        <span class="num">{{6}}</span>
+                                    <!-- Batteries Data-->
+                                    <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+                                        {{-- Loader --}}
+                                        <div class="spinner-grow text-dark" role="status"></div>
+                                        <!-- Filled Batteries -->
+                                        <div class="filled-batteries d-flex align-items-center">
+
+                                            <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                                            <span>{{__('full slots')}}</span>
+                                            <span style="color: var(--background-color);color: var(--background-color);"> . </span>
+                                            <span class="num">0</span>
+                                        </div>
+                                        <!-- Empty Batteries -->
+                                        <div class="empty-batteries d-flex align-items-center">
+                                            <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
+                                            <span>{{__('empty slots')}}</span>
+                                            <span style="color: var(--background-color);color: var(--background);"> . </span>
+                                            <span class="num">{{6}}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Device Image --}}
+                        <div class="device-image" style="width: 150px; min-width: 150px; position: absolute; right: 5px; top: 20px">
+                            <img src="{{asset('assets/images/device.png')}}" class="img-fluid" alt="contol powerbank">
+                        </div>
+
+                        {{-- Edit Device Icon --}}
+                        <a href="{{route('dashboard.devices.edit', $device->device_id)}}" class="edit-device"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></a>
                     </div>
-                    <div class="device-image" style="width: 150px; min-width: 150px; position: absolute; right: 5px; top: 20px">
-                        <img src="{{asset('assets/images/device.png')}}" class="img-fluid" alt="contol powerbank">
-                    </div>
-                </div>
+                </a>
             </div>
             @endforeach 
         </div>
@@ -146,6 +145,23 @@
         }
         .spinner-grow {
             background: var(--background-color)
+        }
+
+        .edit-device {
+            position: absolute;
+            right: -25px;
+            top: 3px;
+            color: var(--text-color-2);
+            cursor: pointer;
+            background: var(--background-color);
+            border-radius: 30px;
+            padding: 5px;
+            display: none;
+            transition: ease-out 2s;
+        }
+
+        .device:hover .edit-device {
+           display: block; 
         }
 
         @media only screen and (max-width: 650px) {
