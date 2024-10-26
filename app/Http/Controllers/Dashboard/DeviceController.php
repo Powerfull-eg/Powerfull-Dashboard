@@ -46,6 +46,7 @@ class DeviceController extends Controller
             'device_id' => 'required|string|unique:devices,device_id',
             'status' => 'required',
             'slots' => 'required|integer',
+            'sim_number' => 'required|max:25'
         ]);
 
         $validated["created_by"] = auth()->user()->id;
@@ -54,18 +55,6 @@ class DeviceController extends Controller
         $device = Device::create($validated);
 
         return redirect()->route('dashboard.devices.index')->with('success', __('Device created successfully.'));
-    }
-
-    /**
-     * Get data of specified device.
-     */
-    public function getDeviceData(Request $request)
-    {
-        $device = Device::where('device_id',$request->deviceID)->with('provider')->first();
-        $provider = new $device->provider->controller;
-        $data = $provider->getDeviceData($request->deviceID);
-        
-        return $data;
     }
 
     /**
@@ -79,11 +68,10 @@ class DeviceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $device)
+    public function edit(Device $device)
     {
         $shops = Shop::pluck('name', 'id');
         $providers = Provider::pluck('name', 'id');
-        $device = Device::where('device_id',$device)->first();
         return view("dashboard.devices.edit", compact('shops','providers','device'));
     }
 
@@ -98,6 +86,7 @@ class DeviceController extends Controller
             'device_id' => 'required|string|unique:devices,device_id,'.$device->id,
             'status' => 'required',
             'slots' => 'required|integer',
+            'sim_number' => 'required|max:25'
         ]);
         
         $validated["updated_by"] = auth()->user()->id;
@@ -114,4 +103,55 @@ class DeviceController extends Controller
     {
         //
     }
+
+    /**
+     * Get data of specified device.
+     */
+    public function getDeviceData(Request $request)
+    {
+        $device = Device::where('device_id',$request->deviceID)->with('provider')->first();
+        $provider = new $device->provider->controller;
+        $data = $provider->getDeviceData($request->deviceID);
+        
+        return $data;
+    }
+
+    /*
+    * Device Operation
+    * @param string $device
+    * @param string $operation
+    * @param int $slotNum
+    * @return array
+    */
+    public function deviceOperation(Request $request) {
+        $request->validate([
+            'device' => "required|string|exists:devices,device_id",
+            'operation' => "required|string",
+            'slotNum' => "numeric"
+        ]);
+        
+        $device = Device::where('device_id',$request->device)->with('provider')->first();
+      	$controller = new $device->provider->controller;
+        $data = $controller->deviceOperation($request->device,$request->operation,$request->slotNum);
+        
+        return $data;
+    }
+
+    /*
+    * Eject single Powerbank for repair
+    */
+
+    public function ejectPowerbank(Request $request) {
+        $request->validate([
+            'device' => "required|string|exists:devices,device_id",
+            'slotNum' => "required|numeric"
+        ]);
+        
+        $device = Device::where('device_id',$request->device)->with('provider')->first();
+      	$controller = new $device->provider->controller;
+        $data = $controller->ejectPowerbank($request->device,$request->slotNum);
+        
+        return $data;
+    }
+    
 }

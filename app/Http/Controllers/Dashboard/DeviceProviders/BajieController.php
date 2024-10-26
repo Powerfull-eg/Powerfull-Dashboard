@@ -7,6 +7,7 @@ use App\Models\Shop;
 use App\Models\Device;
 use App\Models\Operation;
 use App\Models\VoucherOrder;
+use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -72,7 +73,7 @@ class BajieController extends Controller
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->withQueryParameters(["deviceId" => $device])->get($url);
         $response = json_decode($response->body(),true);
 
-        return $response['data'] ?? "Device Not Found OR not online";
+        return $response['data'] ?? $response;
     }
     
     /*
@@ -97,5 +98,25 @@ class BajieController extends Controller
         return $response;
     }
 
+    /*
+    * Device Operation
+    * @param string $device
+    * @param string $operation
+    * @param int $slotNum
+    * @return array
+    */
+
+    public function deviceOperation(string $device, string $operation,int $slotNum = 1) {
+        $operations = ["restart","pop","popall","popallForNoAuth","popallForAuth","heartbeat","lock","unlock","lockStopCharge","report"];
+        
+        if(!in_array($operation,$operations)){
+            throw new Error("Operation $operation not exist in operations list.");
+        }
+
+        $url = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/operation";
+        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->withQueryParameters(["cabinetid" => $device, "operationType" => $operation,$slotNum])->post($url);
+        $response = json_decode($response->body(),true);
+        return $response;
+    }
     
 }

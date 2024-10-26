@@ -76,7 +76,8 @@ Route::middleware('auth:admins')->group(function () {
     // Device Routes
     Route::group(['middleware' => 'auth:admins'], function () {
         Route::get('/device-data/{deviceID}', [DeviceController::class,'getDeviceData'])->name('device-data');
-
+        Route::post('/device-operation', [DeviceController::class,'deviceOperation'])->name('device-operation');
+        Route::post('/eject-battery', [DeviceController::class,'ejectPowerbank'])->name('eject-battery');
     });
 });
 

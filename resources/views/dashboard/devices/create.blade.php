@@ -27,11 +27,15 @@
                     <x-components::forms.input name="slots" :title="__('Slots')" :value="old('slots') ?? 6" required />
                 </div>
             </div>
-            {{-- Shop --}}
-            <div class="mb-3">
-                <x-components::forms.select name="provider_id" :title="__('Provider')" :options="$providers" :selected="old('provider_id') ?? 1" required />
+            {{-- Provider --}}
+            <div class="row">
+                <div class="mb-3 col col-6 col-md-6 col-sm-12">
+                    <x-components::forms.select name="provider_id" :title="__('Provider')" :options="$providers" :selected="old('provider_id') ?? 1" required />
+                </div>
+                <div class="mb-3 col col-6 col-md-6 col-sm-12">
+                    <x-components::forms.input name="sim_number" :title="__('SIM Number')" :value="old('sim_number')" required />
+                </div>
             </div>
-
             {{-- submit --}}
             <div class="card-footer text-end">
                 <a href="{{ route('dashboard.devices.index') }}" class="btn">{{ __('Cancel') }}</a>

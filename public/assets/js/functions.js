@@ -209,29 +209,3 @@ async function bindDeviceSelector(device) {
         device.querySelector(".empty-batteries .num").innerHTML = 0;
     }
 }
-
-// Bind device data for device show page
-async function bindDeviceData(device) {
-    let deviceData,online,full,empty;
-    await getDeviceData(device).then(data => deviceData = data);
-    console.log(deviceData);
-    if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
-        online = deviceData["cabinet"]["online"];
-        full = deviceData["cabinet"]["busySlots"];
-        empty = deviceData["cabinet"]["emptySlots"];
-    }
-
-    // Remove loaders
-    // device.querySelectorAll(".spinner-grow").forEach(el => el.style.display = "none");
-
-    document.querySelector(".device-status .online").style.display = online == 1 ? "flex" : "none";
-    document.querySelector(".device-status .offline").style.display = online == 1 ? "none" : "flex";
-    document.querySelector(".filled-batteries .num").innerHTML = online == 1 ? full : 0;
-    document.querySelector(".empty-batteries .num").innerHTML = online == 1 ? empty : 0;  
-
-    // handle radio inputs when offline
-    const slots = document.querySelectorAll("[name='slot']");
-    slots.forEach((slot)=> online !== 1 ? slot.setAttribute("disabled","disabled"): '');
-
-    
-}
