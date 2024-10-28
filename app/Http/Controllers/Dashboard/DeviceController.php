@@ -46,7 +46,8 @@ class DeviceController extends Controller
             'device_id' => 'required|string|unique:devices,device_id',
             'status' => 'required',
             'slots' => 'required|integer',
-            'sim_number' => 'required|max:25'
+            'sim_number' => 'required|max:25',
+            'powerfull_id' => 'required|max:25'
         ]);
 
         $validated["created_by"] = auth()->user()->id;
@@ -86,7 +87,8 @@ class DeviceController extends Controller
             'device_id' => 'required|string|unique:devices,device_id,'.$device->id,
             'status' => 'required',
             'slots' => 'required|integer',
-            'sim_number' => 'required|max:25'
+            'sim_number' => 'required|max:25',
+            'powerfull_id' => 'required|max:25'
         ]);
         
         $validated["updated_by"] = auth()->user()->id;

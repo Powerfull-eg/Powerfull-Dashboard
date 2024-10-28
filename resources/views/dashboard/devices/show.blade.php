@@ -17,14 +17,20 @@
     </div>
 </div>
 
+{{-- Loader --}}
+<div id="main-loader" class="mx-auto d-none">
+    <div class="spinner-grow" role="status">
+        <span class="visually-hidden"></span>
+    </div>
+</div>
 {{-- Content --}}
-<div class="container">
+<div class="container device-container">
     <div class="row">
         {{-- Section 1 => device data --}}
         <div class="device-data col-9">
             {{-- Names --}}
             <div class="device-names mb-4">
-                <span class="d-block">{{__("ID") . " " . __(env('APP_NAME')) . ": { " . $device->id . " }"}}</span>
+                <span class="d-block">{{__("ID") . " " . __(env('APP_NAME')) . ": { " . $device->powerfull_id . " }"}}</span>
                 <span class="d-block">{{__("ID") . " " . __($device->provider->name) . ": " . $device->device_id }}</span>
             </div>
 
@@ -58,7 +64,7 @@
                 {{-- Battry Slots --}}
                 <div class="w-50 d-flex flex-nowrap justify-content-evenly">
                     @for($i=0; $i < $device->slots; $i++)
-                    <div id="slot-{{$i+1}}" class="d-flex flex-column align-items-center gap-3">
+                    <div id="slot-{{$i+1}}" class="d-flex flex-column align-items-center gap-3 slot">
                         <div class="battery">
                             <span>&nbsp;</span>
                         </div>
@@ -70,12 +76,12 @@
                 {{-- Public Actions --}}
                 <div style="width: 45%">
                     <div class="d-flex flex-column buttons gap-1">
-                        <div class="btn btn-success" onclick="deviceOperation('{{$device->device_id}}','popall',1)">{{__("Eject all batteries")}}</div>
+                        <div class="btn btn-success" onclick="deviceOperation('{{$device->device_id}}','popall',1)">{{__("Eject all batteries")}} (Server Error)</div>
                         <div class="btn btn-warning">{{__("Eject all charged batteries")}}</div>
                         <div class="btn btn-danger">{{__("Eject all batteries not charge")}}</div>
-                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','heartbeat',1)">{{__("Force heartbeat")}}</div>
-                        <div class="btn btn-primary" onclick="deviceOperation('{{$device->device_id}}','report',1)">{{__("Reporting states")}}</div>
-                        <div class="btn btn-success">{{__("Refresh")}}</div>
+                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','heartbeat',1)">{{__("Force heartbeat")}} (Server Error)</div>
+                        <div class="btn btn-primary" onclick="deviceOperation('{{$device->device_id}}','report',1)">{{__("Reporting states")}} (Server Error)</div>
+                        <div class="btn btn-success" onclick="refreshDevice('{{$device->device_id}}')">{{__("Refresh")}}</div>
                     </div>
                 </div>
             </div>
@@ -87,7 +93,7 @@
                     <div class="btn btn-primary col-5">{{__("Details")}}</div>
                     <div class="btn btn-danger col-5">{{__("Prohibit Charging")}}</div>
                     <div class="btn btn-success col-5" onclick="ejectBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Eject")}}</div>
-                    <div class="btn btn-warning col-5">{{__("Locking")}}</div>
+                    <div class="btn btn-warning col-5" onclick="lockDevice('{{$device->device_id}}')">{{__("Locking")}}</div>
                 </div>
             </div>
         </div>
@@ -236,6 +242,13 @@
 
     #qr-code img {
         margin: 10px auto;
+    }
+    #main-loader > div { 
+        background: var(--background-color);
+        width: 10rem;
+        height: 10rem;
+        margin: 0 auto;
+        display: block;
     }
 </style>
 @endpush

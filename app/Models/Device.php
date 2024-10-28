@@ -18,7 +18,9 @@ class Device extends Model
         "slots",
         "created_by",
         "updated_by",
-        "provider_id"
+        "provider_id",
+        "sim_number",
+        "powerfull_id"
     ];
 
     public $hidden = [ 'provider_id', 'created_at', 'updated_at' ,'created_by', 'updated_by', 'deleted_at','shop_id' ];

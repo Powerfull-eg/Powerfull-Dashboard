@@ -60,7 +60,7 @@ async function deviceOperation(device,operation,slotNum) {
 }
 
 // eject batteries
-async function ejectBattery(device,slotNum) {
+async function ejectBattery(device,slotNum,refresh=true) {
     if (!device || !slotNum) {
         throw new Error('Device ID And slot Number are required');
     }
@@ -81,7 +81,55 @@ async function ejectBattery(device,slotNum) {
             }
         }
     });
-    bindDeviceData(device);
+
+    if(refresh) bindDeviceData(device);
 
     return returnData ?? {};
+}
+
+// Eject All batteries
+function ejectAllbatteries(device) {
+    // catch nonexist of device id
+    if (!device) {
+        throw new Error('Device ID is required');
+    }
+
+    // Eject batteries 
+    const batteries = document.querySelectorAll('.slot');
+    const returnData = [];
+    batteries.forEach(battery => {
+        const slotNum = battery.querySelector('input[type="radio"]').value;
+        const data = ejectBattery(device,slotNum,false);
+        returnData[slotNum] = data;
+    });
+
+    // Refresh page
+    bindDeviceData(device);
+
+    return returnData ?? 'Failed to Eject batteries';
+}
+
+// Refresh device data
+async function refreshDevice(device){
+    const loader = document.querySelector('#main-loader');
+    const container = document.querySelector('.device-container');
+
+    container.classList.toggle('d-none');
+    loader.classList.toggle('d-none');
+
+    setTimeout(() => {
+            loader.classList.toggle('d-none');
+            container.classList.toggle('d-none');
+    },2000);
+
+    await bindDeviceData(device);
+
+}
+
+function lockBattery(device) {
+    return deviceOperation(device,'lock',document.querySelector('input[type=radio]:checked').value)
+}
+
+function unlockBattery(device) {
+    return deviceOperation(device,'unlock',document.querySelector('input[type=radio]:checked').value)
 }
