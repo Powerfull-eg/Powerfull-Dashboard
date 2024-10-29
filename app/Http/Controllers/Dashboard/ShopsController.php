@@ -23,7 +23,11 @@ class ShopsController extends Controller
     {
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-        return view("dashboard.shops.index", compact('startDate','endDate'));
+        $shops = new Shop();
+        $shops = $startDate ? $shops->where('created_at','<=',$startDate) : $shops;
+        $shops = $endDate ? $shops->where('created_at','>=',$endDate) : $shops;
+        $shops = $shops->with('device','data')->get();
+        return view("dashboard.shops.index", compact('startDate','endDate','shops'));
     }
 
     /**
