@@ -209,3 +209,31 @@ async function bindDeviceSelector(device) {
         device.querySelector(".empty-batteries .num").innerHTML = 0;
     }
 }
+// Add note
+function addNote(form){
+    form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !event.shiftKey) {
+            $.confirm({
+                title: 'Add Note!',
+                content: 'Are you want to add the note',
+                buttons: {
+                    confirm: function () {
+                        form.submit();
+                    },
+                    cancel: function () {},
+                }
+            });
+        }
+    });
+}
+
+// Check device connection
+async function checkDeviceConnection(device) {
+    let deviceData,online;
+    await getDeviceData(device).then(data => deviceData = data);
+    if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
+        online = deviceData["cabinet"]["online"];
+    }
+
+    return online == 1;
+}
