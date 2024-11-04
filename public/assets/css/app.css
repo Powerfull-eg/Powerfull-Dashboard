@@ -114,6 +114,31 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     animation: bounce 1s ease-in-out 0.66s infinite
 }
 
+/* uploaded image  for menu */
+.image-uploader .uploaded-image img , .image-uploader .uploaded-image i {
+    border: 2px solid var(--background-color);
+    border-radius: 10px;
+}
+
+.image-uploader {
+    border: 0;
+    background: transparent;
+}
+
+.image-uploader .uploaded .uploaded-image.add i {
+    font-size: 3rem;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    cursor: pointer;
+}
+
+.image-uploader .uploaded-image i.ti-circle-plus:before {
+    display: block;
+    text-align: center;
+    margin-top: 25%;
+}
 @keyframes bounce {
 
     0%,

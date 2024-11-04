@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\DeviceController;
 use App\Http\Controllers\Dashboard\DeviceProviders\BajieController;
+use App\Http\Controllers\Dashboard\ShopsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +80,10 @@ Route::middleware('auth:admins')->group(function () {
         Route::post('/device-operation', [DeviceController::class,'deviceOperation'])->name('device-operation');
         Route::post('/eject-battery', [DeviceController::class,'ejectPowerbank'])->name('eject-battery');
     });
+
+    // Shop routes
+    Route::post('updatemenu/{id}', [ShopsController::class,'updateShopMenu'])->name('update-menu');
+
 });
 
 /*

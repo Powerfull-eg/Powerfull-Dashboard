@@ -1,7 +1,7 @@
 <x-layouts::dashboard>
     <div class="header d-flex gap-2 justify-content-between">
         <div class="d-flex align-items-end justify-content-center logo">
-            <img src="{{asset('assets/images/machine.png')}}" width="50" class="d-block mb-2 mx-3" alt="contol powerbank">
+            <i style="font-size: 5rem; color: var(--background-color)" class="ti ti-building-store"></i>
             <h1>{{__("Merchant Control")}}</h1>
         </div>
         <div class="d-flex align-items-center controls gap-3">
@@ -11,7 +11,7 @@
             </div>
             <div>
                 <i class="ti fs-2 ti-pencil"></i>
-                <a href="{{-- route('dashboard.shops.edit',$shop->id) --}}#">{{ __("Edit") ." ". __("Shop")}}</a>
+                <a href="{{ route('dashboard.shops.edit',$shop->id) }}">{{ __("Edit") ." ". __("Shop")}}</a>
             </div>
         </div>
     </div>
@@ -36,27 +36,27 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("Company Name")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->name}} </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Commercial Register")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> (Soon)</td>
                                 <td class="title">{{__("Tax Card")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> (Soon)</td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Company Head Office")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate">(Soon) </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Branches")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate">(Soon) </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Signing Contract In Name")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate">(Soon) </td>
                                 <td class="title">{{__("Job Title")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> (Soon)</td>
                             </tr>
                         </table>
                     </div>
@@ -71,16 +71,16 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("Merchant Name")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->name}} </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Service Phone")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->phone}}</td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Merchant Type")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
-                            </tr>
+                                <td class="text-truncate">{{$shop->data->type ? (app()->getLocale() == 'ar' ? $shop->data->type->type_ar_name : $shop->data->type->type_en_name) :  __("Not Set") }} </td>
+                            </tr>   
                         </table>
                     </div>
                 </div>
@@ -94,19 +94,19 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("Latitude")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->lat ? $shop->data->lat : $shop->location_latitude}}</td>
                                 <td class="title">{{__("Longitude")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->lng ? $shop->data->lng : $shop->location_longitude}}</td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Governorate")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->governorate}} </td>
                                 <td class="title">{{__("City")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->city}} </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Address")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td style="white-space: wrap !important" class="text-truncate">{{$shop->address}} </td>
                             </tr>
                         </table>
                     </div>
@@ -121,13 +121,13 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("Opens At")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->opens_at ? $shop->data->opens_at : __("Not Set")}} </td>
                                 <td class="title">{{__("Closes At")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->closes_at ? $shop->data->closes_at : __("Not Set")}} </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Closes") . " " . __("After") . " " . __("Midnight")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->closes_at ? ($shop->data->closes_at == 1 ? __("Yes") : __("No")) : __("Not Set")}} </td>
                             </tr>
                         </table>
                     </div>
@@ -141,10 +141,10 @@
                     <div class="table">
                         <table class="content-table">
                             <tr>
-                                <td class="title">{{__("Amoun")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="title">{{__("Amount")}}:</td>
+                                <td class="text-truncate"> {{$shop->data && $shop->data->price ? $shop->data->price : __("Not Set")}} </td>
                                 <td class="title">{{__("For Time")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> ({{__("Soon")}})</td>
                             </tr>
                         </table>
                     </div>
@@ -155,9 +155,12 @@
                         <i class="ti ti-tools-kitchen-2"></i>
                         <span>{{__("Merchant") . " ". __("Menu")}}</span>
                     </div>
-                    <div class="table">
-                        <table class="menu-table">
-                        </table>
+                    <div class="menu-table">
+                        <form action="{{route('dashboard.update-menu',$shop->id)}}" method="POST">
+                            @csrf
+                            <div class="menu-images" style="padding-top: .5rem;"></div>
+                            <button class="submit-menu btn btn-primary mx-3 mb-3" style="display: none" role="submit">{{__("Submit")}}</button>
+                        </form>
                     </div>
                 </div>
                 {{-- Device Info --}}
@@ -167,7 +170,7 @@
                             <i class="ti ti-zoom-exclamation"></i>
                             <span>{{__("Device") . " ". __("Info")}}</span>
                         </div>
-                        <a href="#" style="text-decoration: none;">
+                        <a href="{{route('dashboard.devices.show',$shop->device->id)}}" style="text-decoration: none;">
                             <div class="subtitle">
                                 <i class="ti ti-player-track-next"></i>
                                 <span>{{__("Go To") ." ".__("Device") . " ". __("Control")}}</span>
@@ -178,15 +181,34 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("ID Bajie")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->device->device_id}} </td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("SIM")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate"> {{$shop->device->sim_number}}</td>
                             </tr>
                             <tr>
                                 <td class="title">{{__("Battery")}}:</td>
-                                <td class="text-truncate"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad assumenda corporis corrupti doloribus, reprehenderit dicta nisi? Voluptate voluptatem omnis obcaecati sed voluptates, illo fuga, consectetur, natus porro tempora praesentium.</td>
+                                <td class="text-truncate">
+                                    <!-- Batteries Data-->
+                                    <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+                                        <!-- Filled Batteries -->
+                                        <div class="filled-batteries d-flex align-items-center">
+
+                                            <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                                            <span>{{__('full slots')}}</span>
+                                            <span style="color: var(--background-color);color: var(--background-color);"> . </span>
+                                            <span class="num">0</span>
+                                        </div>
+                                        <!-- Empty Batteries -->
+                                        <div class="empty-batteries d-flex align-items-center">
+                                            <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
+                                            <span>{{__('empty slots')}}</span>
+                                            <span style="color: var(--background-color);color: var(--background);"> . </span>
+                                            <span class="num">0</span>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -348,12 +370,32 @@
             document.querySelector(".device-status ." + (online ? "offline" : "online")).classList.add("d-none");
             document.querySelector(".device-status ." + (online ? "online" : "offline")).classList.remove("d-none");
         }
+        const updateDeviceData = async () => {
+            let deviceData;
+            let full = 0, empty = 0;
+            await getDeviceData('{{$shop->device->device_id}}').then(data => deviceData = data);
+            if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
+                full = deviceData.cabinet.busySlots;
+                empty = deviceData.cabinet.emptySlots;
+            }
+            document.querySelector(".filled-batteries .num").innerHTML = full;
+            document.querySelector(".empty-batteries .num").innerHTML = empty;   
+        }
 
         setDeviceConnection();
+        updateDeviceData();
+
+        prepareMenuUploader(@json($shop->menu ?? [] ),"{{ __('Upload Shop Menu Images') }}");
 
         setInterval(() => {
             setDeviceConnection();
-        }, 30000);
+            updateDeviceData();
+        }, 10000);
+        
+        // Show submit button  on change 
+        $("[name='menu_images[]']").on("change", function(e) {
+            document.querySelector(".submit-menu").style.display = $("[name='menu_images[]']").length > 0 ? 'block' : 'none';
+        });
      });
     
 </script>

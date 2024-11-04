@@ -228,7 +228,7 @@ function addNote(form){
 }
 
 // Check device connection
-async function checkDeviceConnection(device) {
+async function checkDeviceConnection(device,label) {
     let deviceData,online;
     await getDeviceData(device).then(data => deviceData = data);
     if(typeof deviceData === 'object' && Object.keys(deviceData).length > 0){
@@ -236,4 +236,48 @@ async function checkDeviceConnection(device) {
     }
 
     return online == 1;
+}
+
+
+// prepare image uploader 
+function prepareImageUploader() {
+    // image uploader
+    const uploaders = document.querySelectorAll('.img-uploader');
+    uploaders.forEach(uploader => {
+        let imageInput = uploader.querySelector('.image-input');
+        let imagePreview = uploader.querySelector('.image-preview');
+
+        // Change Image Preview on input change
+        imageInput.addEventListener('change', (event) => { 
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        // open input on click
+        imagePreview.addEventListener('click', () => { imageInput.click(); });
+    });
+}
+function prepareMenuUploader(menuImages,label) {
+
+          // Menu Images
+          let menu = menuImages ?? [];
+          let images = [];
+          menu.forEach((item) => {
+              images.push({id: item.id, src: item.image});
+          });
+          options = {
+              label: label,
+              preloaded: images,
+              imagesInputName: 'menu_images',
+          }
+          $('.menu-images').imageUploader(options);
+          const addElement = `<div class="uploaded-image add"><i class="ti ti-circle-plus"></i></div>`;
+          $('.image-uploader .uploaded').prepend(addElement);
 }

@@ -195,4 +195,39 @@ class ShopsController extends Controller
         }
     }
     
+    // Update Shop Menu only
+    function updateShopMenu(string $id,Request $request) {
+        dd($request);
+        $request->validate([
+            'menu_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+      // Add menu
+      $shopMenu = ShopsMenu::where('shop_id',$id);
+      $images = $request->file('menu_images');
+      // Old Images
+      if(isset($request->preloaded) && count($request->preloaded) > 0){
+          foreach($shopMenu->get() as $image){
+              if(!in_array($image->id, $request->preloaded)){
+                  $image->delete();
+              }
+          }
+      }else{ $shopMenu->delete(); }
+
+      // New Upoladed Image
+      if(isset($validated['menu_images']) && count($validated['menu_images']) > 0){
+          foreach($validated['menu_images'] as $image){
+              // Storing image
+              $name = time() . '-' . $image->getClientOriginalName() ;
+              $path = $image->storePubliclyAs("public/shops/$id/menu/", $name);
+
+              $shopMenu->create([
+                  'shop_id' => $id,
+                  'image' => $name
+              ]);
+          }
+      }
+
+      return redirect()->back()->with('success', __("Menu Update Successfully"));
+    }
 }

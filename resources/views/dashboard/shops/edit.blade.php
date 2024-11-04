@@ -124,48 +124,17 @@
     </form>
 @push('scripts')
     <script>
-        // image uploader
-        const uploaders = document.querySelectorAll('.img-uploader');
-        uploaders.forEach(uploader => {
-            let imageInput = uploader.querySelector('.image-input');
-            let imagePreview = uploader.querySelector('.image-preview');
-
-            // Change Image Preview on input change
-            imageInput.addEventListener('change', (event) => { 
-                const file = event.target.files[0];
-
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-            // open input on click
-            imagePreview.addEventListener('click', () => { imageInput.click(); });
-        });
-
-        // Menu Images
-        let menu = @json($shop->menu ?? [] );
-        let images = [];
-        menu.forEach((item) => {
-            images.push({id: item.id, src: item.image});
-        });
-        options = {
-            label: '{{ __('Upload Shop Menu Images') }}',
-            preloaded: images,
-            imagesInputName: 'menu_images',
-        }
-        $('.menu-images').imageUploader(options);
+        prepareImageUploader();
+        prepareMenuUploader(@json($shop->menu ?? [] ),"{{ __('Upload Shop Menu Images') }}");
     </script>
 @endpush
 <style>
     .image-preview {
-      max-width: 50px;
-      max-height: 50px;
-      margin-top: 20px;
+      width: 100px;
+      height: 100px;
+      padding: 10px;
+      border: 2px solid var(--background-color);
+      border-radius: 50%;
       cursor: pointer;
     }
 </style>
