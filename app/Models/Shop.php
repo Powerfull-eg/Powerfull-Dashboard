@@ -128,6 +128,12 @@ class Shop extends Model
         return $this->hasMany(ShopsSave::class);
     }
 
+    // Notes Relations
+    public function notes() : HasMany
+    {
+        return $this->hasMany(Note::class, 'type_id', 'id')->where('type', 'shops');
+    }
+    
     /**
      * Check if the Shop is saved
      *

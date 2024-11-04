@@ -11,6 +11,9 @@ use App\Models\ShopsData;
 use App\Models\ShopsMenu;
 use App\Models\Station;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 use function Pest\Laravel\json;
 
@@ -55,7 +58,7 @@ class ShopsController extends Controller
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
 
-        $shop = Shop::with(['device','operations','gifts'])->find($id);
+        $shop = Shop::with(['device','operations','gifts','notes'])->find($id);
         $totalAmount = 0;
         $totalHours = 0;
         $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
@@ -196,10 +199,12 @@ class ShopsController extends Controller
     }
     
     // Update Shop Menu only
-    function updateShopMenu(string $id,Request $request) {
-        dd($request);
-        $request->validate([
-            'menu_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    function updateShopMenu(Request $request,string $id) {
+        $validated = Validator::validate($request->all(), [
+            'menu_images.*' => [
+                'required',
+                File::image()->types(['jpeg','png','jpg','gif','svg'])->max(2048),
+            ],
         ]);
 
       // Add menu
@@ -226,8 +231,9 @@ class ShopsController extends Controller
                   'image' => $name
               ]);
           }
+
       }
 
-      return redirect()->back()->with('success', __("Menu Update Successfully"));
+      return redirect()->back()->with('success', __("Menu Updated Successfully"));
     }
 }
