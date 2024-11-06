@@ -39,4 +39,9 @@ class Device extends Model
     {
         return $this->belongsTo(Provider::class);
     }
+
+    public function notes() : HasMany
+    {
+        return $this->hasMany(Note::class, 'type_id', 'id')->where('type', 'devices');
+    }
 }

@@ -11,6 +11,9 @@ use App\Models\ShopsData;
 use App\Models\ShopsMenu;
 use App\Models\Station;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 use function Pest\Laravel\json;
 
@@ -55,7 +58,7 @@ class ShopsController extends Controller
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
 
-        $shop = Shop::with(['device','operations','gifts'])->find($id);
+        $shop = Shop::with(['device','operations','gifts','notes'])->find($id);
         $totalAmount = 0;
         $totalHours = 0;
         $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
@@ -195,4 +198,42 @@ class ShopsController extends Controller
         }
     }
     
+    // Update Shop Menu only
+    function updateShopMenu(Request $request,string $id) {
+        $validated = Validator::validate($request->all(), [
+            'menu_images.*' => [
+                'required',
+                File::image()->types(['jpeg','png','jpg','gif','svg'])->max(2048),
+            ],
+        ]);
+
+      // Add menu
+      $shopMenu = ShopsMenu::where('shop_id',$id);
+      $images = $request->file('menu_images');
+      // Old Images
+      if(isset($request->preloaded) && count($request->preloaded) > 0){
+          foreach($shopMenu->get() as $image){
+              if(!in_array($image->id, $request->preloaded)){
+                  $image->delete();
+              }
+          }
+      }else{ $shopMenu->delete(); }
+
+      // New Upoladed Image
+      if(isset($validated['menu_images']) && count($validated['menu_images']) > 0){
+          foreach($validated['menu_images'] as $image){
+              // Storing image
+              $name = time() . '-' . $image->getClientOriginalName() ;
+              $path = $image->storePubliclyAs("public/shops/$id/menu/", $name);
+
+              $shopMenu->create([
+                  'shop_id' => $id,
+                  'image' => $name
+              ]);
+          }
+
+      }
+
+      return redirect()->back()->with('success', __("Menu Updated Successfully"));
+    }
 }
