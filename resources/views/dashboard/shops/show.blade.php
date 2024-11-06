@@ -1,4 +1,5 @@
 <x-layouts::dashboard>
+    <x-components::status />
     <div class="header d-flex gap-2 justify-content-between">
         <div class="d-flex align-items-end justify-content-center logo">
             <i style="font-size: 5rem; color: var(--background-color)" class="ti ti-building-store"></i>
@@ -156,7 +157,7 @@
                         <span>{{__("Merchant") . " ". __("Menu")}}</span>
                     </div>
                     <div class="menu-table">
-                        <form action="{{route('dashboard.update-menu',$shop->id)}}" method="POST">
+                        <form action="{{route('dashboard.update-menu',$shop->id)}}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="menu-images" style="padding-top: .5rem;"></div>
                             <button class="submit-menu btn btn-primary mx-3 mb-3" style="display: none" role="submit">{{__("Submit")}}</button>
@@ -267,13 +268,23 @@
                 <span>{{__("Notes")}}</span>
             </div>
             <div class="form">
-                <form method="GET" onclick="addNote(this)">
+                <form method="POST" onclick="addNote(this)" action="{{route('dashboard.notes.store')}}">
+                    @csrf
+                    <input type="hidden" name="type" value="shops">
+                    <input type="hidden" name="type_id" value="{{ $shop->id }}">
                     <div class="form-floating">
                         <textarea required name="note" class="form-control" placeholder="{{__("Add Note Here")}}" id="note" maxlength="200" style="height: 70px; background: transparent; border: 2px solid var(--background-color)"></textarea>
                         <label for="note">{{__("Add Note Here")}}</label>
                       </div>
                 </form>
             </div>
+            {{-- Latest Notes --}}
+            @if($shop->notes->count() > 0)
+            <div class="notes-container py-3">
+                <ul><li>{{ $shop->notes->last()->first()->note}}</li></ul>
+                <a href="{{route('dashboard.notes.show',$shop->notes->last()->first()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
+            </div>
+            @endif
         </div>
     </div>
 @push('styles')

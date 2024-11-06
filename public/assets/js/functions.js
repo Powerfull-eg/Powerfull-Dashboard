@@ -218,6 +218,7 @@ function addNote(form){
                 content: 'Are you want to add the note',
                 buttons: {
                     confirm: function () {
+                        // submit form 
                         form.submit();
                     },
                     cancel: function () {},
