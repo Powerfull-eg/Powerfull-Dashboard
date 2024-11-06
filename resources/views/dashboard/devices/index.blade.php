@@ -23,7 +23,7 @@
         {{-- Devices --}}
         <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
             @foreach ($devices as $device)
-            <div class="device col col-md-5 col-sm-5 me-2 d-flex flex-column text-center" attr-device="{{$device->device_id}}">
+            <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" attr-device="{{$device->device_id}}">
                     <a href="{{route('dashboard.devices.show', $device->id)}}" class="text-decoration-none">
                     <div class="d-flex justify-content-between gap-1 p-2 position-relative">
                         <div class="device-data d-flex flex-column">

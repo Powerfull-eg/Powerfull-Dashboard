@@ -281,8 +281,8 @@
             {{-- Latest Notes --}}
             @if($shop->notes->count() > 0)
             <div class="notes-container py-3">
-                <ul><li>{{ $shop->notes->last()->first()->note}}</li></ul>
-                <a href="{{route('dashboard.notes.show',$shop->notes->last()->first()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
+                <ul><li>{{ $shop->notes->last()->note}}</li></ul>
+                <a href="{{route('dashboard.notes.show',$shop->notes->last()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
             </div>
             @endif
         </div>
@@ -406,6 +406,11 @@
         // Show submit button  on change 
         $("[name='menu_images[]']").on("change", function(e) {
             document.querySelector(".submit-menu").style.display = $("[name='menu_images[]']").length > 0 ? 'block' : 'none';
+        });
+        document.querySelectorAll('.delete-image').forEach(e => {
+            $(e).click(function(){
+                document.querySelector(".submit-menu").style.display = 'block';
+            });
         });
      });
     

@@ -142,6 +142,31 @@
             </div>
         </div>
     </div>
+    {{-- Notes Section --}}
+    <div class="notes" id="notes">
+        <div class="subtitle mb-3">
+            <i class="ti ti-file-description"></i>
+            <span>{{__("Notes")}}</span>
+        </div>
+        <div class="form">
+            <form method="POST" onclick="addNote(this)" action="{{route('dashboard.notes.store')}}">
+                @csrf
+                <input type="hidden" name="type" value="devices">
+                <input type="hidden" name="type_id" value="{{ $device->id }}">
+                <div class="form-floating">
+                    <textarea required name="note" class="form-control" placeholder="{{__("Add Note Here")}}" id="note" maxlength="200" style="height: 70px; background: transparent; border: 2px solid var(--background-color)"></textarea>
+                    <label for="note">{{__("Add Note Here")}}</label>
+                  </div>
+            </form>
+        </div>
+        {{-- Latest Notes --}}
+        @if($device->notes->count() > 0)
+        <div class="notes-container py-3">
+            <ul><li>{{ $device->notes->last()->note}}</li></ul>
+            <a href="{{route('dashboard.notes.show',$device->notes->last()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
+        </div>
+        @endif
+    </div>
 </div>
 @push('styles')
 <style>

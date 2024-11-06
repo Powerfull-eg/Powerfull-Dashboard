@@ -23,7 +23,7 @@ class NoteController extends Controller
 
     public function show(Note $note){
         $type = DB::table($note->type)->where('id',$note->type_id)->first();
-        $notes = Note::where('type_id',$note->type_id)->where('type',$note->type)->get();
+        $notes = Note::where('type_id',$note->type_id)->where('type',$note->type)->with('admin')->get();
         return view('dashboard.notes.show',compact('note','notes','type'));
     }
 }

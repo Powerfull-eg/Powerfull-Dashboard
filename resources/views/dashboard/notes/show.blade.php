@@ -8,28 +8,33 @@
     </div>
     {{-- Notes --}}
     <div class="notes">
-        <table class="content-table w-100">
+        <table class="table table-striped">
             <thead>
-                <tr>
-                    <td class="title">#</td>
-                    <td class="title" style="width: 50%">{{__("Note")}}</td>
-                    <td class="title">{{__("Created By")}}</td>
-                    <td class="title">{{__("Created At")}}</td>
-                    <td class="title">{{__("Updated At")}}</td>
-                </tr>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">{{__("Type")}}</th>
+                <th scope="col">{{__("Name")}}</th>
+                <th scope="col">{{__("Note")}}</th>
+                <th scope="col">{{__("Added By")}}</th>
+                <th scope="col">{{__("Added At")}}</th>
+                <th scope="col">{{__("Updated At")}}</th>
+              </tr>
             </thead>
             <tbody>
-                @foreach ($notes as $note)
+            
+            @foreach ($notes as $note)
                 <tr>
                     <td>{{$loop->iteration}}</td>
-                    <td class="text-truncate">{{$note->note}}</td>
-                    <td class="text-truncate">{{\App\Models\Admin::find($note->admin_id)->name}}</td>
-                    <td class="text-truncate">{{$note->created_at}}</td>
-                    <td class="text-truncate">{{$note->updated_at}}</td>
+                    <td>{{$note->type}}</td>
+                    <td>{{$type->name ?? ($type->fullName ?? __("Not Defined"))}}</td>
+                    <td class="text text-red">{{$note->note}}</td>
+                    <td>{{$note->admin->name}}</td>
+                    <td>{{$note->created_at}}</td>
+                    <td>{{$note->updated_at}}</td>
                 </tr>
-                @endforeach
+            @endforeach
             </tbody>
-        </table>
+          </table>
     </div>
     @push('styles')
         <style>
