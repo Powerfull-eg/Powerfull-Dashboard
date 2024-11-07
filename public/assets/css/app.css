@@ -139,6 +139,27 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     text-align: center;
     margin-top: 25%;
 }
+
+.controls > div > a :focus
+{
+    text-decoration: none;
+}
+.controls > div > a {
+    text-decoration: none;
+    color: var(--text-color-2);
+}
+.controls > div{
+    padding: 5px;
+    background-color: var(--background-color);
+    color: var(--text-color-2);
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 0 5px;
+    padding: 5px 10px;
+
+}
 @keyframes bounce {
 
     0%,

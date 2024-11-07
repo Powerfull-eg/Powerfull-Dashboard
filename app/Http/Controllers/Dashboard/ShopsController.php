@@ -97,8 +97,10 @@ class ShopsController extends Controller
             'closes_at' => 'string',
             'price' => 'string',
             'type_id' => 'numeric|exists:shops_types,id',
+            'price_id' => 'required|numeric|exists:prices,id',
             'menu_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+        
         $admin = auth('admins')->user()->id;
         $validated["updated_by"] = $admin;
         // logo

@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:admins')->group(function () {
-    Route::get('/test/{shop}', [App\Http\Controllers\Dashboard\DeviceProviders\BajieController::class,'getDeviceById']);
+    // Route::get('/test', [App\Http\Controllers\PriceController::class,'calcuatePrice']);
+    
     Route::get('/', \App\Http\Controllers\Dashboard\DashboardController::class)->name('index');
 
     /* --------- Operations Management --------- */

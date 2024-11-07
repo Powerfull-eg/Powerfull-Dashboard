@@ -40,6 +40,12 @@
                     <x-components::forms.input name="location_longitude" :title="__('Longitude')" :value="$shop->location_longitude" required/>
                 </div>
             </div>
+            {{-- Price --}}
+            <div class="mb-3 row">
+                <div class="col col-6">
+                    <x-components::forms.select name="price_id" :options="\App\Models\Price::pluck('name', 'id')" :title="__('Price')" :selected="$shop->price_id" required/>
+                </div>
+            </div>
         </div>
 
         {{--extra data --}}

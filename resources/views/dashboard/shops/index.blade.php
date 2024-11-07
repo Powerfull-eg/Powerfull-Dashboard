@@ -29,6 +29,12 @@
         <div>
             <a href="{{ route('dashboard.shop-types.index') }}" class="btn btn-warning">{{ __('Shop') ." " . __("Types")}}</a>
         </div>
+
+        {{-- Filter --}}
+        <div class="input-group flex-nowrap w-50" style="border: 2px solid var(--background-color)">
+            <span class="input-group-text" id="addon-wrapping"><i class="ti ti-home-search" style="font-size: 2rem"></i></span>
+            <input type="text" oninput="filter(this.value)" class="form-control" placeholder="Search ..." aria-label="Search" aria-describedby="addon-wrapping">
+          </div>
     </div>
     <hr class="mx-5">
 
@@ -37,7 +43,7 @@
                 {{-- Devices --}}
                 <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
                     @foreach ($shops as $shop)
-                    <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" style="min-height: 150px" attr-shop="{{$shop->id}}" attr-device="{{$shop->device ? $shop->device->device_id : ''}}">
+                    <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" style="min-height: 150px" attr-filter="{{$shop->name}}" attr-shop="{{$shop->id}}" attr-device="{{$shop->device ? $shop->device->device_id : ''}}">
                         <div class="data d-none" shop-data="{{json_encode(["open" => $shop->data->opens_at, "close" => $shop->data->closes_at, "afterMid" => $shop->data->closes_after_midnight ?? 0])}}" ></div>
                             <a href="{{route('dashboard.shops.show', $shop->id)}}" class="text-decoration-none">
                             <div class="d-flex justify-content-between gap-1 p-2 position-relative">
@@ -74,23 +80,21 @@
                                                 </div>
                                             </div>
                                             <!-- Batteries Data-->
-                                            <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+                                            <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: 1rem;width: max-content">
                                                 {{-- Loader --}}
                                                 <div class="spinner-grow text-dark" role="status"></div>
                                                 <!-- Filled Batteries -->
                                                 <div class="filled-batteries d-flex align-items-center">
         
-                                                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                                                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1.5rem;" alt="Filled Battery">
                                                     <span>{{__('full slots')}}</span>
-                                                    <span style="color: var(--background-color);color: var(--background-color);"> . </span>
-                                                    <span class="num">0</span>
+                                                    ( <span class="num">0</span> )
                                                 </div>
                                                 <!-- Empty Batteries -->
                                                 <div class="empty-batteries d-flex align-items-center">
-                                                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
+                                                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1.5rem;" alt="Empty Battery">
                                                     <span>{{__('empty slots')}}</span>
-                                                    <span style="color: var(--background-color);color: var(--background);"> . </span>
-                                                    <span class="num">{{6}}</span>
+                                                    ( <span class="num">{{6}}</span> )
                                                 </div>
                                             </div>
                                         </div>

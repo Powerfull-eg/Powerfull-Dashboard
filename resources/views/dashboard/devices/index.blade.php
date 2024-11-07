@@ -17,13 +17,18 @@
             </div>
         </div>
     </div>
+    {{-- Filter --}}
+    <div class="input-group flex-nowrap w-50 mx-auto" style="border: 2px solid var(--background-color)">
+        <span class="input-group-text" id="addon-wrapping"><i class="ti ti-home-search" style="font-size: 1.5rem"></i></span>
+        <input type="text" oninput="filter(this.value)" class="form-control" placeholder="Search ..." aria-label="Search" aria-describedby="addon-wrapping">
+    </div>
     <hr class="mx-5">
 
     <div id="data">
         {{-- Devices --}}
         <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
             @foreach ($devices as $device)
-            <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" attr-device="{{$device->device_id}}">
+            <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" attr-filter="{{$device->device_id}} {{$device->shop->name}}" attr-device="{{$device->device_id}}">
                     <a href="{{route('dashboard.devices.show', $device->id)}}" class="text-decoration-none">
                     <div class="d-flex justify-content-between gap-1 p-2 position-relative">
                         <div class="device-data d-flex flex-column">
@@ -50,23 +55,21 @@
                                         </div>
                                     </div>
                                     <!-- Batteries Data-->
-                                    <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: .6rem;width: max-content">
+                                    <div class="batteries-data d-flex px-0 pt-2 gap-1" style="font-size: 1rem;width: max-content">
                                         {{-- Loader --}}
                                         <div class="spinner-grow text-dark" role="status"></div>
                                         <!-- Filled Batteries -->
                                         <div class="filled-batteries d-flex align-items-center">
 
-                                            <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                                            <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1.5rem;" alt="Filled Battery">
                                             <span>{{__('full slots')}}</span>
-                                            <span style="color: var(--background-color);color: var(--background-color);"> . </span>
-                                            <span class="num">0</span>
+                                            ( <span class="num">0</span> )
                                         </div>
                                         <!-- Empty Batteries -->
                                         <div class="empty-batteries d-flex align-items-center">
                                             <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
                                             <span>{{__('empty slots')}}</span>
-                                            <span style="color: var(--background-color);color: var(--background);"> . </span>
-                                            <span class="num">{{6}}</span>
+                                            ( <span class="num">{{6}}</span> )
                                         </div>
                                     </div>
                                 </div>
@@ -110,27 +113,6 @@
     </div>
 @push("styles")
     <style>
-        .controls > div > a :focus
-        {
-            text-decoration: none;
-        }
-        .controls > div > a {
-            text-decoration: none;
-            color: var(--text-color-2);
-        }
-        .controls > div{
-            padding: 5px;
-            background-color: var(--background-color);
-            color: var(--text-color-2);
-            font-weight: bold;
-            font-size: 12px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin: 0 5px;
-            padding: 5px 10px;
-
-        }
-
         .device-status > div {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
@@ -158,6 +140,11 @@
             padding: 5px;
             display: none;
             transition: ease-out 2s;
+        }
+
+        .device  a {
+            text-decoration: none !important;
+            color: var(--text-color-2) !important;
         }
 
         .device:hover .edit-device {

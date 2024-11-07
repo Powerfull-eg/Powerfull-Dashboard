@@ -67,7 +67,8 @@
             }
             table.content-table tr >td:not(.title) {
                 max-width: 63vw;
-                color: rgb(117, 117, 117);
+                color: #000;
+                font-weight: 500;
             }
             table.content-table thead{
                 background-color: var(--background-color);

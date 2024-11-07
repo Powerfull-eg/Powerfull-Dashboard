@@ -40,22 +40,20 @@
             </div>
 
             {{-- Batteries --}}
-            <div class="batteries-data d-flex px-0 pt-2 gap-1 mb-3" style="font-size: .6rem;width: max-content">
+            <div class="batteries-data d-flex px-0 pt-2 gap-1 mb-3" style="font-size: 1rem;width: max-content">
                 <div class="fs-1 fw-bold">{{__("Battery")}}</div>
                 {{-- Filled Batteries  --}}
                 <div class="filled-batteries d-flex align-items-center">
-                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1rem;" alt="Filled Battery">
+                    <img src="{{asset("assets/images/full-battery.png")}}" style="width: 1.5rem;" alt="Filled Battery">
                     <span>{{__('full slots')}}</span>
-                    <span style="color: var(--background-color);color: var(--background-color);"> . </span>
-                    <span class="num">0</span>
+                    ( <span class="num">0</span> )
                 </div>
 
                  {{-- Empty Batteries  --}}
                 <div class="empty-batteries d-flex align-items-center">
-                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1rem;" alt="Empty Battery">
+                    <img src="{{asset("assets/images/empty-battery.png")}}" style="width: 1.5rem;" alt="Empty Battery">
                     <span>{{__('empty slots')}}</span>
-                    <span style="color: var(--background-color);color: var(--background);"> . </span>
-                    <span class="num">{{6}}</span>
+                    ( <span class="num">{{6}}</span> )
                 </div>
             </div>
 

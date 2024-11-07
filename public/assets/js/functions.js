@@ -282,3 +282,16 @@ function prepareMenuUploader(menuImages,label) {
           const addElement = `<div class="uploaded-image add"><i class="ti ti-circle-plus"></i></div>`;
           $('.image-uploader .uploaded').prepend(addElement);
 }
+
+// Filter
+function filter(needle){
+    const elements = document.querySelectorAll("[attr-filter]");
+    elements.forEach(element => {
+        const haystack = element.getAttribute('attr-filter');
+        if(haystack.toLowerCase().includes(needle.toLowerCase())) {
+            element.classList.contains('d-none') ? element.classList.remove('d-none'): '';
+        }else{
+            element.classList.contains('d-none') ? '' : element.classList.add('d-none');
+        }
+    });
+}

@@ -13,6 +13,26 @@ class PriceController extends Controller
         $prices = Price::all();
         return view('dashboard.prices.index',compact('prices'));
     }
+    
+    public function create() {
+        $template = Price::where('template',1)->first();
+        return view('dashboard.prices.create',compact('template'));
+    }
+
+    // Store Price
+    public function store(Request $request)
+    {
+        // validate request
+        $validated = $this->validatePriceRequest($request);
+
+        // Create prices json
+        $prices = $this->preparePricesJson($request);
+        
+        // Store data
+        $price = $this->upsertPrices($validated,$prices);
+
+        return redirect()->route('dashboard.prices.index')->with('success',__('Prices Added Successfully') . " With id $price->id");
+    }
 
     // Edit Prices
     public function edit(string $id){
@@ -22,41 +42,13 @@ class PriceController extends Controller
     
     // Update Prices
     public function update(Request $request, string $id){
-        $validated = $request->validate([
-            'prices.*.*.*' => 'required',
-            'free_time' => 'required|numeric',
-            'max_hours' => 'required|numeric',
-            'insurance' => 'required|numeric',
-            'app_description_ar' => 'string',
-            'app_description_detailed_ar' => 'string',
-            'app_description_en' => 'string',
-            'app_description_detailed_en' => 'string',
-        ]);
-        // Create prices json
-        $prices = [];
-        foreach($request->prices as $type => $priceDeatails){
-            $i = 0;
-            $prices[$type][$i] = [];
-            foreach($priceDeatails as $value){
-                if(in_array(array_key_first($value),array_keys($prices[$type][$i]))){ $i++; }
-                foreach($value as $k => $v){
-                    $prices[$type][$i][$k] = $v;
-                }
-            }
-        }
-        $price = Price::find($id)->update([
-            'free_time' => $validated['free_time'],
-            'max_hours' => $validated['max_hours'],
-            'insurance' => $validated['insurance'],
-            'prices' => json_encode($prices),
+        // validate request
+        $validated = $this->validatePriceRequest($request);
 
-            'app_description_ar' => $validated['app_description_ar'],
-            'app_description_detailed_ar' => $validated['app_description_detailed_ar'],
-            'app_description_en' => $validated['app_description_en'],
-            'app_description_detailed_en' => $validated['app_description_detailed_en'],
-            "created_by" => auth('admins')->user()->id,
-            "updated_by" => auth('admins')->user()->id,
-        ]);
+        // Create prices json
+        $prices = $this->preparePricesJson($request);
+
+        $price = $this->upsertPrices($validated,$prices,$id,true);
 
         return redirect()->route('dashboard.prices.index')->with('success',__('Prices Updated Successfully'));
     }
@@ -100,9 +92,11 @@ class PriceController extends Controller
     }
     
     // Calculate Price
-    public function calcuatePrice(Request $request){
-        $order = Operation::find($request->orderId);
-        $priceData = Price::latest()->first();
+    public function calcuatePrice(Request $request)
+    {
+        $order = Operation::with('device')->find($request->orderId);
+        $priceData = $order->device->shop->price;
+
         $totalTime = (strtotime($order->returnTime) - strtotime($order->borrowTime));
         $timeWithoutFree = $totalTime - ($priceData->free_time * 60);
         if($timeWithoutFree <= 0) return 0; 
@@ -131,5 +125,76 @@ class PriceController extends Controller
             }
             return $amount;
         }
+    }
+
+    // Validate price request
+    private function validatePriceRequest(Request $request)
+    {
+        return $request->validate([
+            'name' => 'required|string|max:200',
+            'prices.*.*.*' => 'required',
+            'free_time' => 'required|numeric',
+            'max_hours' => 'required|numeric',
+            'insurance' => 'required|numeric',
+            'app_description_ar' => 'string',
+            'app_description_detailed_ar' => 'string',
+            'app_description_en' => 'string',
+            'app_description_detailed_en' => 'string',
+        ]);
+    }
+
+    // Prepare Prices Json
+    private function preparePricesJson(Request $request){
+        $prices = [];
+        foreach($request->prices as $type => $priceDeatails){
+            $i = 0;
+            $prices[$type][$i] = [];
+            foreach($priceDeatails as $value){
+                if(in_array(array_key_first($value),array_keys($prices[$type][$i]))){ $i++; }
+                foreach($value as $k => $v){
+                    $prices[$type][$i][$k] = $v;
+                }
+            }
+        }
+
+        return $prices;
+    }
+
+    // Udate Or insert price
+    private function upsertPrices($data,$prices,$id = null,$update = false)
+    {
+        if($update) {
+            $price = Price::find($id)->update([
+                'free_time' => $data['free_time'],
+                'max_hours' => $data['max_hours'],
+                'insurance' => $data['insurance'],
+                'prices' => json_encode($prices),
+
+                'name' => $data['name'],
+                'app_description_ar' => $data['app_description_ar'],
+                'app_description_detailed_ar' => $data['app_description_detailed_ar'],
+                'app_description_en' => $data['app_description_en'],
+                'app_description_detailed_en' => $data['app_description_detailed_en'],
+                "created_by" => auth('admins')->user()->id,
+                "updated_by" => auth('admins')->user()->id,
+            ]);
+        }else{
+            $price = Price::create([
+                'free_time' => $data['free_time'],
+                'max_hours' => $data['max_hours'],
+                'insurance' => $data['insurance'],
+                'prices' => json_encode($prices),
+    
+                'name' => $data['name'],
+                'app_description_ar' => $data['app_description_ar'],
+                'app_description_detailed_ar' => $data['app_description_detailed_ar'],
+                'app_description_en' => $data['app_description_en'],
+                'app_description_detailed_en' => $data['app_description_detailed_en'],
+                "created_by" => auth('admins')->user()->id,
+                "updated_by" => auth('admins')->user()->id,
+            ]);
+        }
+
+        return $price;
     }
 }
