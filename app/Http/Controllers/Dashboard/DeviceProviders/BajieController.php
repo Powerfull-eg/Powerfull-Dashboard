@@ -58,9 +58,23 @@ class BajieController extends Controller
     public function getDevicePowerbanks(string $device){
         $url = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/batteryListByCabinetId/$device";
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($url);
-        $response = json_decode($response->body(),true)['data'];
-
-        return $response;   
+        $data = json_decode($response->body(),true)['data'] ?? null;
+        if(!$data || count($data) == 0) return [];
+        
+        // Handle Returned data
+        $slots = [];
+        foreach($data as $index => $slot){
+            $slots[$index] = [
+                "Battery_id" => $slot['pbatteryid'],
+                "Slot_Num" => $slot['pkakou'],
+                "Battery_Exist" => strlen($slot['pBatteryid']) > 0 ? true : false,
+                "Cabinet_id" => $slot['pcabinetid'],
+                "Erorr_Number" => $slot['pFaultType'],
+                "Error" => $slot['pFaultCause'],
+                "Guard" => $slot['pIsGuard'],
+            ];
+        }
+        return $slots; 
     }
 
     /*
@@ -114,9 +128,37 @@ class BajieController extends Controller
         }
 
         $url = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/operation";
-        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->withQueryParameters(["cabinetid" => $device, "operationType" => $operation,$slotNum])->post($url);
+        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->withQueryParameters(["cabinetid" => $device, "operationType" => $operation,"slotNum" => $slotNum,"reason" => "Management Control"])->post($url);
         $response = json_decode($response->body(),true);
         return $response;
+    }
+
+    /*
+    * Slots Info
+    * @param string $device
+    * @return array
+    */
+    public function getSlotsInfo(string $device) : array
+    {
+        $url = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/slotByCabinetId/{$device}";
+        $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($url);
+        $data = json_decode($response->body(),true)['data'] ?? null;
+        if(!$data || count($data) == 0) return [];
+        
+        // Handle Returned data
+        $slots = [];
+        foreach($data as $index => $slot){
+            $slots[$index] = [
+                "Battery_id" => $slot['pbatteryid'],
+                "Slot_Num" => $slot['pkakou'],
+                "Battery_Exist" => strlen($slot['pBatteryid']) > 0 ? true : false,
+                "Cabinet_id" => $slot['pcabinetid'],
+                "Erorr_Number" => $slot['pFaultType'],
+                "Error" => $slot['pFaultCause'],
+                "Guard" => $slot['pIsGuard'],
+            ];
+        }
+        return $slots;
     }
     
 }

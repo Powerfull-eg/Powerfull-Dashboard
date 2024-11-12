@@ -14,6 +14,7 @@
                 <th scope="col">#</th>
                 <th scope="col">{{__("Type")}}</th>
                 <th scope="col">{{__("Name")}}</th>
+                <th scope="col">{{__("Subject")}}</th>
                 <th scope="col">{{__("Note")}}</th>
                 <th scope="col">{{__("Added By")}}</th>
                 <th scope="col">{{__("Added At")}}</th>
@@ -27,6 +28,7 @@
                     <td>{{$loop->iteration}}</td>
                     <td>{{$note->type}}</td>
                     <td>{{$type->name ?? ($type->fullName ?? __("Not Defined"))}}</td>
+                    <td class="text fw-bold">{{$note->subject ?? ' - '}}</td>
                     <td class="text text-red">{{$note->note}}</td>
                     <td>{{$note->admin->name}}</td>
                     <td>{{$note->created_at}}</td>

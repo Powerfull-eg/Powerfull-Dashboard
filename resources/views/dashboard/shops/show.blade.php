@@ -182,6 +182,10 @@
                         <table class="content-table">
                             <tr>
                                 <td class="title">{{__("ID Bajie")}}:</td>
+                                <td class="text-truncate"> {{$shop->device->powerfull_id ?? __('Not Set')}} </td>
+                            </tr>
+                            <tr>
+                                <td class="title">{{__("ID Bajie")}}:</td>
                                 <td class="text-truncate"> {{$shop->device->device_id}} </td>
                             </tr>
                             <tr>
@@ -235,7 +239,7 @@
                     <div class="controls">
                         <div class="">
                             <i class="ti ti-wand"></i>
-                            <span btn-save>{{__("Generate")}} </span>
+                            <span btn-save>{{__("Download")}} </span>
                         </div>
                     </div>
                     <textarea id="qr-code-text" class="d-none">{{"https://www.powerfull-eg.com?device=" . $shop->device->device_id}}</textarea>
@@ -270,6 +274,9 @@
                     @csrf
                     <input type="hidden" name="type" value="shops">
                     <input type="hidden" name="type_id" value="{{ $shop->id }}">
+                    <div class="mb-3">
+                        <input type="text" style="background: transparent; border: 2px solid var(--background-color)" name="subject" class="form-control" id="subject" placeholder="{{__("Add note subject")}}">
+                    </div>
                     <div class="form-floating">
                         <textarea required name="note" class="form-control" placeholder="{{__("Add Note Here")}}" id="note" maxlength="200" style="height: 70px; background: transparent; border: 2px solid var(--background-color)"></textarea>
                         <label for="note">{{__("Add Note Here")}}</label>
@@ -279,7 +286,8 @@
             {{-- Latest Notes --}}
             @if($shop->notes->count() > 0)
             <div class="notes-container py-3">
-                <ul><li>{{ $shop->notes->last()->note}}</li></ul>
+                <span> - {{$shop->notes->last()->subject ?? ''}}</span>
+                <ul class="ms-3"><li>{{ $shop->notes->last()->note}}</li></ul>
                 <a href="{{route('dashboard.notes.show',$shop->notes->last()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
             </div>
             @endif

@@ -28,11 +28,11 @@
         {{-- Devices --}}
         <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
             @foreach ($devices as $device)
-            <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" attr-filter="{{$device->device_id}} {{$device->shop->name}}" attr-device="{{$device->device_id}}">
+            <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" attr-filter="{{$device->device_id}} {{$device->shop->name}} {{$device->powerfull_id}}" attr-device="{{$device->device_id}}">
                     <a href="{{route('dashboard.devices.show', $device->id)}}" class="text-decoration-none">
                     <div class="d-flex justify-content-between gap-1 p-2 position-relative">
                         <div class="device-data d-flex flex-column">
-                            <span class="title fs-1 w-100 text-start" style="font-weight: 900; text-decoration: underline">{{$device->device_id}}</span>
+                            <span class="title fs-1 w-100 text-start" style="font-weight: 900; text-decoration: underline; min-height: 20px;">{{$device->powerfull_id ?? ''}}</span>
                             <div class="info d-flex flex-row">
                                 <div class="shop-logo me-3 d-flex align-items-end">
                                     <img src="{{$device->shop->data->logo ?? $device->shop->logo}}" width="50" style="border-radius: 50%; min-height: 50px" alt="contol powerbank">
@@ -77,7 +77,7 @@
                         </div>
 
                         {{-- Device Image --}}
-                        <div class="device-image" style="width: 150px; min-width: 150px; position: absolute; right: 5px; top: 20px">
+                        <div class="device-image" style="width: 110px; min-width: 110px; position: absolute; right: 5px; top: 20px">
                             <img src="{{asset('assets/images/device.png')}}" class="img-fluid" alt="contol powerbank">
                         </div>
 

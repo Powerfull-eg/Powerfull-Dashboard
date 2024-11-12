@@ -31,7 +31,7 @@ class OperationsController extends \App\Http\Controllers\Controller
             $order = Operation::find($request->orderId);
             if($order->returnTime == null) return null;
             $price = new PriceController();
-            $totalAmount = $price->calcuatePrice($request);
+            $totalAmount = $order->amount ?? $price->calcuatePrice($request);
             $amount = intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
             $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
             $paymob = new PaymobController();

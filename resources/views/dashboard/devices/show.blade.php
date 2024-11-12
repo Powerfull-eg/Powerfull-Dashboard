@@ -74,11 +74,11 @@
                 {{-- Public Actions --}}
                 <div style="width: 45%">
                     <div class="d-flex flex-column buttons gap-1">
-                        <div class="btn btn-success" onclick="deviceOperation('{{$device->device_id}}','popall',1)">{{__("Eject all batteries")}} (Server Error)</div>
-                        <div class="btn btn-warning">{{__("Eject all charged batteries")}}</div>
-                        <div class="btn btn-danger">{{__("Eject all batteries not charge")}}</div>
-                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','heartbeat',1)">{{__("Force heartbeat")}} (Server Error)</div>
-                        <div class="btn btn-primary" onclick="deviceOperation('{{$device->device_id}}','report',1)">{{__("Reporting states")}} (Server Error)</div>
+                        <div class="btn btn-success" onclick="deviceOperation('{{$device->device_id}}','popall',1)">{{__("Eject all batteries")}}</div>
+                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','popallForAuth',1)">{{__("Eject all charged batteries")}}</div>
+                        <div class="btn btn-danger" onclick="deviceOperation('{{$device->device_id}}','popallForNoAuth',1)">{{__("Eject all batteries not charge")}}</div>
+                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','heartbeat',1)">{{__("Force heartbeat")}}</div>
+                        <div class="btn btn-primary" onclick="deviceOperation('{{$device->device_id}}','report',1)">{{__("Reporting states")}}</div>
                         <div class="btn btn-success" onclick="refreshDevice('{{$device->device_id}}')">{{__("Refresh")}}</div>
                     </div>
                 </div>
@@ -87,11 +87,11 @@
             {{-- Actions --}}
             <div class="w-50">
                 <span class="text-center fs-3 fw-bold d-block my-3">{{__("Actions")}}</span>
-                <div class="row buttons gap-1">
-                    <div class="btn btn-primary col-5">{{__("Details")}}</div>
-                    <div class="btn btn-danger col-5">{{__("Prohibit Charging")}}</div>
-                    <div class="btn btn-success col-5" onclick="ejectBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Eject")}}</div>
-                    <div class="btn btn-warning col-5" onclick="lockDevice('{{$device->device_id}}')">{{__("Locking")}}</div>
+                <div class="row buttons slot-actions gap-1">
+                    <div diabled class="btn btn-secondary  details col-5">{{__("Details")}}</div>
+                    <div diabled class="btn btn-secondary  prohibit col-5">{{__("Prohibit Charging")}}</div>
+                    <div diabled class="btn btn-secondary  eject col-5">{{__("Eject")}}</div>
+                    <div diabled class="btn btn-secondary  lock col-5">{{__("Locking")}}</div>
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@
                 <button btn-save class="btn" style="background: var(--background-color); border-radius:20px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" stroke-width="2"> <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path> <path d="M13.5 6.5l4 4"></path> <path d="M16 19h6"></path> <path d="M19 16v6"></path></svg>
                     &nbsp;
-                    {{__("Generate")}}
+                    {{__("Download")}}
                 </button>
                 <textarea id="qr-code-text" class="d-none">{{"https://www.powerfull-eg.com?device=$device->device_id"}}</textarea>
             </div>
@@ -151,15 +151,19 @@
                 @csrf
                 <input type="hidden" name="type" value="devices">
                 <input type="hidden" name="type_id" value="{{ $device->id }}">
+                <div class="mb-3">
+                    <input type="text" style="background: transparent; border: 2px solid var(--background-color)" name="subject" class="form-control" id="subject" placeholder="{{__("Add note subject")}}">
+                </div>
                 <div class="form-floating">
                     <textarea required name="note" class="form-control" placeholder="{{__("Add Note Here")}}" id="note" maxlength="200" style="height: 70px; background: transparent; border: 2px solid var(--background-color)"></textarea>
                     <label for="note">{{__("Add Note Here")}}</label>
-                  </div>
+                </div>
             </form>
         </div>
         {{-- Latest Notes --}}
         @if($device->notes->count() > 0)
         <div class="notes-container py-3">
+            <span> - {{$device->notes->last()->subject ?? ''}}</span>
             <ul><li>{{ $device->notes->last()->note}}</li></ul>
             <a href="{{route('dashboard.notes.show',$device->notes->last()->id)}}">{{__("See All Notes")}} <i class="ti ti-arrow-right"></i></a>
         </div>
@@ -289,6 +293,7 @@ $(document).ready(async () => {
     
     // Handle device data
     bindDeviceData("{{$device->device_id}}");
+    refreshDeviceRecursively("{{$device->device_id}}");
 });
 </script>
 @endpush

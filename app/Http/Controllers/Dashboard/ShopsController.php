@@ -63,6 +63,7 @@ class ShopsController extends Controller
         $totalHours = 0;
         $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
         
+        
         $operations = $startDate || $endDate ? $shop->device->operations->where('created_at','>=',$startDate)->where('created_at','<=',$endDate) : $shop->device->operations;
         // $operations[] = $endDate ? $shop->device->operations->where('created_at','<=',$endDate) : null;
         

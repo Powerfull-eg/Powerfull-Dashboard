@@ -43,7 +43,7 @@
                 {{-- Devices --}}
                 <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
                     @foreach ($shops as $shop)
-                    <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" style="min-height: 150px" attr-filter="{{$shop->name}}" attr-shop="{{$shop->id}}" attr-device="{{$shop->device ? $shop->device->device_id : ''}}">
+                    <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" style="min-height: 150px" attr-filter="{{$shop->name}} {{$shop->device->device_id ?? ''}}" attr-shop="{{$shop->id}}" attr-device="{{$shop->device ? $shop->device->device_id : ''}}">
                         <div class="data d-none" shop-data="{{json_encode(["open" => $shop->data->opens_at, "close" => $shop->data->closes_at, "afterMid" => $shop->data->closes_after_midnight ?? 0])}}" ></div>
                             <a href="{{route('dashboard.shops.show', $shop->id)}}" class="text-decoration-none">
                             <div class="d-flex justify-content-between gap-1 p-2 position-relative">

@@ -12,6 +12,7 @@ class Note extends Model
     protected $fillable = [
         'type',
         'type_id',
+        'subject',
         'note',
         'admin_id',
     ];

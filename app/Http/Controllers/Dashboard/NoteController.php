@@ -11,6 +11,7 @@ class NoteController extends Controller
 {
     public function store(Request $request){
         $validated = $request->validate([
+            'subject' => 'required|string|max:200',
             'note' => 'required|string|max:255',
             'type' => 'required',
             'type_id' => 'required',

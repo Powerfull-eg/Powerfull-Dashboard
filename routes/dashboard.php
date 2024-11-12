@@ -80,6 +80,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::group(['middleware' => 'auth:admins'], function () {
         Route::get('/device-data/{deviceID}', [DeviceController::class,'getDeviceData'])->name('device-data');
         Route::post('/device-operation', [DeviceController::class,'deviceOperation'])->name('device-operation');
+        Route::get('/slots', [DeviceController::class,'getSlotsInfo'])->name('slots');
         Route::post('/eject-battery', [DeviceController::class,'ejectPowerbank'])->name('eject-battery');
     });
 

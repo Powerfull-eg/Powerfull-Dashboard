@@ -82,8 +82,8 @@ class UserController extends \App\Http\Controllers\Controller
         $operation = Operation::where(["user_id" => $user["id"],"id" => $id])->first();
                 
         // Handling time for Bajie chinese time 
-        $operation->borrowTime = $operation->borrowTime ? date('Y-m-d H:i:s', strtotime($operation->borrowTime) - 5 * 3600) : $operation->borrowTime;
-        $operation->returnTime = $operation->returnTime ? date('Y-m-d H:i:s', strtotime($operation->returnTime) - 5 * 3600): $operation->returnTime;
+        $operation->borrowTime = $operation->borrowTime ? date('Y-m-d H:i:s', strtotime($operation->borrowTime) - 6 * 3600) : $operation->borrowTime;
+        $operation->returnTime = $operation->returnTime ? date('Y-m-d H:i:s', strtotime($operation->returnTime) - 6 * 3600): $operation->returnTime;
         return response()->json(["order" => $operation]);
     }
     

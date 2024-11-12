@@ -155,5 +155,21 @@ class DeviceController extends Controller
         
         return $data;
     }
+
+    /*
+    * Get Device's Slots Information
+    */    
     
+    public function getSlotsInfo(Request $request)
+    {
+        $request->validate([
+            'device' => "required|string|exists:devices,device_id",
+        ]);
+
+        $device = Device::where('device_id',$request->device)->with('provider')->first();
+        $controller = new $device->provider->controller;
+        $data = $controller->getSlotsInfo($request->device);
+
+        return $data;
+    }
 }

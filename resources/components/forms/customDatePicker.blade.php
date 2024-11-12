@@ -1,11 +1,11 @@
 <form id="date">
 
     <label>
-        <input name="startDate" type="date" value="{{ $_GET['startDate'] ?? null}} "/>
+        <input name="startDate" placeholder="يوم/شهر/سنة" type="date" value="{{ $_GET['startDate'] ?? null}} "/>
         <span>{{ __('Start Date') }}</span>
     </label>
     <label>
-        <input name="endDate" type="date" value="{{ $_GET['endDate'] ?? null }} "/>
+        <input name="endDate" placeholder="يوم/شهر/سنة" type="date" value="{{ $_GET['endDate'] ?? null }} "/>
         <span>{{ __('End Date') }}</span>
     </label>
     <input type="submit" class="btn btn-primary" value="Submit">
