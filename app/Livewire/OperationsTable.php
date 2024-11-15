@@ -79,10 +79,10 @@ class OperationsTable extends Datatable
                 ->searchable(),
             Column::make('Borrow Time',"borrowTime")
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Return Time',"returnTime")
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Borrow Slot',"borrowSlot"),
             Column::make('Shop',"device.shop_id")
                 ->searchUsing(function ($query, $search){

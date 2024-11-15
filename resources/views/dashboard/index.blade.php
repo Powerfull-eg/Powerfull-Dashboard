@@ -256,10 +256,10 @@
                               <a href="{{route('dashboard.shops.show',$operation['shop']->id)}}" class="text-reset">{{$operation['shop']->name}}</a>
                             </td>
                             <td class="text-nowrap text-muted">
-                                {{$operation['operation']->borrowTime}}
+                                {{$operation['operation']->borrowTime ? chineseToCairoTime($operation['operation']->borrowTime) : "-"}}
                             </td>
                             <td class="text-nowrap">
-                                {{$operation['operation']->returnTime ?? "-"}}
+                              {{$operation['operation']->returnTime ? chineseToCairoTime($operation['operation']->returnTime) : "-"}}
                             </td>
                             <td class="text-nowrap">
                                 {{$operation['user']}}

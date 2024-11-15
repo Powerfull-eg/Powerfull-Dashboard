@@ -135,7 +135,7 @@ class DeviceController extends Controller
         $device = Device::where('device_id',$request->device)->with('provider')->first();
       	$controller = new $device->provider->controller;
         $data = $controller->deviceOperation($request->device,$request->operation,$request->slotNum);
-        
+        session()->flash('success', "Device operation $request->operation Done successfully");
         return $data;
     }
 
