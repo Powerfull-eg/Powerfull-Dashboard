@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Operation;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -14,13 +16,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $startDate = $request->startDate ?? null;
-        $endDate = $request->endDate ?? null;
-        $allUsers = new User;
-        $users = $startDate ? $allUsers->where("created_at",'>=',$startDate) : $allUsers;
-        $users = $endDate ? $users->where("created_at",'<=',$endDate) : $users;
-        $top10 = $users->withCount('operations')->orderByDesc('operations_count')->limit(10)->get();
-        return view('dashboard.users.index', compact('startDate','endDate','users','allUsers','top10'));
+        $incompleteAutoRequestDurations = [ 1 => "Every day", 7 => "Every Week", 30 => "Every Month", 365 => "Every Year" ];
+        $incompleteDuration = Setting::where('key', 'incomplete_auto_request_duration')->first();
+        $incompleteOperations = Operation::where('status', 4)->with('device','user')->get();
+        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations'));
     }
     
     /**

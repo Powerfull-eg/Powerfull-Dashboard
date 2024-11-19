@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Route;
 
 class RoleController extends Controller
 {
@@ -98,5 +101,46 @@ class RoleController extends Controller
 
         return redirect()->route('dashboard.roles.index')
             ->with('success', __(':resource has been deleted.', ['resource' => __('Role')]));
+    }
+    /**
+     * Update permissions route
+     */
+    public function updatePermissionsRoute(string $guard = null)
+    {
+        // Get all routes
+        $routes = Route::getRoutes();
+        $allowed_routes = ["index", "create", "edit","destroy","show"];
+        
+        // Clear All Permissions
+        /*
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
+            Permission::query()->delete();
+            return;
+        */
+        foreach ($routes as $route) {
+            $name = $route->getName(); // Get the route name
+            $exist = Permission::where('name', $name)->where('guard_name', $guard ?? config('auth.defaults.guard'))->first();
+            
+            // Specify dashboard routes
+            if(strpos($name, 'dashboard.') === false || $exist) {
+                continue;
+            }
+
+            // Specify allowed routes
+            $matches = false;
+            foreach($allowed_routes as $route){
+                if(strpos($name, $route) !== false){
+                    $matches = true;
+                    break;
+                }
+            }
+
+            if($matches == false) continue;
+            
+            if($name) Permission::findOrCreate($name,$guard ?? config('auth.defaults.guard'));
+        }
+
+        return redirect()->back()
+            ->with('success', __(':resource permissions has been updated.', ['resource' => __('Role')]));
     }
 }

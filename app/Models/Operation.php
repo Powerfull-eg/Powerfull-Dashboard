@@ -44,6 +44,10 @@ class Operation extends Model
         return ((strtotime($this->returnTime) - strtotime($this->borrowTime)));
     }
 
+    public function incompleteOperation(): HasOne
+    {
+        return $this->hasOne(IncompleteHistory::class);    
+    }
 
     // public function borrowTime() : Attribute
     // {

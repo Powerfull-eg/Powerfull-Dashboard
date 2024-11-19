@@ -39,20 +39,19 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:admins',
+            'password' => 'required|string|min:8',
             'role' => 'required|exists:roles,id',
         ]);
-
-        $password = Str::random(8);
 
         $admin = Admin::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($password),
+            'password' => Hash::make($validated['password']),
         ]);
 
         $admin->assignRole($validated['role']);
 
-        SendNewAdminNotification::dispatch($admin, $password);
+        SendNewAdminNotification::dispatch($admin, $validated['password']);
 
         return redirect()->route('dashboard.admins.index')->with('success', __(':resource has been created.', ['resource' => __('Admin')]));
     }
@@ -77,11 +76,20 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'role' => 'required|exists:roles,id',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'password' => 'nullable|string|min:8',
         ]);
 
         cache()->flush();
 
         $admin->syncRoles($validated['role']);
+
+        $admin->update([
+            'name' => $validated['name'] ?? $admin->name,
+            'email' => $validated['email'] ?? $admin->email,
+            'password' => $validated['password'] ? Hash::make($validated['password']) : $admin->password,
+        ]);
 
         return redirect()->route('dashboard.admins.index')->with('success', __(':resource has been updated.', ['resource' => __('Admin')]));
     }

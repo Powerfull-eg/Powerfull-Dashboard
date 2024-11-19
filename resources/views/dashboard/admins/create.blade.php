@@ -16,6 +16,10 @@
             </div>
 
             <div class="mb-3">
+                <x-components::forms.input type="password" name="password" :title="__('Password')" :value="old('password')" required />
+            </div>
+
+            <div class="mb-3">
                 <x-components::forms.select name="role" title="{{ __('Role') }}" :options="$roles"
                     :selected="old('role', null)" required />
             </div>

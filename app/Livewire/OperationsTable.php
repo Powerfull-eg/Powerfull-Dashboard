@@ -29,11 +29,7 @@ class OperationsTable extends Datatable
         $amount = ($voucher ? $voucher->voucher->value . ($voucher->voucher->type ? ' EGP' : '%') : null);
         return $amount;
     }
-    private function getUser($id)
-    {
-        $user = User::find($id);
-        return $user ?? null;
-    }
+    
     //Mount Data
     public function mount($startDate=null, $endDate=null)
     {
@@ -69,10 +65,14 @@ class OperationsTable extends Datatable
             Column::make('#',"id")
                 ->width('50px') 
                 ->sortable(),
-            Column::make('User',"user_id")
-                ->format(fn($value) => $this->getUser($value) ? $this->getUser($value)->fullName : null)
+            Column::make('User',"user")
+                ->format(fn($user) => $user ? $user->fullName : null)
                 ->searchable()
-                ->sortable(),
+                ->searchUsing(function ($query, $search){
+                    $query->whereHas('user', function($query) use ($search){
+                        $query->where('first_name', 'like', "%$search%")->orWhere('last_name', 'like', "%$search%");
+                    });
+                }),
             Column::make('Device',"station_id")
                 ->searchable(),
             Column::make('Powerbank',"powerbank_id")

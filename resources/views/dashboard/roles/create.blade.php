@@ -2,8 +2,9 @@
     <form class="card" action="{{ route('dashboard.roles.store') }}" method="POST">
         @csrf
 
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between">
             <p class="card-title">{{ __('Create') }}</p>
+            <a class="btn btn-primary" href="{{ route('dashboard.roles.update-permissions') }}">{{ __('Update Permissions') }}</a>
         </div>
 
         <div class="card-body border-bottom">

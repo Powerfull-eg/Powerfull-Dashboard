@@ -36,7 +36,29 @@ class CompleteFailedPayment implements ShouldQueue
         $request = new Request();
         foreach($orders as $order){
             $request->merge(["orderId" => $order->id]);
-            $actions->completePayment($request);
+            $payment = $actions->completePayment($request);
+            $this->addIncompletedPaymentToHistory($order,$payment,$payment ? "paid" : "null");
+        }
+    }
+
+    /*
+    * Add Incompleted Payment to history
+    */
+    public static function addIncompletedPaymentToHistory($operation,$done = false ,$status = null){
+        // Add operation to incomplete history
+        $exists = DB::table('incomplete_history')->where('operation_id', $operation->id)->exists();
+        
+        if (!$exists) {
+            DB::table('incomplete_history')->insert([
+                'operation_id' => $operation->id,
+                'original_amount' => $operation->amount,
+            ]);
+        }else{
+            DB::table('incomplete_history')->where('operation_id', $operation->id)->update([
+                'final_amount' => $operation->amount,
+                'status' => $done ? $status : null,
+                'ended_at' => $done ? now() : null
+            ]);
         }
     }
 }

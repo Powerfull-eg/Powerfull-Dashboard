@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:admins')->group(function () {
-    // Route::get('/test', [App\Http\Controllers\PriceController::class,'calcuatePrice']);
+    // Route::get('/test', [App\Jobs\CompleteFailedPayment::class,'handle']);
     
     Route::get('/', \App\Http\Controllers\Dashboard\DashboardController::class)->name('index');
 
@@ -64,6 +64,8 @@ Route::middleware('auth:admins')->group(function () {
     Route::put('profile', [\App\Http\Controllers\Dashboard\ProfileController::class, 'update'])->name('profile.update')->middleware('image.optimize');
 
     Route::resource('roles', \App\Http\Controllers\Dashboard\RoleController::class)->except(['show']);
+    Route::get('roles/update-permissions', [\App\Http\Controllers\Dashboard\RoleController::class, 'updatePermissionsRoute'])->name('roles.update-permissions');
+    
     Route::resource('admins', \App\Http\Controllers\Dashboard\AdminController::class)->except(['show']);
 
     Route::get('settings', [\App\Http\Controllers\Dashboard\SettingController::class, 'edit'])->name('settings.edit');
@@ -75,7 +77,9 @@ Route::middleware('auth:admins')->group(function () {
     
     // payment routes
     Route::resource('payments', \App\Http\Controllers\Dashboard\PaymentController::class)->only(['create', 'store']);
-
+    Route::post('payments/requestMultiplePayments', [\App\Http\Controllers\Dashboard\PaymentController::class,"requestMultiplePayments"])->name("payments.request-multiple-payments");
+    Route::post('payments/incomplete/settings', [\App\Http\Controllers\Dashboard\PaymentController::class, 'incompletePaymentSettingsUpdate'])->name('payments.incomplete.settings');
+    
     // Device Routes
     Route::group(['middleware' => 'auth:admins'], function () {
         Route::get('/device-data/{deviceID}', [DeviceController::class,'getDeviceData'])->name('device-data');
