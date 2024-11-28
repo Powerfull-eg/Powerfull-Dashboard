@@ -59,10 +59,29 @@ class PaymentController extends Controller
         ]);
 
         $orders = [];
-        foreach($request->orders as $order){
-            $orders["ids"] = $this->requestFailedPayments($order);
+        foreach(explode(',',$request->orders) as $order){
+            // $orders["ids"] = $this->requestFailedPayments($order);
         }
 
-        return redirect()->back()->with("success",__("Orders :ids amount requested successfully",["ids" => implode(",", $orders['ids'])]));
-    } 
+        return redirect()->back()->with("success",__("Orders :ids amount requested successfully",["ids" => $request->orders]));
+    }
+
+    // Edit Incomplete order amount
+    public function editIncompleteOrderAmount(Request $request){
+        $request->validate([
+            'amount' => 'required|numeric',
+            'order' => 'required|exists:operations,id',
+        ]);
+
+        $order = Operation::find($request->order);
+        $order->update(["amount" => $request->amount,"status" => ($request->amount == 0 ? 3 : $order->status)]);
+        
+        $order->incompleteOperation->update([
+            "final_amount" => $request->amount,
+            "status" => ($request->amount == 0 ? 'Deleted' : null),
+            "ended_at" => ($request->amount == 0 ? now() : null)
+        ]);
+
+        return redirect()->back()->with("success",__("Order :id updated successfully",["id" => $order->id]));
+    }
 }

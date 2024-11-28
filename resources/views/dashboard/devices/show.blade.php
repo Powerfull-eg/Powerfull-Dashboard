@@ -67,7 +67,7 @@
                             <span>&nbsp;</span>
                         </div>
                         <span class="d-block">{{($i+1)}}</span>
-                        <input type="radio" disabled value="{{$i+1}}" name="slot">
+                        <input type="radio" value="{{$i+1}}" name="slot">
                     </div>
                     @endfor
                 </div>
@@ -88,10 +88,11 @@
             <div class="w-50">
                 <span class="text-center fs-3 fw-bold d-block my-3">{{__("Actions")}}</span>
                 <div class="row buttons slot-actions gap-1">
-                    <div diabled class="btn btn-secondary  details col-5">{{__("Details")}}</div>
-                    <div diabled class="btn btn-secondary  prohibit col-5">{{__("Prohibit Charging")}}</div>
-                    <div diabled class="btn btn-secondary  eject col-5">{{__("Eject")}}</div>
-                    <div diabled class="btn btn-secondary  lock col-5">{{__("Locking")}}</div>
+                    <div diabled class="btn btn-secondary  details col-5" onclick="getSlotDetails('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Details")}}</div>
+                    <div diabled class="btn btn-secondary  prohibit col-5" onclick="deviceOperation('{{$device->device_id}}','lockStopCharge',document.querySelector('input[type=radio]:checked').value)">{{__("Prohibit Charging")}}</div>
+                    <div diabled class="btn btn-secondary  eject col-5" onclick="ejectBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Eject")}}</div>
+                    <div diabled class="btn btn-secondary  lock col-5" onclick="lockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Locking")}}</div>
+                    <div diabled class="btn btn-secondary d-none unlock col-5" onclick="unlockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Unlocking")}}</div>
                 </div>
             </div>
         </div>
@@ -288,7 +289,7 @@ let deviceData;
 
 
 $(document).ready(async () => {
-    
+
     qrCodeGenerate();
     
     // Handle device data

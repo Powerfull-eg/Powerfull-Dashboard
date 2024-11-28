@@ -20,19 +20,19 @@
                 <div>
                     <span>{{__("Total") . " " . __("Downloads")}}</span>
                     <i class="ti ti-cloud-download" style="font-size: 3rem"></i>
-                    <span>1,053</span>
+                    <span>{{__("Soon")}}</span>
                 </div>
                 {{-- Registered Customers --}}
                 <div>
                     <span>{{__("Registered") . " " . __("Customers")}}</span>
                     <i class="ti ti-user-minus" style="font-size: 3rem"></i>
-                    <span>1,001</span>
+                    <span>{{$registerdUsers}}</span>
                 </div>
                 {{-- Active Customers --}}
                 <div>
                     <span>{{__("Active") . " " . __("Customers")}}</span>
                     <i class="ti ti-user-check" style="font-size: 3rem"></i>
-                    <span>1,001</span>
+                    <span>{{$activeUsers}}</span>
                 </div>
             </div>
         </div>
@@ -84,21 +84,21 @@
                     <div class="col-sm-12 col-md-12 col-lg-4 d-flex gap-2 actions flex-nowrap justify-content-between fw-bold align-items-center my-3">
                         {{-- Manual requests --}}
                         <label>
-                            <input type="checkbox" name="incomplete" value="{{ $operation->id }}"> 
+                            <input type="checkbox" name="incomplete-operation" value="{{ $operation->id }}"> 
                             <span class="custom-checkbox"></span>
                         </label>
                         {{-- Details Action --}}
-                        <div class="btn" style="background-color: #e1bc41;">
+                        <div class="btn" onclick="showIncompleteOrder({{$operation->id}})" style="background-color: #e1bc41;">
                             <i class="ti ti-battery-charging"></i>
                             <span>{{__("Details")}}</span>
                         </div>
                         {{-- Edit Amount Action --}}
-                        <div class="btn" style="background-color: orange;">
+                        <div class="btn" onclick="editIncompleteOrder({{$operation->id}})" style="background-color: orange;">
                             <i class="ti ti-edit"></i>
                             <span>{{__("Edit Amount")}}</span>
                         </div>
                         {{-- Delete Action --}}
-                        <div class="btn" style="background-color: rgb(253, 36, 72);">
+                        <div class="btn" onclick="editIncompleteOrder({{$operation->id}},true)" style="background-color: rgb(253, 36, 72);">
                             <i class="ti ti-square-x"></i>
                             <span>{{__("Delete")}}</span>
                         </div>
@@ -109,18 +109,18 @@
                 <form action="{{route('dashboard.payments.request-multiple-payments')}}" id="incomplete-manual" method="POST">
                 @csrf
                     <div class="d-flex mt-2">
-                        <div class="subtitle" type="submit">
+                        <button class="subtitle btn">
                             <i class="ti ti-hand-click fw-normal"></i>
                             <span>{{__("Manual Request")}}</span>
-                        </div>
+                        </button>
                         <input type="hidden" name="orders">
                         <div class="d-flex gap-1  mx-2 operation-data justify-content-between">
                             <label>
-                                <input type="radio" name="incomplete-request" value="1"> 
+                                <input type="radio" name="incomplete-request" value=1> 
                                 <span style="padding: 5px; border-radius: 7px;" class="custom-radio">{{__("Request Selected")}}</span>
                             </label>
                             <label>
-                                <input type="radio" name="incomplete-request" value="2">
+                                <input type="radio" name="incomplete-request" checked value=2>
                                 <span style="padding: 5px; border-radius: 7px;" class="custom-radio">{{__("Request All")}}</span>
                             </label>
                         </div>
@@ -134,7 +134,44 @@
                     <span>{{__("History") . " " . __("Incomplete Payments")}}</span>
                 </div>
                 {{-- Table --}}
-                <livewire:incomplete-history-table />
+                <div class="table-responsive">
+                <table class="table table-vcenter card-table text-nowrap mt-3" id="history-table">
+                    <thead class="sticky-top">
+                        <tr>
+                          <th>#</th>
+                          <th>{{__("Operation ID")}}</th>
+                          <th>{{__("Customer")}}</th>
+                          <th>{{__("Merchant")}}</th>
+                          <th>{{__("Device")}}</th>
+                          <th>{{__("Borrow Time")}}</th>
+                          <th>{{__("Return Time")}}</th>
+                          <th>{{__("Renting Time")}}</th>
+                          <th>{{__("Amount")}}</th>
+                          <th>{{__("Final Amount")}}</th>
+                          <th>{{__("Status")}}</th>
+                          <th>{{__("Ended At")}}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach ($incompleteOperations as $operation)
+                        <tr>
+                            <td>{{$loop->iteration}}</td>
+                            <td>{{$operation->id}}</td>
+                            <th scope="row">{{$operation->user->fullName}}</th>
+                            <td>{{$operation->device->shop->name}}</td>
+                            <td>{{$operation->device->device_id}}</td>
+                            <td>{{$operation->borrowTime ? chineseToCairoTime($operation->borrowTime) : "-"}}</td>
+                            <td>{{$operation->returnTime ? chineseToCairoTime($operation->returnTime) : "-"}}</td>
+                            <td>{{$operation->returnTime ? secondsToTimeString(Carbon\Carbon::parse($operation->returnTime)->getTimestamp() - Carbon\Carbon::parse($operation->borrowTime)->getTimestamp()) : '-'}}</td>
+                            <td>{{$operation->incompleteOperation->original_amount ? $operation->incompleteOperation->original_amount . ' ' . __('EGP') : '-'}}</td>
+                            <td>{{$operation->incompleteOperation->final_amount ? $operation->incompleteOperation->final_amount . ' ' . __('EGP') : '-'}}</td>
+                            <td>{{$operation->incompleteOperation->status ? $operation->incompleteOperation->status : '-'}}</td>
+                            <td>{{$operation->incompleteOperation->ended_at ? $operation->incompleteOperation->ended_at->format('D, M j, Y') : '-'}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                </table>
+                </div>
             </div>
         </div>
     </div>
@@ -195,17 +232,21 @@
             border-color: var(--background-color) !important;
         }
         
-        div.livewire-datatable > .table-responsive  tr td, div.livewire-datatable > .table-responsive thead tr th {
-            border: 2px solid;
+        div.livewire-datatable > .table-responsive  tr td, div.livewire-datatable > .table-responsive thead tr th
+        ,#history-table tr td, #history-table tr th
+        {
+            border: 2px solid #000 !important;
             padding: 5px 20px !important;
         }
-        div.livewire-datatable > .table-responsive thead tr th {
+        div.livewire-datatable > .table-responsive thead tr th,#history-table > thead tr th{
             background-color: var(--background-color) !important;
             color: var(--text-color2) !important;
             font-weight: 600 !important;
             text-align: center !important;
         }
-
+        #history-table tr td {
+            overflow: scroll;
+        }
         div.livewire-datatable > .table-responsive thead a {
             color: var(--text-color2) !important;
         }
@@ -267,23 +308,13 @@
         input[type="checkbox"]:checked + .custom-checkbox::after , input[type="radio"]:checked + .custom-radio::after {
             display: block;
         }
+
+        .jconfirm-box-container {
+            width: 100%;
+        }
         </style>
     @endpush
     @push('scripts')
-        <script>
-            $('form#incomplete-manual').on('beforeSubmit',function() {
-                const selectedValues = $('input[name="incomplete"]:checked').map(function() {
-                    return $(this).val();
-                }).get();
-
-                if($("input[name='incomplete-request']:checked").val() == 1){
-                    $('input[name="orders"]').val(selectedValues);
-                    return;
-                }
-
-                $('form#incomplete-manual').attr("action", "{{route('dashboard.payments.store')}}");
-            });
-            
-        </script>
+        <script src="{{ asset('assets/js/user.js') }}"></script>
     @endpush
 </x-layouts::dashboard>

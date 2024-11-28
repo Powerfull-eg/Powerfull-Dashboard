@@ -24,6 +24,7 @@ Route::middleware('auth:admins')->group(function () {
 
     /* --------- Operations Management --------- */
     Route::resource('operations',\App\Http\Controllers\Dashboard\OperationController::class);
+    Route::get('operation/{id}',[\App\Http\Controllers\Dashboard\OperationController::class,'getOperationData']);
 
     /* --------- Website Management --------- */
     Route::resource('users', \App\Http\Controllers\Dashboard\UserController::class);
@@ -79,6 +80,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('payments', \App\Http\Controllers\Dashboard\PaymentController::class)->only(['create', 'store']);
     Route::post('payments/requestMultiplePayments', [\App\Http\Controllers\Dashboard\PaymentController::class,"requestMultiplePayments"])->name("payments.request-multiple-payments");
     Route::post('payments/incomplete/settings', [\App\Http\Controllers\Dashboard\PaymentController::class, 'incompletePaymentSettingsUpdate'])->name('payments.incomplete.settings');
+    Route::post('payments/incomplete/edit-amount', [\App\Http\Controllers\Dashboard\PaymentController::class, 'editIncompleteOrderAmount'])->name('payments.incomplete.edit-amount');
     
     // Device Routes
     Route::group(['middleware' => 'auth:admins'], function () {
