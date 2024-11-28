@@ -36,4 +36,9 @@ class GiftUser extends Model
         return $this->belongsTo(Shop::class,"provider_id","shop_id");
     }
 
+    public function operation() : BelongsTo
+    {
+        return $this->belongsTo(Operation::class);
+    }
+
 }

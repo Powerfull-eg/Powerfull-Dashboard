@@ -48,6 +48,8 @@ class UsersTable extends Datatable
         $this->fixedHeader = true;
 
         return [
+            Column::make(__('View'), 'id')
+            ->format(fn ($id) => $id ? "<a href='" . route("dashboard.users.show",$id) . "' style='color: var(--background-color); display: block; text-align: center;'><i style='font-size: 2rem !important;' class='ti ti-user-up'></i></a>": ''),
             Column::make(__("Powerfull ID"),'id')
                 ->sortable(),
             Column::make(__("Name"),'fullName')
@@ -73,8 +75,6 @@ class UsersTable extends Datatable
             Column::make(__('Email'), 'email')
                 ->searchable()  
                 ->format(fn ($email) => $email ? view('components.icon', ['icon' => "<a href=mailto:'" . $email . "' class='btn btn-primary' style='width:50px;'><i class='fs-1 ti ti-mail'></i></a>"]) . " " . $email: ''),
-            // Column::make(__('Edit'), 'id')
-            // ->format(fn ($id) => $id ? "<a href='" . route("dashboard.users.edit",$id) . "' style='color: var(--background-color); display: block; text-align: center;'><i style='font-size: 2rem !important;' class='ti ti-user-edit'></i></a>": ''),
         ];
     }
 

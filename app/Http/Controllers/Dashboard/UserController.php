@@ -88,6 +88,15 @@ class UserController extends Controller
         ]);
         return redirect()->route("dashboard.users.index")->with("Success",__("User updated successfully"));
     }
+
+    /**
+     * Show user page
+    */
+    public function show(User $user){
+        $statusStrings = ["New","Running","Not Paid","Done","Failed Payment"];
+        return view('dashboard.users.show',compact('user','statusStrings'));
+    }
+    
     /**
      * Remove the specified resource from storage.
      */
