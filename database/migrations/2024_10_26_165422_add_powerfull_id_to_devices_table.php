@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('devices', function (Blueprint $table) {
+            $table->string("sim_number",25)->default(0);
             $table->string("powerfull_id",100)->nullable();
         });
     }
