@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->integer('type_id');
+            $table->string("subject")->nullable();
             $table->text('note');
             $table->unsignedBigInteger('admin_id');
             $table->unsignedBigInteger('deleted_by')->nullable();
