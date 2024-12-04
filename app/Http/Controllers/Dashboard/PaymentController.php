@@ -60,7 +60,7 @@ class PaymentController extends Controller
 
         $orders = [];
         foreach(explode(',',$request->orders) as $order){
-            // $orders["ids"] = $this->requestFailedPayments($order);
+            $orders["ids"] = $this->requestFailedPayments($order);
         }
 
         return redirect()->back()->with("success",__("Orders :ids amount requested successfully",["ids" => $request->orders]));

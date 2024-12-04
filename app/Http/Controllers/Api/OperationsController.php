@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Station;
 use App\Models\VoucherOrder;
 use App\Models\Voucher;
+use App\Models\IncompleteHistory;
 use App\Jobs\CompleteFailedPayment;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\VoucherController;
@@ -36,8 +37,7 @@ class OperationsController extends \App\Http\Controllers\Controller
             $amount = intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
             $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
             $paymob = new PaymobController();
-            // $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $paymob->payWithSavedToken($request));
-            $paymentDone =  ["status" => false,"payment_id"=> "0"];
+            $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $paymob->payWithSavedToken($request));
             DB::table('test')->insert(["request" => "Payment: " . json_encode($paymentDone)]);
             $order->update([
                 "payment_id" => $paymentDone["payment_id"],
@@ -46,7 +46,8 @@ class OperationsController extends \App\Http\Controllers\Controller
             ]);
 
             // Add operation to incomplete history
-            ($paymentDone["status"] ? null : CompleteFailedPayment::addIncompletedPaymentToHistory($order,$paymentDone["status"],$paymentDone["status"] == true ? "paid" : null));
+            $incompleteExists = IncompleteHistory::where('operation_id', $order->id)->first();
+            (!$paymentDone["status"] || $incompleteExists ? CompleteFailedPayment::addIncompletedPaymentToHistory($order,$paymentDone["status"],$paymentDone["status"] == true ? "paid" : null) : null );
             return $paymentDone["status"];
         
         }catch(\Exception $err){ DB::table('test')->insert(["request" => "Operation Error: " . $err->getmessage()]);}
