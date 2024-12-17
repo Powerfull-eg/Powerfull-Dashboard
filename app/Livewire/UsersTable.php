@@ -26,18 +26,18 @@ class UsersTable extends Datatable
     {
         if($this->date[0] && $this->date[1])
         {
-            return User::query()->whereBetween("created_at",$this->date)->orderByDesc("updated_at"); 
+            return User::withTrashed()->whereBetween("created_at",$this->date)->orderByDesc("updated_at"); 
         }
         elseif($this->date[0] && !$this->date[1])
         {
-            return User::query()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at"); 
+            return User::withTrashed()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at"); 
         }
         elseif(!$this->date[0] && $this->date[1])
         {
-            return User::query()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at"); 
+            return User::withTrashed()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at"); 
         }
         
-        return User::query()->orderByDesc("created_at");
+        return User::withTrashed()->orderByDesc("created_at");
     }
 
     /**
@@ -60,16 +60,19 @@ class UsersTable extends Datatable
             Column::make(__("Customer Phone"),'phone')
                 ->searchable()
                 ->format(fn ($phone) => $phone ? "0" . $phone : '')
-                ->searchUsing(function ($query, $search){
-                    $search = $search[0] == "0" ? substr($search, 1) : $search;
-                    return $query->where("phone","like","%$search%");
-                }),
+                ->searchable(),
             Column::make(__('Register On'), 'created_at')
                 ->sortable()
                 ->format(fn ($date) => ($date ? $date->format('d/m/Y') : '' )),
             Column::make(__('Last Update'), 'operations')
                 ->sortable()
                 ->format(fn ($operations) => ($operations->count() ? $operations->last()->created_at->format('d/m/Y') : '-' )),
+            Column::make(__('Deleted At'), 'deleted_at')
+                ->sortable()
+                ->format(fn ($date) => ($date ? $date->format('d/m/Y H:m:i') : '' )),
+            Column::make(__('Restore'), 'id')
+                ->sortable()
+                ->format(fn ($id) => (User::withTrashed()->find($id)->deleted_at ? "<a class='btn btn-success' href='" . route("dashboard.users.restore",$id) . "'>" . __('Restore') . " <i style='font-size: 1.5rem !important;' class='ti ti-chevron-left text-center'></i> </a>" : '-' )),
             Column::make(__('Operations Log'), 'id')
                 ->format(fn ($id) => $id ? "<a href='" . route("dashboard.users.operations",$id) . "' style='color: var(--background-color); display: block; text-align: center;'><i style='font-size: 3rem !important;' class='ti ti-battery-charging'></i></a>": ''),
             Column::make(__('Email'), 'email')

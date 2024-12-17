@@ -50,6 +50,32 @@ class ShopsController extends Controller
     }
 
     /**
+     * Display the Shop Operations.
+     */
+    public function operations(string $shop)
+    {
+        // Date Filter
+        $startDate = $request->startDate ?? null;
+        $endDate = $request->endDate ?? null;
+
+        $shop = Shop::with(['device','operations','gifts','notes'])->find($shop);
+        $totalAmount = 0;
+        $totalHours = 0;
+        $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
+        
+        
+        $operations = $startDate || $endDate ? $shop->device->operations->where('created_at','>=',$startDate)->where('created_at','<=',$endDate) : $shop->device->operations;
+        // $operations[] = $endDate ? $shop->device->operations->where('created_at','<=',$endDate) : null;
+        
+        foreach($operations as $operation){
+            $totalAmount += ($operation->amount ?? 0);
+            $totalHours += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
+        }
+
+        return view("dashboard.shops.show-operation",compact('shop','totalAmount','totalHours','totalGifts','startDate','endDate'));
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Request $request,string $id)

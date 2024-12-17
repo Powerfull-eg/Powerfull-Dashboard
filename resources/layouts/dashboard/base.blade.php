@@ -2,6 +2,12 @@
     @if (setting('page_loader_enabled'))
         <x-components::page-loader />
     @endif
+    {{-- Loader --}}
+    <div id="page-overlay" class="d-none">
+        <div class="loader-demo-box">
+            <div class="jumping-dots-loader"> <span></span> <span></span> <span></span> </div>
+        </div>
+    </div>
 
     <div class="page">
         <aside class="navbar navbar-vertical navbar-expand-lg d-print-none" style="overflow: auto; background-color: var(--background-color)">

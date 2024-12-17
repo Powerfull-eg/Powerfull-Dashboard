@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\BajieController;
 use App\Models\IncompleteHistory;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Request as FacadesRequest;
 
 class OperationController extends Controller
 {
@@ -59,5 +60,62 @@ class OperationController extends Controller
             ]);
         }   
         return false;
+    }
+
+    // Delete Operation
+    public function destroy(Operation $operation){
+        $operation->status = 3;
+        $operation->deleted_by = auth()->user()->id;
+        $operation->delete();
+        $operation->save();
+        $operation->user->createHistory(["action" => "Delete Order"]);
+
+        return redirect()->back()->with("success",__("Operation :id deleted successfully",["id" => $operation->id]));
+    }
+
+    /**
+     * Restore Operation
+     */
+    public function restore(string $id)
+    {
+        $operation = Operation::withTrashed()->find($id);
+        $operation->restore();
+        $operation->deleted_by = auth()->user()->id;
+        $operation->save();
+        $operation->user->createHistory(["action" => "Restore Order"]);
+
+        return redirect()->back()->with('success', __('Operation :id has been restored.', ['id' => $operation->id]));
+    }
+
+    /** 
+    * Close Operation
+    */
+    public function closeOrder(string $id, Request $request) {
+        $operation = Operation::find($id);
+        if($operation->status != 1){
+            return redirect()->back()->with('error', __('Operation :id is not open.', ['id' => $operation->id]));
+        }
+
+        // Close Operation
+        $operation->status = 2;
+        $operation->returnTime = $operation->returnTime ?? now()->toISOString();
+        $operation->save();
+        $operation->user->createHistory(["action" => "Close Order"]);
+
+        return redirect()->back()->with('success', __('Operation :id has been closed.', ['id' => $operation->id]));
+    }
+
+    /** 
+    * Refund Operation Amount
+    */
+    public function refundOrder(string $id,Request $request){
+        $request->validate(['amount' => 'required']);
+
+        $operation = Operation::find($id);
+        $operation->user->createHistory(["action" => "Refund Order"]);
+        if($operation->status != 2){
+            return redirect()->back()->with('error', __('Operation :id is not closed.', ['id' => $operation->id]));
+        }
+
     }
 }

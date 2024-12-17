@@ -75,8 +75,10 @@
                 <div style="width: 45%">
                     <div class="d-flex flex-column buttons gap-1">
                         <div class="btn btn-success" onclick="deviceOperation('{{$device->device_id}}','popall',1)">{{__("Eject all batteries")}}</div>
-                        <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','popallForAuth',1)">{{__("Eject all charged batteries")}}</div>
-                        <div class="btn btn-danger" onclick="deviceOperation('{{$device->device_id}}','popallForNoAuth',1)">{{__("Eject all batteries not charge")}}</div>
+                        {{-- <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','popallForAuth',1)">{{__("Eject all charged batteries")}}</div> --}}
+                        <div class="btn btn-secondary">{{__("Eject all charged batteries")}} <i class="ps-2 ti ti-lock"></i></div>
+                        {{-- <div class="btn btn-danger" onclick="deviceOperation('{{$device->device_id}}','popallForNoAuth',1)">{{__("Eject all batteries not charge")}}</div> --}}
+                        <div class="btn btn-secondary">{{__("Eject all batteries not charge")}} <i class="ps-2 ti ti-lock"></i></div>
                         <div class="btn btn-warning" onclick="deviceOperation('{{$device->device_id}}','heartbeat',1)">{{__("Force heartbeat")}}</div>
                         <div class="btn btn-primary" onclick="deviceOperation('{{$device->device_id}}','report',1)">{{__("Reporting states")}}</div>
                         <div class="btn btn-success" onclick="refreshDevice('{{$device->device_id}}')">{{__("Refresh")}}</div>
@@ -89,10 +91,12 @@
                 <span class="text-center fs-3 fw-bold d-block my-3">{{__("Actions")}}</span>
                 <div class="row buttons slot-actions gap-1">
                     <div diabled class="btn btn-secondary  details col-5" onclick="getSlotDetails('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Details")}}</div>
-                    <div diabled class="btn btn-secondary  prohibit col-5" onclick="deviceOperation('{{$device->device_id}}','lockStopCharge',document.querySelector('input[type=radio]:checked').value)">{{__("Prohibit Charging")}}</div>
+                    {{-- <div diabled class="btn btn-secondary  prohibit col-5" onclick="deviceOperation('{{$device->device_id}}','lockStopCharge',document.querySelector('input[type=radio]:checked').value)">{{__("Prohibit Charging")}}</div> --}}
+                    <div diabled class="btn btn-secondary col-5">{{__("Prohibit Charging")}} <span class="ps-2 ti ti-lock"></span></div>
                     <div diabled class="btn btn-secondary  eject col-5" onclick="ejectBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Eject")}}</div>
-                    <div diabled class="btn btn-secondary  lock col-5" onclick="lockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Locking")}}</div>
-                    <div diabled class="btn btn-secondary d-none unlock col-5" onclick="unlockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Unlocking")}}</div>
+                    <div diabled class="btn btn-secondary col-5">{{__("Locking")}} <span class="ps-2 ti ti-lock"></span></div>
+                    {{-- <div diabled class="btn btn-secondary  lock col-5" onclick="lockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Locking")}}</div> --}}
+                    {{-- <div diabled class="btn btn-secondary d-none unlock col-5" onclick="unlockBattery('{{$device->device_id}}',document.querySelector('input[type=radio]:checked').value)">{{__("Unlocking")}}</div> --}}
                 </div>
             </div>
         </div>

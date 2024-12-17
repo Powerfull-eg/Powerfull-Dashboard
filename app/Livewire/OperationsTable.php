@@ -84,13 +84,13 @@ class OperationsTable extends Datatable
                 ->searchable()
                 ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Borrow Slot',"borrowSlot"),
-            Column::make('Shop',"device.shop_id")
+            Column::make('Shop',"device.shop")
                 ->searchUsing(function ($query, $search){
                     $query->whereHas('device', function($query) use ($search){
                         $query->where('shop_id', 'like', "%$search%");
                     });
                 })
-            ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a>"]) : ''),
+            ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop->id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a> " . $shop->name]) : ''),
             Column::make('Has Voucher',"id")
                 ->format(fn($id) => $this->voucherAmount($id)),
             Column::make('Net Amount',"amount")

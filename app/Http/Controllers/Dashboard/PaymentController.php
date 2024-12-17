@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\OperationsController;
 use App\Models\Operation;
+use App\Models\Payment;
 use App\Models\Setting;
 
 class PaymentController extends Controller
@@ -84,4 +85,22 @@ class PaymentController extends Controller
 
         return redirect()->back()->with("success",__("Order :id updated successfully",["id" => $order->id]));
     }
+
+    // Refund order Amount
+    public function refundAmount(int $order,int $amount) {
+        $order = Operation::findOrFail($order); 
+        $payment = $order->payment_id ? Payment::find($order->payment_id) : null;
+        if($payment) {
+            return redirect()->back()->with("error",__("Order :id isn't paid yet",["id" => $order->id]));
+        }
+        // $provider = $payment ? $payment->provider : null;
+        // $controller = new $provider->controller;
+        // return $controller->refund($order,$amount);
+
+        $paymob = new \App\Http\Controllers\Api\PaymobController();
+        $refund = $paymob->refund($amount);
+
+        return redirect()->back()->with($refund ? "success": "error" ,$refund ? __("Order :id amount refunded successfully",["id" => $order->id]) : __("Order :id amount refund failed",["id" => $order->id]));
+    }
+
 }

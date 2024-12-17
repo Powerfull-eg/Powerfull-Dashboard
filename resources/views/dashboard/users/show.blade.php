@@ -1,6 +1,5 @@
 <x-layouts::dashboard>
     <x-components::status />
-    <x-components::status />
     <div class="header d-flex gap-2 justify-content-between">
         <div class="d-flex align-items-end justify-content-center gap-2 logo">
             <i style="font-size: 4rem; color: var(--background-color)" class="ti ti-user-cog"></i>
@@ -20,8 +19,7 @@
                     </div>
                     {{-- Edit Button --}}
                     <div class="controls">
-                        <i class="ti fs-2 ti-pencil"></i>
-                        <a href="{{ route('dashboard.users.edit',$user->id) }}">{{ __("Edit")}}</a>
+                        <a href="{{ route('dashboard.users.edit',$user->id) }}"><i class="ti fs-2 ti-pencil"></i>{{ __("Edit")}}</a>
                     </div>
                 </div>
                 {{-- Table --}}
@@ -41,7 +39,18 @@
                         </tr>
                         <tr>
                             <td class="title">{{__("Password")}}:</td>
-                            <td class="text-truncate"> {{'actions'}} </td>
+                            <td>
+                                <div class="d-flex gap-1 text-white align-items-center px-2" style="background: rgb(151, 151, 151); border-radius: 10px;">
+                                    <div onclick="resetPassword({{$user->id}},'{{$user->fullName}}')" class="btn me-2 bg-transparent" style="border: 0;" type="submit">{{__("Reset password")}}</div>  
+                                    @foreach ($resetPasswordChannels as $channel)
+                                        <label style="padding-right: 2px;">
+                                            <input type="checkbox" name="resetPasswordChannels" value="{{$channel}}"> 
+                                            <span class="custom-checkbox">{{ucfirst($channel)}}</span>
+                                        </label>
+                                    @endforeach
+                                    <form action="{{ url('/') . '/dashboard/users/reset-password' }}" class="d-none" id="reset-password" method="POST"> @csrf</form>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="title">{{__("Register On App")}}:</td>
@@ -52,15 +61,18 @@
                 {{-- Account Actions --}}
                 <div class="account-actions d-flex justify-content-between">
                     {{-- Block Account --}}
-                    <div class="btn btn-warning" style="background: #b9890f">
+                    <div type="submit" class="btn btn-warning" style="background: {{$user->blocked ? '#1665a5' : '#b9890f'}}" onclick="blockAccount({{$user->id}},'{{$user->blocked ? 'unblock' : 'block'}}')">
                         <i class="ti fs-2 ti-lock"></i>
-                        <a href="#">{{ __("Block Account")}}</a>
+                        <span >{{$user->blocked ? __("Unblock Account") : __("Block Account")}}</span>
                     </div>
                     {{-- Delete Account --}}
-                    <div class="btn btn-danger">
+                    <div class="btn btn-danger" onclick="deleteAccount()">
                         <i class="ti fs-2 ti-trash"></i>
-                        <a href="#">{{ __("Delete Account")}}</a>
+                        <span href="#">{{ __("Delete Account")}}</span>
                     </div>
+                    {{-- Forms --}}
+                    <form action="{{ url('/') . '/dashboard/users/' . ($user->blocked ? 'unblock' : 'block') }}" class="d-none" id="block-account" method="POST"> @csrf</form>
+                    <form action="{{ route('dashboard.users.destroy', $user->id) }}" class="d-none" id="delete-account" method="POST"> @csrf @method('DELETE')</form>
                 </div>
             </div>
             {{-- Avatar --}}
@@ -78,7 +90,7 @@
                 </div>
                 <div class="text-white btn btn-success">
                     <i class="ti fs-2 ti-circle-plus"></i>
-                    <a href="#">{{ __("Add") . " " . __("Gift")}}</a>
+                    <a href="{{ route('dashboard.users.gifts.create',$user->id) }}">{{ __("Add") . " " . __("Gift")}}</a>
                 </div>
             </div>
             {{-- Table --}}
@@ -131,13 +143,14 @@
                         <th>{{__("Renting Time")}}</th>
                         <th>{{__("Amount")}}</th>
                         <th>{{__("Operation Status")}}</th>
+                        <th>{{__("Actions")}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if ($user->operations->isEmpty())
-                        <tr><td colspan="9">{{__("No Operations Exists")}}</td></tr>
+                    @if ($operations->isEmpty())
+                        <tr><td colspan="10">{{__("No Operations Exists")}}</td></tr>
                     @else
-                        @foreach ($user->operations->sortByDesc('updated_at')->take(5) as $operation)
+                        @foreach ($operations->sortByDesc('updated_at')->take(5) as $operation)
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <th scope="row">{{$operation->user->fullName}}</th>
@@ -148,8 +161,31 @@
                                 <td>{{secondsToTimeString($operation->returnTime ? Carbon\Carbon::parse($operation->returnTime)->getTimestamp() - Carbon\Carbon::parse($operation->borrowTime)->getTimestamp() : 0) ?? '-'}}</td>
                                 <td>{{$operation->incompleteOperation ? ($operation->incompleteOperation->final_amount ?? $operation->incompleteOperation->original_amount) . ' ' . __('EGP') : ($operation->amount . ' ' . __('EGP') ?? '-')}}</td>
                                 <td>{{__($statusStrings[$operation->status])}}</td>
+                                <td>
+                                {{-- Actions --}}
+                                <div class="d-flex align-items-end mx-2 gap-2">
+                                    {{-- Check order status --}}
+                                    @if ($operation->status == 3)
+                                        <div onclick="refundOrder({{$operation->id}})" class="text-dark btn btn-success">
+                                            <a >{{ __("Refund")}}</a>
+                                        </div>
+                                    @elseif($operation->status == 1)
+                                        <div onclick="closeOrder({{$operation->id}})" class="text-dark btn btn-warning">
+                                            <a >{{ __("Close")}}</a>
+                                        </div>
+                                    @endif
+                                    {{-- Delete & Restore order --}}
+                                        <div onclick="deleteOrder({{$operation->id}},{{$operation->deleted_at ? true : false}})" class="text-dark btn {{$operation->deleted_at ? 'btn-warning' : 'btn-danger'}}">
+                                            <a>{{ $operation->deleted_at ? __("Restore") : __("Delete")}}</a>
+                                        </div>
+                                </div>
+                                </td>
                             </tr>
                         @endforeach
+                        <form action="{{ url('/') . '/dashboard/operations' }}" class="d-none" id="delete-order" method="POST"> @csrf @method('DELETE')</form>
+                        <form action="{{ url('/') . '/dashboard/operations/restore' }}" class="d-none" id="restore-order" method="POST"> @csrf</form>
+                        <form action="{{ url('/') . '/dashboard/operations/close' }}" class="d-none" id="close-order" method="POST"> @csrf</form>
+                        <form action="{{ url('/') . '/dashboard/operations/refund' }}" class="d-none" id="close-order" method="POST"> @csrf</form>
                     @endif
                 </tbody>
             </table>
@@ -229,6 +265,37 @@
             font-weight: 600 !important;
             text-align: center !important;
         }
+
+        input[type="checkbox"],input[type="radio"] {
+         display: none;
+        }
+
+        /* Style the custom checkbox */
+        .custom-checkbox,.custom-radio {
+            background-color: transparent;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Checked state */
+        input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: var(--background-color); 
+        }
+
+        input[type="radio"]:checked + .custom-radio {
+            background-color: #8d8d8d; 
+        }
+
+        /* Show the checkmark when checked */
+        input[type="checkbox"]:checked + .custom-checkbox::after , input[type="radio"]:checked + .custom-radio::after {
+            display: block;
+        }
         </style>
+    @endpush
+    {{-- Scripts --}}
+    @push('scripts')
+        <script src="{{ asset('assets/js/user.js') }}"></script>
     @endpush
 </x-layouts::dashboard>

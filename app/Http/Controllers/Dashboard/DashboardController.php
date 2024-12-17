@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Models\Device;
 use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -35,50 +37,59 @@ class DashboardController extends Controller
         $inCompletedOperations = $operations->where('returnTime'.null)->get();
         $inCompletedPaymentOperations = $operations->where('status','!=',3)->get();
         $operationsPerLastWeek = $operations->where('created_at','>=',now()->sub('1 week'))->get();
+        $operationsThisMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))));
+
         $data['allOperations'] = $allOperations;
         $data['inCompletedOperations'] = $inCompletedOperations;
         $data['inCompletedPaymentOperations'] = $inCompletedPaymentOperations;
         $data['operationsPerLastWeek'] = $operationsPerLastWeek;
-
+        $data['operationsThisMonth'] = $operationsThisMonth->count();
+        // Get last 3 months operations
+        $last3months = [date('m')-2,date('m')-1,date('m')];
+        foreach($last3months as $key => $month){
+            $monthName = date('F',mktime(0,0,0,$month,1,date('Y')));
+            $last3monthsOperations[$monthName] = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,$month,1,date('Y'))))->count();
+        }
+        $data['last3monthsOperations'] = $last3monthsOperations ?? [];
+        
         # Revenues
         $revenuePerAllOperations = $allOperations->sum('amount');
-        $revenuePerLastWeek = $operationsPerLastWeek->sum('amount');
         $data['revenuePerAllOperations'] = $revenuePerAllOperations;
-        $data['revenuePerLastWeek'] = $revenuePerLastWeek;
 
         #Users
         $allUsers = $users->all();
-        $usersPerLastMonth = $users->where('created_at','>=',now()->sub('1 month'))->get();
+        $usersThisMonth = $users->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))))->count();
         $data['allUsers'] = $allUsers;
-        $data['usersPerLastMonth'] = $usersPerLastMonth;
+        $data['usersThisMonth'] = $usersThisMonth;
         
         # Active Users
-        $activeUsers = $operationsPerLastWeek->pluck('user_id')->countBy(fn($val) => $val++);
+        $regularCustomers = $operationsThisMonth->pluck('user_id')->countBy(fn($val) => $val++);
+        $regularCustomers = array_map(fn($value) => $value > 1,$regularCustomers->toArray());
+
         $top10 = $users->withCount('operations')->orderByDesc('operations_count')->limit(10)->get();
-        $data['activeUsers'] = $activeUsers;
+        $data['regularCustomers'] = $regularCustomers;
         $data['top10'] = $top10;
 
         # Support
-        $allTickets = $support->all();
-        $newTickets = $support->where('status',0)->get();
-        $data['allTickets'] = $allTickets;
-        $data['newTickets'] = $newTickets;
+        $data['allTickets'] = $support->count();
+        $data['newTickets'] = 0;
+        foreach($support->with('lastMessage')->get() as $ticket){
+            $ticket->lastMessage->first()->sender == 1  ? $data['newTickets']++ : null;
+        }
 
         #Shops
-        $allShops = $shops->all();
-        $newShops = $shops->where('created_at','>=',now()->sub('1 month'));
         $latestOperationsShops = [];
-        foreach($operations->orderByDesc('created_at')->limit('5')->get() as $operation){
+        foreach($operations->orderByDesc('created_at')->limit('10')->get() as $operation){
                 $latestOperationsShops[] = [
                     "shop" => $operation->device->shop,
                     "operation" => $operation,
                     'user' => $users->find($operation->user_id)->fullName ?? null
                 ];
         }
-        $data['allShops'] = $allShops;
-        $data['newShops'] = $newShops;
+        $data['allShops'] = $shops;
         $data['latestOperationsShops'] = $latestOperationsShops;
         
+        $data['top10Shops'] = Device::with('shop')->withCount('operations')->orderByDesc('operations_count')->limit(10)->get();
         return $data;
     }
 }

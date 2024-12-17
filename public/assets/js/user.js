@@ -94,3 +94,137 @@ function showIncompleteOrder(order) {
         },
     });
 }
+
+// Delete Account
+function deleteAccount() {
+    $.confirm({
+        title: 'Delete Account',
+        content: 'Are you sure you want to delete this account?',
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () { $('#delete-account')[0].submit(); }
+            },
+            cancel: function () {
+                //close
+            },
+        },
+    });
+}
+
+// Block Account
+function blockAccount(user,action = 'block') {
+    $.confirm({
+        title: `${action == 'block' ? 'Block' : 'Unblock'} Account`,
+        content: `Are you sure you want to ${action == 'block' ? 'block' : 'unblock'} this account?`,
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    const form = $('#block-account');
+                    $(form)[0].action += '/' + user;
+                    $(form)[0].submit();
+                }
+            },
+            cancel: function () {
+                //close
+            },
+        },
+    });
+}
+
+// Delete order
+function deleteOrder(order,restore = false) {
+    $.confirm({
+        title: restore ? 'Restore Order' : 'Delete Order',
+        content: `Are you sure you want to ${restore ? 'restore' : 'delete'} this order?`,
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    const form = restore ? $('#restore-order') : $('#delete-order');
+                    $(form)[0].action += '/' + order;
+                    $(form)[0].submit();
+                }
+            },
+            cancel: function () {
+                //close
+            },
+        },
+    });
+}
+
+// Close order 
+function closeOrder(order) {
+    $.confirm({
+        title: 'Close Order',
+        content: `Are you sure you want to close this order?`,
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    const form = $('#close-order');
+                    $(form)[0].action += '/' + order;
+                    $(form)[0].submit();
+                }
+            },
+            cancel: function () {},
+        },
+    });    
+}
+
+// refund order amount
+function refundOrder(order) {
+    $.confirm({
+        title: 'Refund Order',
+        content: `Are you sure you want to refund amount this order?
+        <div class="form-group">
+            <label>New Amount</label>
+            <input type="number" name="amount" placeholder="Order New Amount" class="amount form-control" required />
+        </div>
+        `,
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    const form = $('#refund-order');
+                    $(form)[0].action += '/' + order;
+                    const amount = this.$content.find('[name=amount]').val();
+                    $(form)[0].amount.value = amount;
+                    $(form)[0].submit();
+                }
+            },
+            cancel: function () {},
+        },
+    });    
+}
+
+// Close order 
+function resetPassword(user,userName) {
+    $.confirm({
+        title: 'Reset Password',
+        content: `Are you sure you want to reset user ${userName} password?`,
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    const form = $('#reset-password');
+                    $(form)[0].action += '/' + user;
+                    const channels = $('input[name="resetPasswordChannels"]:checked').map(function () {
+                        return this.value;
+                    }).get();                    
+                    $(form).append(`<input type="hidden" name="channels" value="${channels.join(',')}">`);
+                    $('#page-overlay').hasClass('d-none') ? showPageLoader() : '';
+                    $(form)[0].submit();
+                }
+            },
+            cancel: function () {},
+        },
+    });    
+}

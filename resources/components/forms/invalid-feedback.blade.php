@@ -14,6 +14,7 @@
     $name = str_replace(['[', ']'], ['.', ''], $name);
 @endphp
 
+@if (isset($errors) && $errors->has($key))
 @error($key)
     <div class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>
@@ -27,3 +28,4 @@
         </script>
     @endpush
 @enderror
+@endif

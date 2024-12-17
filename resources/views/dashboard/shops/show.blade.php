@@ -87,10 +87,16 @@
                 </div>
                 {{-- Merchant Location --}}
                 <div id="location">
-                    <div class="subtitle">
-                        <i class="ti ti-map-pin"></i>
-                        <span>{{__("Merchant") . " ". __("Location")}}</span>
-                    </div>
+                  	<div class="d-flex justify-content-between">
+                      <div class="subtitle">
+                          <i class="ti ti-map-pin"></i>
+                          <span>{{__("Merchant") . " ". __("Location")}}</span>
+                      </div>
+                      <a href="{{route('dashboard.shops.operations', $shop->id)}}" class="subtitle">
+                          <i class="ti ti-map-pin"></i>
+                          <span>{{__("Operations")}}</span>
+                      </a>
+                  	</div>
                     <div class="table">
                         <table class="content-table">
                             <tr>

@@ -25,15 +25,25 @@ Route::middleware('auth:admins')->group(function () {
     /* --------- Operations Management --------- */
     Route::resource('operations',\App\Http\Controllers\Dashboard\OperationController::class);
     Route::get('operation/{id}',[\App\Http\Controllers\Dashboard\OperationController::class,'getOperationData']);
+    Route::post('operations/restore/{id}',[\App\Http\Controllers\Dashboard\OperationController::class,'restore'])->name('operations.restore');
+    Route::post('operations/close/{id}',[\App\Http\Controllers\Dashboard\OperationController::class,'closeOrder'])->name('operations.close');
+    Route::post('operations/refund/{id}',[\App\Http\Controllers\Dashboard\OperationController::class,'refundOrder'])->name('operations.refund');
 
     /* --------- Website Management --------- */
     Route::resource('users', \App\Http\Controllers\Dashboard\UserController::class);
     Route::get('users/operations/{id}', [\App\Http\Controllers\Dashboard\UserController::class,"showOperations"])->name("users.operations");
-    
+    Route::get('users/restore/{id}', [\App\Http\Controllers\Dashboard\UserController::class,"restore"])->name("users.restore");
+    Route::post('users/block/{id}', [\App\Http\Controllers\Dashboard\UserController::class,"block"])->name("users.block");
+    Route::post('users/unblock/{id}', [\App\Http\Controllers\Dashboard\UserController::class,"unblock"])->name("users.unblock");
+    Route::post('users/reset-password/{id}',[\App\Http\Controllers\Dashboard\UserController::class,"resetPassword"])->name('users.reset-password');
+    Route::get('users/add-gift/{id}',[\App\Http\Controllers\Dashboard\UserController::class,"addGift"])->name('users.gifts.create');
+    Route::post('users/store-gift/{id}',[\App\Http\Controllers\Dashboard\UserController::class,"storeGift"])->name('users.gifts.store');
+
     Route::resource('devices', \App\Http\Controllers\Dashboard\DeviceController::class);
     Route::get('devices/data/{deviceID}', [\App\Http\Controllers\Dashboard\DeviceController::class,"getDeviceData"]);
 
     Route::resource('shops', \App\Http\Controllers\Dashboard\ShopsController::class);
+    Route::get('shops/operations/{id}', [\App\Http\Controllers\Dashboard\ShopsController::class,'operations'])->name('shops.operations');
     Route::post('shops/sync', [\App\Http\Controllers\Dashboard\ShopsController::class,'syncShopData'])->name('shops.sync');
     // Shops Types
     Route::resource('shop-types', \App\Http\Controllers\Dashboard\ShopTypesController::class);
@@ -46,7 +56,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('gifts', \App\Http\Controllers\Dashboard\GiftsController::class);
     Route::get('gifts-show/{id}', [\App\Http\Controllers\Dashboard\GiftsController::class,'showGiftUsage'])->name('gifts-show');
     Route::get('gifts-deliver/{id}', [\App\Http\Controllers\Dashboard\GiftsController::class,'deliver'])->name('gifts-deliver');
-
+    
     /* --------- Vouchers Management --------- */
     Route::resource('vouchers', \App\Http\Controllers\Dashboard\VoucherController::class);
     

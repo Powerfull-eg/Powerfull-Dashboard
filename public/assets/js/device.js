@@ -88,25 +88,39 @@ async function deviceOperation(device,operation,slotNum) {
       if (!device || !operation) {
           throw new Error('Device ID And operation type are required');
       }
-      refreshDevice(device);
-
       let returnData;
-      // Fetch device data
-      await $.ajax({
-          type: 'POST',
-          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-          url: `/dashboard/device-operation`,
-          data: {
-              device,operation,slotNum
-          },
-          success: function (data) {
-              if (data) {
-                  console.log(data)
-                  returnData = data;
-                  return;
-              }
+
+      await $.confirm({
+          title: capitalizeFirstLetter(operation)+ ' Operation',
+          content: `You want to perform ${capitalizeFirstLetter(operation)} operation on this device?`,
+          buttons: {
+              confirm: {
+                  text: 'Confirm',
+                  btnClass: 'btn-blue',
+                  action: async function () {
+                    refreshDevice(device);
+
+                    // Fetch device data
+                    await $.ajax({
+                        type: 'POST',
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                        url: `/dashboard/device-operation`,
+                        data: {
+                            device,operation,slotNum
+                        },
+                        success: function (data) {
+                            if (data) {
+                                console.log(data)
+                                returnData = data;
+                                return;
+                            }
+                        }
+                    });
+                  }
+              },
+              cancel: function () { },
           }
-      });
+      })
       return returnData ?? {};
 }
 
@@ -156,7 +170,7 @@ function refreshDeviceRecursively(device,ms = 120000){
 
 function lockBattery(device,slot) {
   return deviceOperation(device,'lock',slot)
-}
+}   
 
 function unlockBattery(device,slot) {
   return deviceOperation(device,'unlock',slot)
@@ -166,7 +180,7 @@ async function getSlotDetails(device,slotNum) {
   if (!device || !slotNum) {
       throw new Error('Device ID And slot Number are required');
   }
-
+  
   const slots = await getSlotsInfo(device);
   if(slots.length > 0){
       slots.forEach((slot) => {
