@@ -50,6 +50,10 @@ class Operation extends Model
         return $this->hasOne(IncompleteHistory::class);    
     }
 
+    public function refunds() {
+        return $this->hasMany(Refund::class);
+    }
+    
     // public function borrowTime() : Attribute
     // {
     //     return Attribute::make(

@@ -148,7 +148,7 @@
         }
 
         .device:hover .edit-device {
-           display: block; 
+           display: block;
         }
 
         @media only screen and (max-width: 650px) {

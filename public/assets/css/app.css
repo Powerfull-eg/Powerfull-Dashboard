@@ -248,3 +248,50 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         transform: translateY(-20px)
     }
 }
+
+/* Content table */
+table.content-table {
+    width: 100%;
+}
+table.content-table tr {
+    border: 3px solid var(--background-color);
+    padding: 5px;
+    margin-top: 10px;
+    display: flex;
+    max-width: 70vw;
+    gap: 10px;
+    align-items: center;
+    border-radius: 7px;
+}
+table.content-table tr td {
+    width: fit-content;
+}
+table.content-table tr td.title{
+    min-width: fit-content;
+    font-size: 15px;
+    font-weight: bold;
+}
+.content-table tr >td:not(.title) {
+    max-width: 63vw;
+    color: rgb(117, 117, 117);
+}
+.content-table .text-truncate {
+    white-space: unset !important;
+}
+
+/* Subtitle Styles */
+.subtitle {
+    display: flex;
+    color: var(--text-color);
+    gap: .5rem;
+    background-color: var(--background-color);
+    width: fit-content;
+    padding: .25rem;
+    align-items: center;
+    border-radius: 10px;
+    min-width: 25%; 
+}
+.subtitle i.ti {
+    font-size: 30px;
+    font-weight: 600;
+}

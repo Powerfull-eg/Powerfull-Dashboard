@@ -178,13 +178,13 @@ function closeOrder(order) {
 }
 
 // refund order amount
-function refundOrder(order) {
+function refundOrder(order,orderAmount) {
     $.confirm({
         title: 'Refund Order',
-        content: `Are you sure you want to refund amount this order?
+        content: `Add the required refund amount of this order?
         <div class="form-group">
-            <label>New Amount</label>
-            <input type="number" name="amount" placeholder="Order New Amount" class="amount form-control" required />
+            <label>Refunded</label>
+            <input type="number" name="amount" placeholder="Order Refunded Amount" class="amount form-control" required />
         </div>
         `,
         buttons: {
@@ -193,9 +193,13 @@ function refundOrder(order) {
                 btnClass: 'btn-blue',
                 action: function () {
                     const form = $('#refund-order');
-                    $(form)[0].action += '/' + order;
                     const amount = this.$content.find('[name=amount]').val();
-                    $(form)[0].amount.value = amount;
+                    if(!amount || amount <= 0 || amount > orderAmount){
+                        $.alert('Provide a valid amount');
+                        return false;
+                    }
+                    $(form).append(`<input type="hidden" name="operation_id" value="${order}">`);
+                    $(form).append(`<input type="hidden" name="amount" value="${amount}">`);
                     $(form)[0].submit();
                 }
             },

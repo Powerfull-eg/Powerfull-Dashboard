@@ -165,18 +165,18 @@
                                 {{-- Actions --}}
                                 <div class="d-flex align-items-end mx-2 gap-2">
                                     {{-- Check order status --}}
-                                    @if ($operation->status == 3)
-                                        <div onclick="refundOrder({{$operation->id}})" class="text-dark btn btn-success">
-                                            <a >{{ __("Refund")}}</a>
+                                    @if ($operation->status == 3 && $operation->amount > 0)
+                                        <div onclick="refundOrder({{$operation->id}},{{$operation->amount}})" class="text-dark btn btn-success">
+                                            <span>{{ __("Refund")}}</span>
                                         </div>
                                     @elseif($operation->status == 1)
                                         <div onclick="closeOrder({{$operation->id}})" class="text-dark btn btn-warning">
-                                            <a >{{ __("Close")}}</a>
+                                            <span>{{ __("Close")}}</span>
                                         </div>
                                     @endif
                                     {{-- Delete & Restore order --}}
                                         <div onclick="deleteOrder({{$operation->id}},{{$operation->deleted_at ? true : false}})" class="text-dark btn {{$operation->deleted_at ? 'btn-warning' : 'btn-danger'}}">
-                                            <a>{{ $operation->deleted_at ? __("Restore") : __("Delete")}}</a>
+                                            <span>{{ $operation->deleted_at ? __("Restore") : __("Delete")}}</span>
                                         </div>
                                 </div>
                                 </td>
@@ -185,7 +185,7 @@
                         <form action="{{ url('/') . '/dashboard/operations' }}" class="d-none" id="delete-order" method="POST"> @csrf @method('DELETE')</form>
                         <form action="{{ url('/') . '/dashboard/operations/restore' }}" class="d-none" id="restore-order" method="POST"> @csrf</form>
                         <form action="{{ url('/') . '/dashboard/operations/close' }}" class="d-none" id="close-order" method="POST"> @csrf</form>
-                        <form action="{{ url('/') . '/dashboard/operations/refund' }}" class="d-none" id="close-order" method="POST"> @csrf</form>
+                        <form action="{{ route('dashboard.payments.refund') }}" class="d-none" id="refund-order" method="POST"> @csrf</form>
                     @endif
                 </tbody>
             </table>
@@ -199,21 +199,6 @@
             text-decoration: none;
             color: unset;
         }
-        .subtitle {
-            display: flex;
-            color: var(--text-color);
-            gap: .5rem;
-            background-color: var(--background-color);
-            width: fit-content;
-            padding: .25rem;
-            align-items: center;
-            border-radius: 10px;
-            min-width: 25%; 
-        }
-        .subtitle i.ti {
-            font-size: 30px;
-            font-weight: 600;
-        }
         div.controls{
             padding: 5px;
             background-color: var(--background-color);
@@ -224,34 +209,6 @@
             cursor: pointer;
             margin: 0 5px;
             padding: 5px 10px;
-        }
-        table.content-table {
-            width: 100%;
-        }
-        table.content-table tr {
-            border: 3px solid var(--background-color);
-            padding: 5px;
-            margin-top: 10px;
-            display: flex;
-            max-width: 70vw;
-            gap: 10px;
-            align-items: center;
-            border-radius: 7px;
-        }
-        table.content-table tr td {
-            width: fit-content;
-        }
-        table.content-table tr td.title{
-            min-width: fit-content;
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .content-table tr >td:not(.title) {
-            max-width: 63vw;
-            color: rgb(117, 117, 117);
-        }
-        .content-table .text-truncate {
-            white-space: unset !important;
         }
         /* Tables style */
         table.data-table  tr td, table.data-table tr th

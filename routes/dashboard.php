@@ -50,6 +50,7 @@ Route::middleware('auth:admins')->group(function () {
     
     /* --------- Support Management --------- */
     Route::resource('support', \App\Http\Controllers\Dashboard\SupportController::class);
+    Route::post('support/message/update', [\App\Http\Controllers\Dashboard\SupportController::class,'updateMessage'])->name('support.message.update');
     /* --------- Prices Management --------- */
     Route::resource('prices', \App\Http\Controllers\PriceController::class);
     /* --------- Gifts Management --------- */
@@ -91,6 +92,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::post('payments/requestMultiplePayments', [\App\Http\Controllers\Dashboard\PaymentController::class,"requestMultiplePayments"])->name("payments.request-multiple-payments");
     Route::post('payments/incomplete/settings', [\App\Http\Controllers\Dashboard\PaymentController::class, 'incompletePaymentSettingsUpdate'])->name('payments.incomplete.settings');
     Route::post('payments/incomplete/edit-amount', [\App\Http\Controllers\Dashboard\PaymentController::class, 'editIncompleteOrderAmount'])->name('payments.incomplete.edit-amount');
+    Route::post('payments/refund/', [\App\Http\Controllers\Dashboard\PaymentController::class, 'refund'])->name('payments.refund');
     
     // Device Routes
     Route::group(['middleware' => 'auth:admins'], function () {

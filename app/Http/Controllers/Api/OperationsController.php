@@ -7,8 +7,6 @@ use App\Models\Payment;
 use App\Models\Station;
 use App\Models\VoucherOrder;
 use App\Models\Voucher;
-use App\Models\IncompleteHistory;
-use App\Jobs\CompleteFailedPayment;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Api\PaymobController;
@@ -44,13 +42,8 @@ class OperationsController extends \App\Http\Controllers\Controller
                 "amount" => $totalAmount,
                 "status" => ($paymentDone["status"] == true ? 3 : 4),
             ]);
-
-            // Add operation to incomplete history
-            $incompleteExists = IncompleteHistory::where('operation_id', $order->id)->first();
-            (!$paymentDone["status"] || $incompleteExists ? CompleteFailedPayment::addIncompletedPaymentToHistory($order,$paymentDone["status"],$paymentDone["status"] == true ? "paid" : null) : null );
-            return $paymentDone["status"];
         
         }catch(\Exception $err){ DB::table('test')->insert(["request" => "Operation Error: " . $err->getmessage()]);}
-    }
+    }    
     
 }

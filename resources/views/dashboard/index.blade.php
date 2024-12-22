@@ -215,12 +215,12 @@
                 </div>
 
                 @php
-                foreach ($data['top10Shops'] as $device) {
-                    $topShops[$device->shop->name] = $device['operations_count'];
+                foreach ($data['top10Shops'] as $shop) {
+                    $topShops["names"][] = $shop->shop->name;
+                	  $topShops["count"][] = $shop['operations_count'];
                 }
-                
                 @endphp
-                <x-components::chart :title="__('Top 10 Shops')" :dataLabels="array_keys($topShops)" :dataValues="array_values($topShops)" />
+                <x-components::chart :title="__('Top 10 Shops')" :dataLabels="$topShops['names']" :dataValues="$topShops['count']" />
                 </div>
             </div>
           </div>

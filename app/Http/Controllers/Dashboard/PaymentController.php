@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\OperationsController;
 use App\Models\Operation;
 use App\Models\Payment;
+use App\Models\Refund;
 use App\Models\Setting;
 
 class PaymentController extends Controller
@@ -85,22 +86,38 @@ class PaymentController extends Controller
 
         return redirect()->back()->with("success",__("Order :id updated successfully",["id" => $order->id]));
     }
+    
+    // Refund operation Amount
+    public function refund(Request $request) {
 
-    // Refund order Amount
-    public function refundAmount(int $order,int $amount) {
-        $order = Operation::findOrFail($order); 
-        $payment = $order->payment_id ? Payment::find($order->payment_id) : null;
-        if($payment) {
-            return redirect()->back()->with("error",__("Order :id isn't paid yet",["id" => $order->id]));
+        $request->validate([
+            'operation_id' => 'required|exists:operations,id',
+            'amount' => 'required|numeric|min:1',
+        ]);
+        dd($request->all());
+        $operation = Operation::findOrFail($request->operation_id); 
+        $payment = $operation->payment_id ? Payment::find($operation->payment_id) : null;
+        if(!$payment) {
+            return redirect()->back()->with("error",__("Order :id isn't paid yet",["id" => $operation->id]));
         }
-        // $provider = $payment ? $payment->provider : null;
-        // $controller = new $provider->controller;
-        // return $controller->refund($order,$amount);
-
-        $paymob = new \App\Http\Controllers\Api\PaymobController();
-        $refund = $paymob->refund($amount);
-
-        return redirect()->back()->with($refund ? "success": "error" ,$refund ? __("Order :id amount refunded successfully",["id" => $order->id]) : __("Order :id amount refund failed",["id" => $order->id]));
+        
+        $provider = $payment ? $payment->provider : null;
+        // static payment temporary
+        $controller = new \App\Http\Controllers\Api\PaymobController();
+        $refund = $controller->refund($request->operation_id,$request->amount);
+        // Failed refund
+        if(!$refund) return redirect()->back()->with("error",__("Order :id amount refund failed",["id" => $operation->id]));
+        
+        // Storing refund
+        Refund::create([
+            "operation_id" => $request->operation_id,
+            "amount" => $request->amount,
+            "reason" => $request->reason ?: null,
+        ]);
+        // Update operation amount
+        $operation->update(["amount" => ($request->amount - $operation->amount <= 0 ? 0 : $operation->amount - $request->amount)]);
+        
+        return redirect()->back()->with("success",__("Order :id amount refunded successfully",["id" => $operation->id])); 
     }
 
 }
