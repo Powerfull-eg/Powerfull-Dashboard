@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -27,6 +28,7 @@ class Shop extends Model
         "address",
         "location_latitude",
         "location_longitude",
+        "price_id",
         "created_by",
         "updated_by",
     ];
@@ -128,6 +130,18 @@ class Shop extends Model
         return $this->hasMany(ShopsSave::class);
     }
 
+    // Notes Relations
+    public function notes() : HasMany
+    {
+        return $this->hasMany(Note::class, 'type_id', 'id')->where('type', 'shops');
+    }
+    
+    // Price Relation
+    public function price() : BelongsTo
+    {
+        return $this->belongsTo(Price::class);
+    }
+    
     /**
      * Check if the Shop is saved
      *

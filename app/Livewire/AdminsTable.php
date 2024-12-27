@@ -15,9 +15,7 @@ class AdminsTable extends Datatable
      */
     public function __construct()
     {
-        if (static::can('dashboard.admins.create')) {
-            $this->create = 'dashboard.admins.create';
-        }
+        $this->perPage = 3;
     }
 
     /**

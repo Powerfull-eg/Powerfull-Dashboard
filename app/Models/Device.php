@@ -11,7 +11,6 @@ class Device extends Model
 {
     use HasFactory;
 
-
     public $fillable = [
         "device_id",
         "shop_id",
@@ -19,7 +18,9 @@ class Device extends Model
         "slots",
         "created_by",
         "updated_by",
-        "provider_id"
+        "provider_id",
+        "sim_number",
+        "powerfull_id"
     ];
 
     public $hidden = [ 'provider_id', 'created_at', 'updated_at' ,'created_by', 'updated_by', 'deleted_at','shop_id' ];
@@ -32,5 +33,15 @@ class Device extends Model
     public function operations(): HasMany
     {
         return $this->hasMany(Operation::class,"station_id","device_id");
+    }
+
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(Provider::class);
+    }
+
+    public function notes() : HasMany
+    {
+        return $this->hasMany(Note::class, 'type_id', 'id')->where('type', 'devices');
     }
 }

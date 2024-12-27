@@ -2,11 +2,17 @@
     @if (setting('page_loader_enabled'))
         <x-components::page-loader />
     @endif
+    {{-- Loader --}}
+    <div id="page-overlay" class="d-none">
+        <div class="loader-demo-box">
+            <div class="jumping-dots-loader"> <span></span> <span></span> <span></span> </div>
+        </div>
+    </div>
 
     <div class="page">
-        <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark d-print-none" style="overflow: auto">
+        <aside class="navbar navbar-vertical navbar-expand-lg d-print-none" style="overflow: auto; background-color: var(--background-color)">
             <div class="container-fluid">
-                <a class="navbar-brand py-3 py-lg-5 px-2" href="{{ route('dashboard.index') }}">
+                <a class="navbar-brand" href="{{ route('dashboard.index') }}">
                     <x-components::logo class="navbar-brand-img" height="24" />
                 </a>
 

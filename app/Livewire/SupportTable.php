@@ -68,7 +68,7 @@ class SupportTable extends Datatable{
                     $query->whereHas('lastMessage', function($query) use ($search){
                         $query->where('message', 'like', "%$search%");
                     });
-                }),
+                })->format(fn ($message) => strlen($message) > 100 ? mb_substr($message, 0, 100, "UTF-8") . "..." : $message),
             Column::make(__("Add Reply"),'id')
                 ->format(fn ($id) => view('components.icon', ['icon' => "<a href='". route("dashboard.support.edit", $id)."' class='btn btn-warning' style='width:50px;'><i class='fs-1 ti ti-message-forward'></i></a>"])),
             Column::make(__("Need Reply"),'lastMessage.0.sender')

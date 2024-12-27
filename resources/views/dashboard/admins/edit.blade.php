@@ -12,6 +12,13 @@
                 <x-components::forms.input :title="__('Admin')" :value="$admin->name" disabled />
             </div>
             <div class="mb-3">
+                <x-components::forms.input type="email" name="email" :title="__('Email address')" :value="$admin->email" required />
+            </div>
+
+            <div class="mb-3">
+                <x-components::forms.input type="password" name="password" :title="__('Password')" required />
+            </div>
+            <div class="mb-3">
                 <x-components::forms.select name="role" title="{{ __('Role') }}" :options="$roles" :selected="$admin->roles()->first()?->id"
                     required />
             </div>

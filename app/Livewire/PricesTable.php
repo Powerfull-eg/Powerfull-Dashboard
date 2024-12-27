@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Http\Controllers\PriceController;
 use App\Models\Price;
 use Illuminate\Database\Eloquent\Builder;
 use Redot\LivewireDatatable\Action;
@@ -16,6 +17,18 @@ class PricesTable extends Datatable
     public function __construct()
     {
         //
+    }
+
+    // Delete Record
+    private function delete($id)
+    {
+        if($id == 1){
+            return redirect()->action([PriceController::class, 'index'])->with('success',__("This Price Can't be Removed"));
+        }
+        
+        $price = Price::findOrfail($id);
+        $price->delete();
+        return redirect()->action([PriceController::class, 'index'])->with('success',__("Price Deleted Successfully"));
     }
 
     // Format Price
@@ -47,6 +60,7 @@ class PricesTable extends Datatable
     {
         return [
             Column::make('#','id'),
+            Column::make('name','name')->sortable()->searchable(),
             Column::make(__('Prices'),'prices')
                 ->format(fn ($price) => $this->formatPrice($price)),
             Column::make(__('Free Time'),'free_time')
@@ -61,6 +75,8 @@ class PricesTable extends Datatable
             Column::make(__('Updated At'), 'updated_at')
                 ->format(fn ($date) => $date->format('d M Y'))
                 ->sortable(),
+            // Column::make(__('Delete'), 'id')
+            //     ->format(fn ($id) => $this->delete($id))
         ];
     }
 

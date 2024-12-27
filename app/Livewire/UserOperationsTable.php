@@ -77,11 +77,11 @@ class UserOperationsTable extends Datatable
             Column::make(__("Borrow Time"),'borrowTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make(__("Return Time"),'returnTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make(__("Amount"),'amount')
                 ->sortable()    
                 ->searchable()
@@ -89,7 +89,7 @@ class UserOperationsTable extends Datatable
             Column::make(__("Operation Date"),'borrowTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => Carbon::create($time)->toDateString()),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make(__("Gifts"),''),
         ];
     }

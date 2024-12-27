@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('devices', function (Blueprint $table) {
-            $table->unsignedBigInteger('provider_id')->refrences('id')->on('providers')->nullable()->after('slots');
+            $table->unsignedBigInteger('provider_id')->refrences('id')->on('providers')->nullable()->after('slots')->default(1);
         });
     }
 

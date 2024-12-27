@@ -29,6 +29,7 @@
         <table class="table table-vcenter card-table text-nowrap">
             <thead @class(['sticky-top' => $fixedHeader])>
                 <tr>
+                    <th>#</th>
                     @foreach ($columns as $column)
                         <th style="width: {{ $column->width }}" @class([$column->class, 'sortable' => $column->sortable])>
                             @if ($column->sortable)
@@ -53,7 +54,9 @@
             <tbody wire:loading.class="opacity-50">
                 @forelse ($rows as $row)
                     <tr>
+                        <td>{{ $loop->index + 1  + (($paginators['page'] - 1)  * $rows->toArray()['per_page']) }}</td>
                         @foreach ($columns as $column)
+                            
                             <td>{!! $column->value($row) ?: '-' !!}</td>
                         @endforeach
 

@@ -1,11 +1,9 @@
 <x-layouts::website.auth :title="__('Reset password')">
-
     <x-components::status />
-
     <div class="card card-md">
         <form class="card-body" method="POST" action="{{ route('website.password.store') }}">
             @csrf
-
+            
             <!-- Password Reset Token -->
             <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
@@ -14,8 +12,8 @@
             <p class="text-muted mb-4">{{ __('Make sure to use a strong password to keep your account secure.') }}</p>
 
             <div class="mb-3">
-                <x-components::forms.input type="email" name="email" :title="__('Email address')"
-                    value="{{ old('email', $request->email) }}" placeholder="your@email.com" required />
+                <x-components::forms.input type="number" name="phone" :title="__('Phone Number')"
+                    value="{{ old('phone', $request->phone) }}" placeholder="01xxxxxxx" required />
             </div>
 
             <div class="mb-3">

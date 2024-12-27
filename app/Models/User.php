@@ -8,6 +8,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -130,5 +131,24 @@ class User extends Authenticatable implements JWTSubject
     public function savedShops() : HasMany
     {
         return $this->hasMany(ShopsSave::class);
+    }
+
+    public function blocked() : HasOne
+    {
+        return $this->hasOne(BlockedAccount::class);
+    }
+
+    public function accountHistory() : HasMany
+    {
+        return $this->hasMany(UsersAccountHistory::class);
+    }
+
+    public function createHistory($data)
+    {
+        if(!$data['action']) throw new \Exception("Action is required");
+
+        $data['user_id'] = $this->id;
+        $data['done_by'] = auth()->user()->id;
+        $this->accountHistory()->create($data);
     }
 }

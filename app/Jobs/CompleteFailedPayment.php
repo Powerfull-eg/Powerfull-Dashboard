@@ -23,7 +23,7 @@ class CompleteFailedPayment implements ShouldQueue
      */
     public function __construct()
     {
-        $this->handle();
+        // $this->handle();
     }
 
     /**
@@ -37,6 +37,7 @@ class CompleteFailedPayment implements ShouldQueue
         foreach($orders as $order){
             $request->merge(["orderId" => $order->id]);
             $actions->completePayment($request);
+        
         }
     }
 }

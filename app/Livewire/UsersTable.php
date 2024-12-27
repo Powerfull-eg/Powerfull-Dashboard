@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Redot\LivewireDatatable\Action;
 use Redot\LivewireDatatable\Column;
 use Redot\LivewireDatatable\Datatable;
+use Illuminate\Support\Facades\DB;
 
 class UsersTable extends Datatable
 {
@@ -25,18 +26,18 @@ class UsersTable extends Datatable
     {
         if($this->date[0] && $this->date[1])
         {
-            return User::query()->whereBetween("created_at",$this->date)->orderByDesc("updated_at"); 
+            return User::withTrashed()->whereBetween("created_at",$this->date)->orderByDesc("updated_at"); 
         }
         elseif($this->date[0] && !$this->date[1])
         {
-            return User::query()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at"); 
+            return User::withTrashed()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at"); 
         }
         elseif(!$this->date[0] && $this->date[1])
         {
-            return User::query()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at"); 
+            return User::withTrashed()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at"); 
         }
         
-        return User::query()->orderByDesc("created_at");
+        return User::withTrashed()->orderByDesc("created_at");
     }
 
     /**
@@ -47,26 +48,36 @@ class UsersTable extends Datatable
         $this->fixedHeader = true;
 
         return [
-            Column::make(__("First Name"),'first_name')
-                ->sortable()
-                ->searchable(),
-            Column::make(__("Last Name"),'last_name')
-                ->sortable()
-                ->searchable(),
+            Column::make(__('View'), 'id')
+            ->format(fn ($id) => $id ? "<a href='" . route("dashboard.users.show",$id) . "' style='color: var(--background-color); display: block; text-align: center;'><i style='font-size: 2rem !important;' class='ti ti-user-up'></i></a>": ''),
+            Column::make(__("Powerfull ID"),'id')
+                ->sortable(),
+            Column::make(__("Name"),'fullName')
+                ->searchable()
+                ->searchUsing(function ($query, $search){
+                    return $query->where(DB::raw("CONCAT(first_name, ' ', last_name)"),"like","%{$search}%");
+                }),
             Column::make(__("Customer Phone"),'phone')
+                ->searchable()
+                ->format(fn ($phone) => $phone ? "0" . $phone : '')
                 ->searchable(),
-                // ->format(fn ($phone) => $phone ? "+20" . $phone : ''),
+            Column::make(__('Register On'), 'created_at')
+                ->sortable()
+                ->format(fn ($date) => ($date ? $date->format('d/m/Y') : '' )),
+            Column::make(__('Last Update'), 'operations')
+                ->sortable()
+                ->format(fn ($operations) => ($operations->count() ? $operations->last()->created_at->format('d/m/Y') : '-' )),
+            Column::make(__('Deleted At'), 'deleted_at')
+                ->sortable()
+                ->format(fn ($date) => ($date ? $date->format('d/m/Y H:m:i') : '' )),
+            Column::make(__('Restore'), 'id')
+                ->sortable()
+                ->format(fn ($id) => (User::withTrashed()->find($id)->deleted_at ? "<a class='btn btn-success' href='" . route("dashboard.users.restore",$id) . "'>" . __('Restore') . " <i style='font-size: 1.5rem !important;' class='ti ti-chevron-left text-center'></i> </a>" : '-' )),
+            Column::make(__('Operations Log'), 'id')
+                ->format(fn ($id) => $id ? "<a href='" . route("dashboard.users.operations",$id) . "' style='color: var(--background-color); display: block; text-align: center;'><i style='font-size: 3rem !important;' class='ti ti-battery-charging'></i></a>": ''),
             Column::make(__('Email'), 'email')
                 ->searchable()  
                 ->format(fn ($email) => $email ? view('components.icon', ['icon' => "<a href=mailto:'" . $email . "' class='btn btn-primary' style='width:50px;'><i class='fs-1 ti ti-mail'></i></a>"]) . " " . $email: ''),
-            Column::make(__('Operations'), 'id')
-                ->format(fn ($id) => $id ? view('components.icon', ['icon' => "<a href='" . route("dashboard.users.operations",$id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-1 ti ti-battery-charging'></i></a>"]) : ''),
-            Column::make(__('Created At'), 'created_at')
-                ->sortable()
-                ->format(fn ($date) => ($date ? $date->format('d M Y h:m:i') : '' )),
-            Column::make(__('Updated At'), 'updated_at')
-                ->format(fn ($date) => ($date ? $date->format('d M Y h:m:i') : '' ) )
-                ->sortable(),
         ];
     }
 

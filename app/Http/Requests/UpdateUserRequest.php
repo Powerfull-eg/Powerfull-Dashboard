@@ -26,10 +26,9 @@ class UpdateUserRequest extends FormRequest
             "last_name" => "required|string",
             "image" => "nullable|string",
             "email" => "nullable|email",
-            "password" => "nullable|password",
+            "password" => "nullable",
             "code" => "required|string",
             "phone" => "required|numeric",
-            "updated_by" => "required|integer"
         ];
     }
 }

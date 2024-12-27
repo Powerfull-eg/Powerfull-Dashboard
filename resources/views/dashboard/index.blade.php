@@ -4,25 +4,33 @@
           <div class="col-sm-6 col-lg-3">
             <div class="card">
               <div class="card-body">
+                <div class="subheader">{{__('Operations')}}</div>
                 <div class="d-flex align-items-center">
-                  <div class="subheader">{{__('Operations')}}</div>
-                  <div class="ms-auto lh-1">
-                    <div class="dropdown">
-                      <a class="text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('Last 7 days')}}</a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item active" href="#">{{__('Last 7 days')}}</a>
-                      </div>
-                    </div>
-                  </div>
+                  <div class="h1 mb-1">{{ intval($data['operationsPerLastWeek']->count())}}</div>
+                  <div class="ms-auto lh-1">{{__('This Week')}}</div>
                 </div>
-                <div class="h1 mb-3">{{ intval($data['operationsPerLastWeek']->count())}}</div>
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <div class="h1">{{ intval($data['operationsThisMonth'])}}</div>
+                  <div>{{__('This Month')}}</div>
+                </div>
                 <div class="d-flex mb-2">
                   <div>{{__("Conversion Rate")}}</div>
                   <div class="ms-auto">
+                    @if (($data['operationsThisMonth'] > $data['operationsLastMonth'] || $data['operationsThisMonth'] == $data['operationsLastMonth']) && $data['operationsLastMonth'] != 0)
                     <span class="text-green d-inline-flex align-items-center lh-1">
-                        {{ intval($data['operationsPerLastWeek']->count()/$data['allOperations']->count()) * 100}}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                      {{ intval($data['operationsThisMonth']/$data['operationsLastMonth']) * 100}}%
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
                     </span>
+                    @else
+                    <span class="text-red d-inline-flex align-items-center lh-1">
+                      {{ $data['operationsLastMonth'] !=0 ? intval((1 - ($data['operationsThisMonth'] / $data['operationsLastMonth'])) * 100) : $data['operationsLastMonth']}}%
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trending-down">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M3 7l6 6l4 -4l8 8" />
+                        <path d="M21 10l0 7l-7 0" />
+                      </svg>
+                    </span>
+                    @endif
                   </div>
                 </div>
                 <div class="progress progress-sm">
@@ -37,51 +45,17 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex align-items-center">
-                  <div class="subheader">{{__('Revenue')}}</div>
-                  <div class="ms-auto lh-1">
-                    <div class="dropdown">
-                      <a class="text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        {{-- <a class="dropdown-item active" href="#">{{__('Last 7 days')}}</a> --}}
-                      </div>
-                    </div>
-                  </div>
+                  <div class="subheader">{{__("New Clients") . " ( " . __("In App") . " )"}}</div>
                 </div>
-                <div class="d-flex align-items-baseline">
-                  <div class="h1 mb-0 me-2">{{$data['revenuePerAllOperations']}} {{__('EGP')}}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1 d-block">
-                      {{intval($data['revenuePerLastWeek']/$data['revenuePerAllOperations']) * 100}}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
-                    </span>
-                  </div>
+                <div class="d-flex align-items-baseline justify-content-between">
+                  <div class="h1 mb-3 me-2">{{ $data['usersThisMonth'] }}</div>
+                  <div>{{__('This Month')}}</div>
                 </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-lg-3">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div class="subheader">{{__("New Clients")}}</div>
-                  <div class="ms-auto lh-1">
-                    <div class="dropdown">
-                      <a class="text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('Last 30 days')}}</a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item active" href="#">{{__('Last 30 days')}}</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div class="h1 mb-3 me-2">{{ $data['usersPerLastMonth']->count() }}</div>
-                  <div class="me-auto">
-                    <span class="text-yellow d-inline-flex align-items-center lh-1">
-                      {{ intval($data['usersPerLastMonth']->count()/$data['allUsers']->count() * 100)  }}% <!-- Download SVG icon from http://tabler-icons.io/i/minus -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
-                    </span>
-                  </div>
+                <div class="me-auto">
+                  <span class="text-yellow d-inline-flex align-items-center lh-1">
+                    {{ intval($data['usersThisMonth']/$data['allUsers']->count() * 100)  }}% <!-- Download SVG icon from http://tabler-icons.io/i/minus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
+                  </span>
                 </div>
                 <div id="chart-new-clients" class="chart-sm"></div>
               </div>
@@ -91,25 +65,37 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex align-items-center">
-                  <div class="subheader">{{__('Active Users')}}</div>
+                  <div class="subheader">{{__('Regular Customers')}}</div>
                   <div class="ms-auto lh-1">
-                    <div class="dropdown">
-                      <a class="text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('Last 7 days')}}</a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item active" href="#">{{__('Last 7 days')}}</a>
-                      </div>
-                    </div>
+                    <div >{{__('This Month')}}</div>
                   </div>
                 </div>
                 <div class="d-flex align-items-baseline">
-                  <div class="h1 mb-3 me-2">{{$data['activeUsers']->count()}}</div>
+                  <div class="h1 mb-3 me-2">{{count($data['regularCustomers'])}}</div>
                   <div class="me-auto">
                     <span class="text-green d-inline-flex align-items-center lh-1">
-                        {{ intval($data['activeUsers']->count()/$data['allUsers']->count() * 100)  }}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        {{ intval(count($data['regularCustomers'])/$data['allUsers']->count() * 100)  }}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
                     </span>
                   </div>
                 </div>
+                <div id="chart-active-users" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          {{-- last 3 months operations --}}
+          <div class="col-sm-6 col-lg-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="subheader">{{__('Last 3 Months Operations')}}</div>
+                  @if (count($data['last3monthsOperations']) > 0)
+                    @foreach ($data['last3monthsOperations'] as $name => $operations)
+                       <div class="d-flex align-items-center justify-content-between mt-3 pb-1" style="border-bottom: 1px solid">
+                        <div>{{ucfirst($name)}}</div>
+                        <div>{{intval($operations)}}</div>
+                      </div>
+                    @endforeach
+                  @endif
                 <div id="chart-active-users" class="chart-sm"></div>
               </div>
             </div>
@@ -175,10 +161,10 @@
                       </div>
                       <div class="col">
                         <div class="font-weight-medium">
-                          {{$data['allTickets']->count()}} {{__('Tickets')}}
+                          {{$data['allTickets']}} {{__('Tickets')}}
                         </div>
                         <div class="text-muted">
-                            {{$data['newTickets']->count()}} {{__('New Tickets')}}
+                            {{$data['newTickets']}} {{__('New Tickets')}}
                         </div>
                       </div>
                     </div>
@@ -202,8 +188,8 @@
                         <div class="font-weight-medium">
                           {{$data['allShops']->count() . ' ' . __('Shops')}}
                         </div>
-                        <div class="text-muted">
-                            {{$data['newShops']->count() . ' ' . __('Shops')}}
+                        <div class="text-muted"> 
+                            <span id="offline-shops"></span>{{' ( ' . __('Offline') . ')'}}
                         </div>
                       </div>
                     </div>
@@ -212,6 +198,7 @@
               </div>
             </div>
           </div>
+          {{-- Users Chart --}}
           <div class="col-lg-12">
             <div class="card">
               <div class="card-body">
@@ -229,6 +216,26 @@
                 </div>
             </div>
           </div>
+          {{-- Shops Chart --}}
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h3 class="card-title">{{__('Top 10')}} {{__('Shops')}}</h3>
+                    <a href="{{route('dashboard.shops.index')}}" class="btn btn-primary">{{__('View Shops')}}</a>
+                </div>
+
+                @php
+                foreach ($data['top10Shops'] as $shop) {
+                    $topShops["names"][] = $shop->shop->name;
+                	  $topShops["count"][] = $shop['operations_count'];
+                }
+                @endphp
+                <x-components::chart :title="__('Top 10 Shops')" :dataLabels="$topShops['names']" :dataValues="$topShops['count']" />
+                </div>
+            </div>
+          </div>
+          
           <div class="col-lg-12">
             <div class="card">
               <div class="card-body">
@@ -238,6 +245,7 @@
                     <div class="table-responsive">
                         <table class="table card-table table-vcenter">
                             <thead>
+                                <td>#</td>
                                 <td>-</td>
                                 <td>{{__('Shop Name')}}</td>
                                 <td>{{__('Borrow Time')}}</td>
@@ -248,6 +256,9 @@
                         @foreach($data['latestOperationsShops'] as $operation)
                           <tr>
                             <td>
+                                {{$loop->index +1}}
+                            </td>
+                            <td>
                                 <a href="{{route('dashboard.shops.show',$operation['shop']->id)}}" class="text-reset">
                                     <span class="avatar avatar-sm" style="background-image: url({{$operation['shop']->logo}})"></span>
                                 </a>
@@ -256,10 +267,10 @@
                               <a href="{{route('dashboard.shops.show',$operation['shop']->id)}}" class="text-reset">{{$operation['shop']->name}}</a>
                             </td>
                             <td class="text-nowrap text-muted">
-                                {{$operation['operation']->borrowTime}}
+                                {{$operation['operation']->borrowTime ? chineseToCairoTime($operation['operation']->borrowTime) : "-"}}
                             </td>
                             <td class="text-nowrap">
-                                {{$operation['operation']->returnTime ?? "-"}}
+                              {{$operation['operation']->returnTime ? chineseToCairoTime($operation['operation']->returnTime) : "-"}}
                             </td>
                             <td class="text-nowrap">
                                 {{$operation['user']}}
@@ -278,4 +289,25 @@
           </div>
         </div>
       </div>
+      
+@push('scripts')
+  <script>
+    const getOfflineShops = async () => {
+      const devices = {{JS::from(\App\Models\Device::pluck('device_id'));}}
+      let offlineShops = 0;
+
+      for( const device of devices) {
+        const data = await getDeviceData(device);
+        if(data?.code && data?.code == 2004){
+          offlineShops++;
+        }
+      };
+
+      return offlineShops;
+    }
+
+    getOfflineShops().then(data => document.querySelector("#offline-shops").innerHTML = data);
+    
+  </script>
+@endpush
 </x-layouts::dashboard>

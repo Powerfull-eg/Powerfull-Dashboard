@@ -32,12 +32,6 @@ class ShopOperationsTable extends Datatable
 
     }
     
-    // Convert time to Cairo time 
-    protected function timezoneConvert($time){
-        $newTime = strtotime($time) - ( 60 * 60 * 2);
-        return $newTime;
-    }
-    
     /**
      * Query builder.
      */
@@ -83,17 +77,17 @@ class ShopOperationsTable extends Datatable
             Column::make(__("Borrow Time"),'borrowTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => $time ? new Carbon($this->timezoneConvert($time)) : null),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make(__("Return Time"),'returnTime')
                 ->sortable()    
                 ->searchable()
-                ->format(fn ($time) => $time ? new Carbon($this->timezoneConvert($time)) : null),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make(__("Amount"),'amount')
                 ->sortable()    
                 ->searchable()
                 ->format(fn ($amount) => $amount ? $amount .' '. __("EGP") : __("Free Order")),
             Column::make(__("Operation Date"),'borrowTime')
-                ->sortable()    
+                ->sortable()
                 ->searchable()
                 ->format(fn ($time) => Carbon::create($time)->toDateString()),
         ];

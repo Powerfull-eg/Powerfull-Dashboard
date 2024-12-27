@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Provider;
 use App\Models\Shop;
+use App\Models\ShopsData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,29 +31,13 @@ class CloneShops implements ShouldQueue
      */
     public function handle(): void
     {
-        $providers = config('devices-providers');
+        $providors = Provider::all();
         $shops = [];
-
-        foreach($providers as $provider => $controller)
-        {
-                $data = json_decode($controller->getShops()->getContent(),true)[1];
-                $data = json_decode($data, true)["data"];
-                DB::table('test')->insert(["request" => json_encode($data) ]);
-                foreach($data as $details)
-                {
-                    $shops[] = [
-                        "name" => $details['shopName'],
-                        "provider_id" => $details['newID'],
-                        "logo" => $details['shopBanner'] ?? null,
-                        "icon" => $details['shopIcon'] ?? null,
-                        "governorate" => 'Cairo',
-                        "city" => 'Cairo',
-                        "address" => $details['shopAddress'] ?? null,
-                        "location_latitude" => $details['latitude'],
-                        "location_longitude" => $details['longitude'],
-                    ];
-                }
+        
+        foreach($providors as $provider){
+            $shops[] = $provider->controller->getShops();
         }
+
         // Add Shops and update if exists
         foreach($shops as $shop){
             $existShop = Shop::where('provider_id',$shop['provider_id']);

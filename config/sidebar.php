@@ -18,8 +18,76 @@ return [
         'route' => 'dashboard.index',
         'icon' => 'ti ti-home',
         'locales' => [
-            'en' => 'Dashboard',
-            'ar' => 'لوحة التحكم',
+            'en' => 'Home',
+            'ar' => 'الصفحة الرئيسية',
+        ],
+    ],
+    // Control
+    [
+        'icon' => 'ti ti-adjustments',
+        'route' => 'dashboard.control.index',
+        'locales' => [
+            'en' => 'Control',
+            'ar' => 'التحكم',
+        ],
+        "children" => [
+            [
+                'icon' => 'ti ti-battery-automotive',
+                'locales' => [
+                    'en' => 'Devices',
+                    'ar' => 'المحطات',
+                ],
+                'route' => 'dashboard.devices.index',
+            ],
+            [
+                'icon' => 'ti ti-building-store',
+                'locales' => [
+                    'en' => 'Shops',
+                    'ar' => 'المتاجر',
+                ],
+                'route' => 'dashboard.shops.index',
+            ],
+            [
+                'icon' => 'ti ti-users',
+                'route' => 'dashboard.users.index',
+                'locales' => [
+                    'en' => 'Users',
+                    'ar' => 'المستخدمين',
+                ],
+            ],
+            [
+                'icon' => 'ti ti-gift',
+                'route' => 'dashboard.gifts.index',
+                'locales' => [
+                    'en' => 'Gifts',
+                    'ar' => 'الهدايا',
+                ],
+            ],
+            [
+                'icon' => 'ti ti-certificate',
+                'route' => 'dashboard.vouchers.index',
+                'locales' => [
+                    'en' => 'Vouchers',
+                    'ar' => 'الكوبونات',
+                ],
+            ],
+            [
+                'icon' => 'ti ti-coin',
+                'route' => 'dashboard.prices.index',
+                'locales' => [
+                    'en' => 'Pricing',
+                    'ar' => 'الأسعار',
+                ],
+            ],
+        ]
+    ],
+    // Customer Services
+    [
+        'icon' => 'ti ti-help',
+        'route' => 'dashboard.support.index',
+        'locales' => [
+            'en' => 'Customer Service',
+            'ar' => 'خدمة العملاء',
         ],
     ],
     // Action (Operation)
@@ -31,96 +99,83 @@ return [
             'ar' => 'العمليات',
         ],
     ],
+    // Access Permissions
     [
-        'icon' => 'ti ti-battery-automotive',
+        'icon' => 'ti ti-login',
         'locales' => [
-            'en' => 'Devices',
-            'ar' => 'المحطات',
+            'en' => 'Access Permissions',
+            'ar' => 'صلاحيات الدخول',
         ],
-        'route' => 'dashboard.devices.index',
-    ],
-    [
-        'icon' => 'ti ti-building-store',
-        'locales' => [
-            'en' => 'Shops',
-            'ar' => 'المتاجر',
-        ],
-        'route' => 'dashboard.shops.index',
-    ],
-    [
-        'icon' => 'ti ti-users',
-        'route' => 'dashboard.users.index',
-        'locales' => [
-            'en' => 'Users Management',
-            'ar' => 'إدارة المستخدمين',
-        ],
-    ],
-    [
-        'icon' => 'ti ti-help',
-        'route' => 'dashboard.support.index',
-        'locales' => [
-            'en' => 'Support Management',
-            'ar' => 'إدارة الدعم',
-        ],
-    ],
-    [
-        'icon' => 'ti ti-adjustments',
-        'route' => 'dashboard.control.index',
-        'locales' => [
-            'en' => 'Control Management',
-            'ar' => 'إدارة التحكم',
-        ],
-        "children" => [
+
+        'children' => [
             [
-                'icon' => 'ti ti-adjustments',
-                'route' => 'dashboard.control.index',
+                // 'route' => 'dashboard.profile.edit',
                 'locales' => [
-                    'en' => 'Control Home',
-                    'ar' => ' صفحة إدارة التحكم',
+                    'en' => 'Access Reports',
+                    'ar' => 'صلاحيات التقارير',
                 ],
             ],
+
             [
-                'icon' => 'ti ti-bolt',
-                'route' => 'dashboard.powerbank.index',
+                // 'route' => 'dashboard.roles.index',
                 'locales' => [
-                    'en' => 'PowerBank Management',
-                    'ar' => 'إدارة أجهزة الباوربانك',
+                    'en' => 'Access Merchants',
+                    'ar' => 'صلاحيات المتاجر',
                 ],
             ],
+
             [
-                'icon' => 'ti ti-coin',
-                'route' => 'dashboard.prices.index',
+                // 'route' => 'dashboard.admins.index',
                 'locales' => [
-                    'en' => 'Prices Management',
-                    'ar' => 'إدارة الأسعار',
+                    'en' => 'Access Selection',
+                    'ar' => 'صلاحيات الإختيار',
                 ],
             ],
-            [
-                'icon' => 'ti ti-certificate',
-                'route' => 'dashboard.vouchers.index',
-                'locales' => [
-                    'en' => 'Vouchers Management',
-                    'ar' => 'إدارة الكوبونات',
-                ],
-            ],
-            [
-                'icon' => 'ti ti-gift',
-                'route' => 'dashboard.gifts.index',
-                'locales' => [
-                    'en' => 'Gifts Management',
-                    'ar' => 'إدارة الهدايا',
-                ],
-            ],
-        ]
-    ],
-    [
-        'route' => 'dashboard.qr-code.index',
-        'icon' => 'ti ti-qrcode',
-        'locales' => [
-            'en' => 'QR Code',
-            'ar' => 'رمز الاستجابة السريعة',
         ],
     ],
+    // Reports
+    [
+        'icon' => 'ti ti-license',
+        'locales' => [
+            'en' => 'Reports',
+            'ar' => 'التقارير',
+        ],
+
+        'children' => [
+            [
+                // 'route' => 'dashboard.profile.edit',
+                'locales' => [
+                    'en' => 'Comperhensive Reports',
+                    'ar' => 'التقارير الكاملة',
+                ],
+            ],
+
+            [
+                // 'route' => 'dashboard.roles.index',
+                'locales' => [
+                    'en' => 'Devices Reports',
+                    'ar' => 'تقارير الأجهزة',
+                ],
+            ],
+
+            [
+                // 'route' => 'dashboard.admins.index',
+                'locales' => [
+                    'en' => 'Customers Reports',
+                    'ar' => 'تقارير العملاء',
+                ],
+            ],
+
+            [
+                // 'route' => 'dashboard.admins.index',
+                'locales' => [
+                    'en' => 'Financial Reports',
+                    'ar' => 'تقارير المالية',
+                ],
+            ],
+        ],
+    ],
+    // Settings
     [
         'icon' => 'ti ti-settings',
         'locales' => [
@@ -170,4 +225,5 @@ return [
             ],
         ],
     ],
+
 ];

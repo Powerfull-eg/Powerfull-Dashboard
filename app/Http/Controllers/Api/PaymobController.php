@@ -210,4 +210,26 @@ class PaymobController extends \App\Http\Controllers\Controller
         $payment = Payment::where("payment_order_id",$request->input('obj.order.id'));
         $payment->update(["response_data" => $request->input('obj'),"type" => "TRANSACTION-MOTO-CALLBACK"]);
     }
+
+    // Refund Amount 
+    public function refund(int $amount,int $operation){
+        $url = "https://accept.paymob.com/api/acceptance/void_refund/refund";
+        $secretKey = "Token " . env("PAYMOB_API_SECRET");
+        $operation = Operation::with("payment")->find($operation);
+        $transaction_id = $operation->payment->response_data ? json_decode($operation->payment->response_data)["id"] : null;
+        // return false if entries is invalid
+        if(!$transaction_id || $amount < 1 || $amount > $operation->amount) return false;
+
+        $response = HTTP::withHeaders(["Authorization" => $secretKey])->post($url,[
+            "amount_cents" => ($amount * 100),
+            "transaction_id" => $transaction_id
+        ]);
+
+        if($response->status() == 200){
+            $responseBody = json_decode($response->body(),true);
+            return true;
+        }
+
+        return false;
+    }
 }

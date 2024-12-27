@@ -4,6 +4,12 @@
     <form action="{{ route('dashboard.prices.update',$price->id) }}" method="POST">
         @csrf
         @method("PUT")
+        <div class="row m-3">
+            <div class="mb-3 col">
+                <label class="form-label">{{__('Name')}}</label>
+                <input type="text" class="form-control" name="name" value="{{$price->name}}" placeholder="{{__('Enter'). " " .__('Name')}}" />
+            </div>
+        </div>
         <div class="row m-3">    
             <div class="mb-3 col">
                 <label class="form-label">{{__('Arabic App Description')}}</label>
@@ -25,20 +31,20 @@
                 <textarea type="text" class="form-control" name="app_description_detailed_en" placeholder="{{__('Enter')}} {{__('English App Description Detailed')}}">{{$price->app_description_detailed_en}}</textarea>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 mx-2">
             <label class="form-label">{{__('Free Time')}}</label>
             <input type="number" class="form-control" name="free_time" required value="{{$price->free_time}}" placeholder="{{__('Enter')}} {{__('Free Time')}}" />
         </div>
-        <div class="mb-3">
+        <div class="mb-3 mx-2">
             <label class="form-label">{{__('Max Hours')}}</label>
             <input type="number" class="form-control" name="max_hours" required value="{{$price->max_hours}}" placeholder="{{__('Enter')}} {{__('Max Hours')}}" />
         </div>
-        <div class="mb-3">
+        <div class="mb-3 mx-2">
             <label class="form-label">{{__('Insurance Amount')}}</label>
             <input type="number" class="form-control" name="insurance" required value="{{$price->insurance}}" placeholder="{{__('Enter')}} {{__('Insurance Amount')}}" />
         </div>
         {{-- Price details --}}
-        <div class="mb-3">
+        <div class="mb-3 mx-2">
             <label class="form-label fs-2 w-100 d-block text-center">{{__('Price Details')}}</label>
             {{-- <input type="hidden" name="prices" required value="{{$price->prices}}"/> --}}
             @foreach (json_decode($price->prices,true) as $type => $prices)
@@ -76,7 +82,7 @@
                 const hr = document.createElement('hr');
                 const addBtn = element.cloneNode(true);
                 const removeBtn = document.querySelector('.remove-price').cloneNode(true);
-                const addAfter = (document.querySelector('.remove-price') == element.nextElementSibling ? element.nextElementSibling : element);
+                const addAfter = (element.nextElementSibling.classList.contains('remove-price') ? element.nextElementSibling : element);
                 [removeBtn,addBtn,clone,hr].forEach(ele => addAfter.after(ele));
             }
 

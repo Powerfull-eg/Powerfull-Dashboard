@@ -1,15 +1,15 @@
 @props(['item'])
 
-<li @class(['nav-item', 'dropdown', 'active' => $item->active])>
-    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">
+<li class="ms-2">
+    <div class="fs-3 fw-bold my-2">
         @if ($item->icon)
             <span class="nav-link-icon"><i class="{{ $item->icon }}"></i></span>
         @endif
 
         {{ $item->title }}
-    </a>
+    </div>
 
-    <div @class(['dropdown-menu', 'show' => $item->active])>
+    <div class="ms-3">
         @foreach ($item->children as $child)
             @include('layouts.dashboard.partials.dropdown-item', ['item' => $child])
         @endforeach

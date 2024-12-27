@@ -124,8 +124,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
-
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('authUser', [AuthController::class, 'get_user']);
 });
+
+// Restore password
+Route::get('reset-password/reset-result', [\App\Http\Controllers\Api\Auth\NewPasswordController::class, 'resetResult'])->name('website.password.reset-result');
+Route::get('reset-password/{token}', [\App\Http\Controllers\Api\Auth\NewPasswordController::class, 'create'])->name('website.password.reset');
+Route::post('reset-password', [\App\Http\Controllers\Api\Auth\NewPasswordController::class, 'store'])->name('website.password.store');

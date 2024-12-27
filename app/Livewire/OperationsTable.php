@@ -29,11 +29,7 @@ class OperationsTable extends Datatable
         $amount = ($voucher ? $voucher->voucher->value . ($voucher->voucher->type ? ' EGP' : '%') : null);
         return $amount;
     }
-    private function getUser($id)
-    {
-        $user = User::find($id);
-        return $user ?? null;
-    }
+    
     //Mount Data
     public function mount($startDate=null, $endDate=null)
     {
@@ -46,17 +42,17 @@ class OperationsTable extends Datatable
     {
         if($this->date[0] && $this->date[1])
         { 
-            return Operation::query()->whereBetween("created_at",$this->date)->orderByDesc("updated_at");
+            return Operation::query()->whereBetween("created_at",$this->date)->orderByDesc("created_at");
         }
         elseif($this->date[0] && !$this->date[1])
         {
-            return Operation::query()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at");
+            return Operation::query()->where("created_at",">=",$this->date[0])->orderByDesc("created_at");
         }
         elseif(!$this->date[0] && $this->date[1])
         {
-            return Operation::query()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at");
+            return Operation::query()->where("created_at","<=",$this->date[1])->orderByDesc("created_at");
         }
-        return Operation::query()->orderByDesc("updated_at");
+        return Operation::query()->orderByDesc("created_at");
     }
 
     /**
@@ -69,28 +65,32 @@ class OperationsTable extends Datatable
             Column::make('#',"id")
                 ->width('50px') 
                 ->sortable(),
-            Column::make('User',"user_id")
-                ->format(fn($value) => $this->getUser($value) ? $this->getUser($value)->fullName : null)
+            Column::make('User',"user")
+                ->format(fn($user) => $user ? $user->fullName : null)
                 ->searchable()
-                ->sortable(),
+                ->searchUsing(function ($query, $search){
+                    $query->whereHas('user', function($query) use ($search){
+                        $query->where('first_name', 'like', "%$search%")->orWhere('last_name', 'like', "%$search%");
+                    });
+                }),
             Column::make('Device',"station_id")
                 ->searchable(),
             Column::make('Powerbank',"powerbank_id")
                 ->searchable(),
             Column::make('Borrow Time',"borrowTime")
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Return Time',"returnTime")
                 ->searchable()
-                ->format(fn ($time) => Carbon::rawParse($time)),
+                ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Borrow Slot',"borrowSlot"),
-            Column::make('Shop',"device.shop_id")
+            Column::make('Shop',"device.shop")
                 ->searchUsing(function ($query, $search){
                     $query->whereHas('device', function($query) use ($search){
                         $query->where('shop_id', 'like', "%$search%");
                     });
                 })
-            ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a>"]) : ''),
+            ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop->id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a> " . $shop->name]) : ''),
             Column::make('Has Voucher',"id")
                 ->format(fn($id) => $this->voucherAmount($id)),
             Column::make('Net Amount',"amount")

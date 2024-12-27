@@ -1,0 +1,1 @@
+<img src="/assets/images/loader-logo.png" width="500" alt="" class="my-2">
