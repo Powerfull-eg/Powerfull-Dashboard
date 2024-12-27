@@ -51,6 +51,7 @@ Route::middleware('auth:admins')->group(function () {
     /* --------- Support Management --------- */
     Route::resource('support', \App\Http\Controllers\Dashboard\SupportController::class);
     Route::post('support/message/update', [\App\Http\Controllers\Dashboard\SupportController::class,'updateMessage'])->name('support.message.update');
+    Route::post('support/close/{id}', [\App\Http\Controllers\Dashboard\SupportController::class,'endTicket'])->name('support.close');
     /* --------- Prices Management --------- */
     Route::resource('prices', \App\Http\Controllers\PriceController::class);
     /* --------- Gifts Management --------- */
@@ -79,6 +80,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('roles/update-permissions', [\App\Http\Controllers\Dashboard\RoleController::class, 'updatePermissionsRoute'])->name('roles.update-permissions');
     
     Route::resource('admins', \App\Http\Controllers\Dashboard\AdminController::class)->except(['show']);
+    Route::post('admins/create-with-permissions', [\App\Http\Controllers\Dashboard\AdminController::class, 'createWithPermissions'])->name('admins.create-with-permissions');
 
     Route::get('settings', [\App\Http\Controllers\Dashboard\SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [\App\Http\Controllers\Dashboard\SettingController::class, 'update'])->name('settings.update');

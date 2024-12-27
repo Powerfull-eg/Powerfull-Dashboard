@@ -7,6 +7,7 @@ use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -36,19 +37,26 @@ class DashboardController extends Controller
         $allOperations = $operations->all();
         $inCompletedOperations = $operations->where('returnTime'.null)->get();
         $inCompletedPaymentOperations = $operations->where('status','!=',3)->get();
-        $operationsPerLastWeek = $operations->where('created_at','>=',now()->sub('1 week'))->get();
+        // Start from last friday
+        $operationsPerLastWeek = $operations->where('created_at','>=',now()->isFriday() ? now()->startOfDay() : new Carbon('last friday'))->get();
         $operationsThisMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))));
+        $operationsLastMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m')-1,1,date('Y'))));
 
         $data['allOperations'] = $allOperations;
         $data['inCompletedOperations'] = $inCompletedOperations;
         $data['inCompletedPaymentOperations'] = $inCompletedPaymentOperations;
         $data['operationsPerLastWeek'] = $operationsPerLastWeek;
         $data['operationsThisMonth'] = $operationsThisMonth->count();
+        $data['operationsLastMonth'] = $operationsLastMonth->count();
         // Get last 3 months operations
-        $last3months = [date('m')-2,date('m')-1,date('m')];
+        $last3months = [date('m')-3,date('m')-2,date('m')-1];
         foreach($last3months as $key => $month){
             $monthName = date('F',mktime(0,0,0,$month,1,date('Y')));
-            $last3monthsOperations[$monthName] = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,$month,1,date('Y'))))->count();
+            $last3monthsOperations[$monthName] = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,$month,1,date('Y'))));
+            if($key !== count($last3months) - 1){
+                $last3monthsOperations[$monthName] = $last3monthsOperations[$monthName]->where('created_at','<',date("Y-m-d",mktime(0,0,0,$month+1,1,date('Y'))));
+            }
+            $last3monthsOperations[$monthName] = $last3monthsOperations[$monthName]->count();
         }
         $data['last3monthsOperations'] = $last3monthsOperations ?? [];
         
@@ -64,8 +72,7 @@ class DashboardController extends Controller
         
         # Active Users
         $regularCustomers = $operationsThisMonth->pluck('user_id')->countBy(fn($val) => $val++);
-        $regularCustomers = array_map(fn($value) => $value > 1,$regularCustomers->toArray());
-
+        $regularCustomers = array_filter($regularCustomers->toArray(), fn($value) => $value > 1);
         $top10 = $users->withCount('operations')->orderByDesc('operations_count')->limit(10)->get();
         $data['regularCustomers'] = $regularCustomers;
         $data['top10'] = $top10;

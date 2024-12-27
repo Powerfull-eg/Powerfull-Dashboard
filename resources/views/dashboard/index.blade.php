@@ -7,7 +7,7 @@
                 <div class="subheader">{{__('Operations')}}</div>
                 <div class="d-flex align-items-center">
                   <div class="h1 mb-1">{{ intval($data['operationsPerLastWeek']->count())}}</div>
-                  <div class="ms-auto lh-1">{{__('Last 7 days')}}</div>
+                  <div class="ms-auto lh-1">{{__('This Week')}}</div>
                 </div>
                 <div class="d-flex align-items-center justify-content-between mb-1">
                   <div class="h1">{{ intval($data['operationsThisMonth'])}}</div>
@@ -16,10 +16,21 @@
                 <div class="d-flex mb-2">
                   <div>{{__("Conversion Rate")}}</div>
                   <div class="ms-auto">
+                    @if (($data['operationsThisMonth'] > $data['operationsLastMonth'] || $data['operationsThisMonth'] == $data['operationsLastMonth']) && $data['operationsLastMonth'] != 0)
                     <span class="text-green d-inline-flex align-items-center lh-1">
-                        {{ intval($data['operationsThisMonth']/$data['allOperations']->count()) * 100}}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                      {{ intval($data['operationsThisMonth']/$data['operationsLastMonth']) * 100}}%
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
                     </span>
+                    @else
+                    <span class="text-red d-inline-flex align-items-center lh-1">
+                      {{ $data['operationsLastMonth'] !=0 ? intval((1 - ($data['operationsThisMonth'] / $data['operationsLastMonth'])) * 100) : $data['operationsLastMonth']}}%
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trending-down">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M3 7l6 6l4 -4l8 8" />
+                        <path d="M21 10l0 7l-7 0" />
+                      </svg>
+                    </span>
+                    @endif
                   </div>
                 </div>
                 <div class="progress progress-sm">

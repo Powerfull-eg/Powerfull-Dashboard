@@ -57,8 +57,22 @@
                         </form>
                     </div>
                 </div>
+                {{-- Closiing Ticket --}}
+                @php 
+                    $closable = $ticket->status != 2 && $ticket->lastMessage->first()->sender == 2;
+                @endphp
+                <form class="d-none" id="close-ticket" action="{{ route('dashboard.support.close', $ticket->id) }}" method="post">@csrf</form>
+                <a class="floating-btn text {{ $closable ? 'text-danger' : 'disabled' }}" 
+                    style="bottom: 220px;" 
+                    onclick="{{ $closable ? 'closeTicket()' : ''}}" 
+                    href="#"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-title="{{__("Close Ticket")}}"
+                    >
+                    <i class="ti ti-x"></i>
+                </a>
                 {{-- Scroll To Top --}}
-                <div onclick="$(document).scrollTop(0);" class="scroll-top bg-white p-3 position-fixed text text-warning" style="width: 50px; height: 50px; bottom: 150px; right: 20px; border: 1px solid var(--background-color); border-radius: 10%; cursor: pointer;"><span><i class="ti ti-arrow-up"></i></span></div>
+                <div onclick="$(document).scrollTop(0);" style="bottom: 150px" class="scroll-top floating-btn text text-warning"><span><i class="ti ti-arrow-up"></i></span></div>
             </div>
         </div>
     @push('scripts')
@@ -95,10 +109,49 @@
                 $(parent).find('form').submit();
             })
         }
+
+        // Close Ticket
+        const closeTicket = () => {
+            this.event.preventDefault();
+            $.confirm({
+                title: '{{__("Close Ticket")}}',
+                content: '{{__("Are you sure you want to close this ticket?")}}',
+                type: 'red',
+                buttons: {
+                    confirm: {
+                        text: '{{__("Yes")}}',
+                        btnClass: 'btn-red',
+                        action: () => {
+                            $('#close-ticket').submit();
+                        }
+                    },
+                    cancel: {
+                        text: '{{__("No")}}',
+                        btnClass: 'btn-default',
+                    },
+                },
+            });
+        }
     </script>
     @endpush
     @push('styles')
     <style>
+    .floating-btn {
+        padding: 1rem;
+        position: fixed;
+        background: white;
+        width: 50px;
+        height: 50px;
+        right: 20px;
+        border: 1px solid var(--background-color);
+        border-radius: 10%;
+        cursor: pointer;
+    }
+    .floating-btn.disabled {
+        cursor: not-allowed;
+        border-color: #ddd;
+        color: #ddd;
+    }
     span.user {
         padding: 13px;
         background: linear-gradient(265deg, rgb(220 115 37) 37%, rgba(229,136,31,1) 74%);

@@ -74,7 +74,7 @@ class ResetPasswordNotification extends Notification
 
         return [
             'body' => $message,
-            'mobile' => $this->user->code . $this->user->phone
+            'mobile' => $this->user->phone
         ];
     }
 
@@ -90,7 +90,7 @@ class ResetPasswordNotification extends Notification
 
         return [
             'body' => $message,
-            'mobile' => $this->user->code . $this->user->phone
+            'mobile' => $this->user->phone
         ];
     }
 

@@ -7,6 +7,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
@@ -16,7 +17,13 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('dashboard.admins.index');
+        $permissions = Permission::all()->groupBy(function ($item, $key) {
+            return explode('.', $item->name)[1];
+        });
+
+        return view('dashboard.admins.index', [
+            'permissions' => $permissions,
+        ]);
     }
 
     /**
@@ -106,5 +113,35 @@ class AdminController extends Controller
         $admin->delete();
 
         return back()->with('success', __(':resource has been deleted.', ['resource' => __('Admin')]));
+    }
+
+// Create a new account with permissions
+    public function createWithPermissions(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins',
+            'password' => 'required|string|min:8|confirmed',
+            'permissions' => 'required|array',
+            'permissions.*' => 'required|exists:permissions,id'
+        ]);
+        $role = Role::create([
+            'name' => Str::random(10),
+            'permissions' => $validated['permissions']
+        ]);
+
+        $role->syncPermissions($validated['permissions'] ?? []);
+        
+        $admin = Admin::create([
+            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            ''
+        ]);
+
+        $admin->assignRole($role);
+
+        return redirect()->route('dashboard.admins.index')->with('success', __(':resource has been created.', ['resource' => __('Admin')]));
+
     }
 }

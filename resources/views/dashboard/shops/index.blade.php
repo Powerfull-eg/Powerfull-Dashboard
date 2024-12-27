@@ -102,8 +102,8 @@
                                 </div>
         
                                 {{-- Device Image --}}
-                                <div class="device-image" style="width: 120px; min-width: 120px; position: absolute; right: 5px; top: 2px">
-                                    <img src="{{$shop->data->logo ?? $shop->logo}}" width="120" style="border-radius: 50%; min-height: 120px" alt="contol powerbank">
+                                <div class="device-image" style="width: 100px; min-width: 100px; position: absolute; right: 5px; top: 2px">
+                                    <img src="{{$shop->data->logo ?? $shop->logo}}" width="100" style="border-radius: 50%; min-height: 100px" alt="contol powerbank">
                                 </div>
         
                                 {{-- Edit Device Icon --}}

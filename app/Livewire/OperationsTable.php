@@ -42,17 +42,17 @@ class OperationsTable extends Datatable
     {
         if($this->date[0] && $this->date[1])
         { 
-            return Operation::query()->whereBetween("created_at",$this->date)->orderByDesc("updated_at");
+            return Operation::query()->whereBetween("created_at",$this->date)->orderByDesc("created_at");
         }
         elseif($this->date[0] && !$this->date[1])
         {
-            return Operation::query()->where("created_at",">=",$this->date[0])->orderByDesc("updated_at");
+            return Operation::query()->where("created_at",">=",$this->date[0])->orderByDesc("created_at");
         }
         elseif(!$this->date[0] && $this->date[1])
         {
-            return Operation::query()->where("created_at","<=",$this->date[1])->orderByDesc("updated_at");
+            return Operation::query()->where("created_at","<=",$this->date[1])->orderByDesc("created_at");
         }
-        return Operation::query()->orderByDesc("updated_at");
+        return Operation::query()->orderByDesc("created_at");
     }
 
     /**

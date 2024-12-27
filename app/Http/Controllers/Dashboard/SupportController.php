@@ -50,7 +50,6 @@ class SupportController extends Controller
         // Send Notification to user 
         if($message){
             $user = User::findorFail($message->ticket->user_id);
-            $user->notify(new SupportNotification($user,$validated["message"],'whatsapp'));
         }
 
         Ticket::find($validated["ticket_id"])->update(["updated_at" => Carbon::now(),'status' => 1]);
@@ -72,5 +71,30 @@ class SupportController extends Controller
         
         $message->update($validated);
         return redirect()->back()->with('success',__("Message Updated Successfully"));
+    }
+
+    // End Ticket 
+    public function endTicket(string $id)
+    {
+        if(!Auth::guard('admins')->user()){
+            return redirect()->back()->with('error', __("You can't close this ticket"));
+        }
+
+        $closingMessage = __('Your inquiry has been solved, If you have any other questions, please don\'t hesitate to contact us.');
+
+        $ticket = Ticket::with("messages","user")->find($id);
+
+        $ticket->messages()->create([
+            "message" => $closingMessage,
+            "ticket_id" => $ticket->id,
+            "admin_id" => Auth::guard('admins')->user()->id,
+            "sender" => 0
+        ]);
+
+        $ticket->update(['status' => 2]);
+
+        $ticket->user->notify(new SupportNotification($ticket->user, $closingMessage,'whatsapp'));
+
+        return redirect()->back()->with('success',__("Ticket Closed Successfully"));
     }
 }
