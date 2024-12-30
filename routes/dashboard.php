@@ -109,6 +109,9 @@ Route::middleware('auth:admins')->group(function () {
 
     // Notes Routes
     Route::resource('notes', NoteController::class);
+
+    // Reports Routes
+    Route::resource('reports', \App\Http\Controllers\Dashboard\ReportsController::class);
 });
 
 /*

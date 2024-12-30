@@ -143,7 +143,7 @@ return [
 
         'children' => [
             [
-                // 'route' => 'dashboard.profile.edit',
+                'route' => 'dashboard.reports.index',
                 'locales' => [
                     'en' => 'Comperhensive Reports',
                     'ar' => 'التقارير الكاملة',
@@ -151,7 +151,8 @@ return [
             ],
 
             [
-                // 'route' => 'dashboard.roles.index',
+                'route' => 'dashboard.reports.index',
+                'routeData' => ['target' => 'devices'],
                 'locales' => [
                     'en' => 'Devices Reports',
                     'ar' => 'تقارير الأجهزة',
@@ -159,7 +160,8 @@ return [
             ],
 
             [
-                // 'route' => 'dashboard.admins.index',
+                'route' => 'dashboard.reports.index',
+                'routeData' => ['target' => 'customers'],
                 'locales' => [
                     'en' => 'Customers Reports',
                     'ar' => 'تقارير العملاء',
@@ -167,7 +169,8 @@ return [
             ],
 
             [
-                // 'route' => 'dashboard.admins.index',
+                'route' => 'dashboard.reports.index',
+                'routeData' => ['target' => 'financial'],
                 'locales' => [
                     'en' => 'Financial Reports',
                     'ar' => 'تقارير المالية',

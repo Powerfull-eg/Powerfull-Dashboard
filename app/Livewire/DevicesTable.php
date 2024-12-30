@@ -21,7 +21,7 @@ class DevicesTable extends Datatable
      */
     public function __construct()
     {
-        $this->getDevices();
+        // $this->getDevices();
     }
     // Mount Data
     public function mount($startDate=null, $endDate=null)
@@ -69,24 +69,24 @@ class DevicesTable extends Datatable
     {
         $this->fixedHeader = true;
         return [
-            Column::make('#',"id")
-                ->width('50px') 
-                ->sortable(),
+            // Column::make('#',"id")
+            //     ->width('50px') 
+            //     ->sortable(),
             Column::make(__('Device ID'),"device_id")
                 ->searchable()
                 ->sortable(),
             Column::make('Shop',"shop_id")
                 ->searchable()
                 ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a>"]) : ''),
-            Column::make('Live',"device_id")
-            ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? "<i class='text text-success fs-1 ti ti-checkbox'></i>":"<i class='text text-danger fs-1 ti ti-circle-x'></i>" )  : null) ),
-            Column::make('Type',"device_id")
-            ->format(fn($device) => ($this->devices[$device] ? 'Type: ' . (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["type"] : null)  : null) ),
+            // Column::make('Live',"device_id")
+            // ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? "<i class='text text-success fs-1 ti ti-checkbox'></i>":"<i class='text text-danger fs-1 ti ti-circle-x'></i>" )  : null) ),
+            // Column::make('Type',"device_id")
+            // ->format(fn($device) => ($this->devices[$device] ? 'Type: ' . (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["type"] : null)  : null) ),
             Column::make('Slots',"slots")
                 ->sortable(),
-            Column::make('Empty Slots',"device_id")
-                ->sortable()
-                ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["emptySlots"]: null) : null) ),
+            // Column::make('Empty Slots',"device_id")
+            //     ->sortable()
+            //     ->format(fn($device) => ($this->devices[$device] ? (isset($this->devices[$device]["data"]["cabinet"]["online"]) ? $this->devices[$device]["data"]["cabinet"]["emptySlots"]: null) : null) ),
             Column::make('Added At',"created_at")
                 ->sortable()
                 ->format(fn ($date) => ($date ? $date->format('d M Y h:m:i') : '' )),
