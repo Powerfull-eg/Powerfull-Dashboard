@@ -61,11 +61,20 @@ class ReportTable extends Datatable
             Column::make(__('Service Number'),"sim_number")
                 ->searchable()
                 ->sortable(),
-            Column::make(__('Total Operations Orders'),"operations_count")
+            Column::make(__('Total Operations Orders'),"operations")
+                ->format(fn ($operations) => $operations->count())
                 ->sortable(),
-            Column::make(__('Total Operating Hours'),"operations_time")
+            Column::make(__('Total Operating Hours'),"operations")
+                ->format(function($operations) {
+                    $hours = 0;
+                    foreach ($operations as $operation) {
+                        $hours += $operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0;
+                    }
+                    return intval($hours);
+                })
                 ->sortable(),
-            Column::make(__('Total Amount'),"operations_amount")
+            Column::make(__('Total Amount'),"operations")
+                ->format(fn($operations) => $operations->sum('amount'))
                 ->sortable(),
             Column::make(__('Partnership Share'),"shop.id")
                 ->sortable()
