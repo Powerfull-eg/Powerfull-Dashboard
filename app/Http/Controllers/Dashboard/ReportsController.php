@@ -8,9 +8,13 @@ use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\PdfService;
 use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExportExcel;
+use App\Exports\ReportExportExcel;
 
 class ReportsController extends Controller
 {
@@ -19,8 +23,7 @@ class ReportsController extends Controller
     private $operations;
     private $users;
 
-    public function index(Request $request)
-    {
+    public function __construct(Request $request){
         //Shops Data
         $this->shops = $request->startDate ? Shop::where('created_at','>=',$request->startDate) : new Shop;
         $this->shops = $request->endDate ? $this->shops->where('created_at','<=',$request->endDate) : $this->shops;
@@ -36,19 +39,20 @@ class ReportsController extends Controller
         //Users Data
         $this->users = $request->startDate ? User::where('created_at','>=',$request->startDate) : new User;
         $this->users = $request->endDate ? $this->users->where('created_at','<=',$request->endDate) : $this->users;
-
+    }
+    
+    public function index(Request $request)
+    {
         $target = $request->target ?: 'shops';
         $request->target = $target;
-        $data = $this->getTargetData($request);
+        $data = $this->getTargetData($target);
         $startDate = $request->startDate;
         $endDate = $request->endDate;
         return view('dashboard.reports.index',compact('target','data','startDate','endDate'));
     }
 
-    private function getTargetData($request)
-    {
-        $target = $request->target;
-        
+    private function getTargetData($target)
+    {   
         $targets = [
             'shops' => "getShopsData",
             'devices' => "getDevicesData",
@@ -60,14 +64,19 @@ class ReportsController extends Controller
         
         foreach ($targets as $key => $value) {
             if  ($key !== $target) continue;
-            $data = $this->$value($request);
+            $data = $this->$value();
         }
-        
+        // add dates to data
+        if(request()->startDate || request()->endDate){
+            $data->startDate = request()->startDate ?? null;
+            $data->endDate = request()->endDate ?? null; 
+        }
+
         return $data;
     }
 
     // Shops Data
-    private function getShopsData(Request $request){
+    private function getShopsData(){
 
         $shops = $this->shops->with('device','operations')->get();
         // Summary data
@@ -86,7 +95,7 @@ class ReportsController extends Controller
     }
 
     // Devices Data
-    private function getDevicesData(Request $request){
+    private function getDevicesData(){
         $devices = $this->devices->with('shop','operations')->get();
         // Summary data
         $summary["totalCompanyDevices"] = "77";
@@ -105,7 +114,7 @@ class ReportsController extends Controller
     }
 
     // Customers Data
-    private function getCustomersData(Request $request){
+    private function getCustomersData(){
         $users = $this->users->with('operations')->get();
         // Summary data
         $summary["numOfDownloadedApp"] = $users->count();
@@ -122,14 +131,8 @@ class ReportsController extends Controller
     }
 
     // Financial Data
-    private function getFinancialData(Request $request){
-        // $startDate = $request->startDate ?? null;
-        // $endDate = $request->endDate ?? null;
-        // $financial = new Financial;
-        // $financial = $startDate ? $financial->where('created_at','<=',$startDate) : $financial;
-        // $financial = $endDate ? $financial->where('created_at','>=',$endDate) : $financial;
-        // $financial = $financial->with('device','data')->get();
-        $financial = (object) [];
+    private function getFinancialData(){
+        $financial = $this->devices->with('shop','operations')->get();
         $summary["totalIncome"] = $this->operations->sum('amount');
         $summary["totalNetProfit"] = $this->operations->sum('amount');
         $summary["totalOperationsOrders"] = $this->operations->count();
@@ -142,5 +145,39 @@ class ReportsController extends Controller
         $summary["totalOperationsHours"] = round($summary["totalOperationsHours"],0);
         $financial->summary = $summary;
         return $financial;
+    }
+
+    // Report PDF Generator
+    public function getReportPdf($target=null){
+        if(!$target) return redirect()->back()->with('error', __("Please select a right report"));
+        
+        $view = "dashboard.pdf.reports.$target";
+        $data = $this->getTargetData($target);
+        
+        // Add dates to data
+        $data->startDate = $this->startDate ?? null;
+        $data->endDate = $this->endDate ?? null;
+        
+        $pdf = PdfService::generatePdf($view, $data);
+        return response()->make($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="report.pdf"',
+        ]);
+    }
+
+    public function exportExcel($target) 
+    {
+        if(!$target) return redirect()->back()->with('error', __("Please select a right report"));
+        if($target == 'customers'){
+            $data = $this->getTargetData($target);
+        } else {
+            $data = $this->devices->with('shop','operations')->get();
+            $data->summary = $this->getTargetData($target)->summary;
+        }
+        
+        $data->targetExcel = $target;
+        
+        $excel = $target == 'customers' ? UsersExportExcel::class : ReportExportExcel::class;
+        return Excel::download(new $excel($data), "$target.xlsx");
     }
 }

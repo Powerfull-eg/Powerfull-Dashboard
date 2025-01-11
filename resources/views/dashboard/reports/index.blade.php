@@ -1,4 +1,4 @@
-<x-layouts::dashboard>
+<x-layouts::dashboard :title="ucfirst($target) . ' ' . __('Reports')">
     <div class="header d-flex gap-2 justify-content-between">
         <div class="d-flex align-items-end mb-5 justify-content-center logo">
             <i style="font-size: 5rem; color: var(--background-color)" class="ti ti-clipboard-data"></i>
@@ -18,12 +18,17 @@
         </div>
         {{-- Exports --}}
         <div class="col-12 col-md-4 d-flex gap-2 justify-content-center mx-auto">
-            <div class="btn export">{{__("Export All PDF")}}</div>
-            <div class="btn export">{{__("Export All Excel")}}</div>
+            {{-- <a href="{{route('dashboard.reports.pdf', $target)}}" class="btn export" onclick="()">{{__("Export All PDF")}}</a> --}}
+            <form id="excel-form" class="export-form" action="{{route('dashboard.reports.export.excel', $target)}}" method="POST">
+                @csrf
+                <input type="hidden" name="startDate" value="{{$startDate}}">
+                <input type="hidden" name="endDate" value="{{$endDate}}">
+                <button type="submit" class="btn export">{{__("Export All Excel")}}</button>
+            </form>
         </div>
     </div>
 
-    <div class="container row justify-content-center mt-5">
+    <div class="container summary-container row justify-content-center mt-5">
         {{-- Summary Data --}}
         @foreach ($data->summary as $title => $number)           
             <div class="summary-card {{ in_array($loop->index, [1,4]) ? 'middle' : ''}} col-3">
