@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'mode'                     => '',
+    'mode'                     => 'utf-8',
     'format'                   => 'A4',
     'default_font_size'        => '12',
     'default_font'             => 'sans-serif',
@@ -12,7 +12,7 @@ return [
     'margin_header'            => 0,
     'margin_footer'            => 0,
     'orientation'              => 'P',
-    'title'                    => 'Laravel mPDF',
+    'title'                    => 'Powerfull',
     'subject'                  => '',
     'author'                   => '',
     'watermark'                => '',

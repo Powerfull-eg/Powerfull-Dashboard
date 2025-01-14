@@ -18,19 +18,26 @@
         </div>
         {{-- Exports --}}
         <div class="col-12 col-md-4 d-flex gap-2 justify-content-center mx-auto">
-            {{-- <a href="{{route('dashboard.reports.pdf', $target)}}" class="btn export" onclick="()">{{__("Export All PDF")}}</a> --}}
+            <form id="pdf-form" class="export-form" action="{{route('dashboard.reports.export.pdf', $target)}}" method="POST">
+                @csrf
+                <input type="hidden" name="startDate" value="{{$startDate}}">
+                <input type="hidden" name="endDate" value="{{$endDate}}">
+                <button type="submit" class="btn export">{{__("Export PDF")}}</button>
+            </form>
             <form id="excel-form" class="export-form" action="{{route('dashboard.reports.export.excel', $target)}}" method="POST">
                 @csrf
                 <input type="hidden" name="startDate" value="{{$startDate}}">
                 <input type="hidden" name="endDate" value="{{$endDate}}">
-                <button type="submit" class="btn export">{{__("Export All Excel")}}</button>
+                <button type="submit" class="btn export">{{__("Export Excel")}}</button>
             </form>
         </div>
     </div>
 
-    <div class="container summary-container row justify-content-center mt-5">
+    <div class="container">
+
         {{-- Summary Data --}}
-        @foreach ($data->summary as $title => $number)           
+        <div class="summary-container row justify-content-center mt-5">
+            @foreach ($data->summary as $title => $number)           
             <div class="summary-card {{ in_array($loop->index, [1,4]) ? 'middle' : ''}} col-3">
                 <div class="number-card">
                     <span class="background"></span>
@@ -39,9 +46,10 @@
                 <div class="title-card">{{ucfirst(implode(" ",preg_split('/(?=[A-Z])/', $title, -1, PREG_SPLIT_NO_EMPTY)))}}</div>
                 <hr>
             </div>
-        @endforeach
+            @endforeach
+        </div>
+
         {{-- Table --}}
-        {{-- Temporary !!!! --}}
         <div class="col-12">
             @if ($target == 'customers')
             <livewire:users-table :startDate="$startDate" :endDate="$endDate"/>

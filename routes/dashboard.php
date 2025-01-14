@@ -112,7 +112,7 @@ Route::middleware('auth:admins')->group(function () {
 
     // Reports Routes
     Route::resource('reports', \App\Http\Controllers\Dashboard\ReportsController::class);
-    // Route::get('reports/pdf/{target}', [\App\Http\Controllers\Dashboard\ReportsController::class,'getReportPdf'])->name('reports.pdf');
+    Route::post('reports/export-pdf/{target}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportpdf'])->name('reports.export.pdf');
     Route::post('reports/export-excel/{target}',[\App\Http\Controllers\Dashboard\ReportsController::class,"exportExcel"])->name('reports.export.excel');
 
 });

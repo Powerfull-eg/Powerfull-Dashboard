@@ -152,7 +152,7 @@ return [
 
             [
                 'route' => 'dashboard.reports.index',
-                'routeData' => ['target' => 'devices'],
+                'params' => ['target' => 'devices'],
                 'locales' => [
                     'en' => 'Devices Reports',
                     'ar' => 'تقارير الأجهزة',
@@ -161,7 +161,7 @@ return [
 
             [
                 'route' => 'dashboard.reports.index',
-                'routeData' => ['target' => 'customers'],
+                'params' => ['target' => 'customers'],
                 'locales' => [
                     'en' => 'Customers Reports',
                     'ar' => 'تقارير العملاء',
@@ -170,7 +170,7 @@ return [
 
             [
                 'route' => 'dashboard.reports.index',
-                'routeData' => ['target' => 'financial'],
+                'params' => ['target' => 'financial'],
                 'locales' => [
                     'en' => 'Financial Reports',
                     'ar' => 'تقارير المالية',

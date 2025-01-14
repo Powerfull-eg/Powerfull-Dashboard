@@ -71,6 +71,13 @@ class Dashboard extends Component
 
         $item->url = isset($item->route) ? route($item->route) : '#';
         $item->active = $item->url && $this->isActiveUrl($item->url);
+        // Url Params
+        if(isset($item->params)) {
+            $item->url .= '?';
+            foreach ($item->params as $key => $value) {
+                $item->url .= $key . '=' . $value;
+            }    
+        }
 
         // Set the page title to the current item title if it's active.
         if ($item->active) {

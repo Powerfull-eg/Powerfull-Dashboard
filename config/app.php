@@ -191,6 +191,8 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -214,6 +216,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'PDF' => Mccarlosen\LaravelMpdf\Facades\LaravelMpdf::class
         //
     ])->toArray(),
 

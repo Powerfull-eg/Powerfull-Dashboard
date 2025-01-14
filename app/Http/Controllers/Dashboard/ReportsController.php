@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExportExcel;
 use App\Exports\ReportExportExcel;
+use PDF;
 
 class ReportsController extends Controller
 {
@@ -148,21 +149,25 @@ class ReportsController extends Controller
     }
 
     // Report PDF Generator
-    public function getReportPdf($target=null){
+    public function exportpdf($target){
         if(!$target) return redirect()->back()->with('error', __("Please select a right report"));
         
-        $view = "dashboard.pdf.reports.$target";
-        $data = $this->getTargetData($target);
+        $view = $target == 'customers' ? "dashboard.pdf.users" : "dashboard.pdf.reports";
+        if($target == 'customers'){
+            $data = $this->getTargetData($target);
+        } else {
+            $data = $this->devices->with('shop','operations')->get();
+            $data->summary = $this->getTargetData($target)->summary;
+            $data->target = $target;
+        }
         
         // Add dates to data
         $data->startDate = $this->startDate ?? null;
         $data->endDate = $this->endDate ?? null;
-        
-        $pdf = PdfService::generatePdf($view, $data);
-        return response()->make($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="report.pdf"',
-        ]);
+
+        $pdf = PDF::loadView($view, ['data' => $data]);
+        return $pdf->stream("$target.pdf");
+
     }
 
     public function exportExcel($target) 
