@@ -34,25 +34,35 @@
             </div>
             {{-- Form --}}
             <form action="{{route('dashboard.admins.create-with-permissions')}}" method="POST" enctype="multipart/form-data">
-z                @csrf
+                @csrf
                 {{-- Admin inputs --}}
                 <div class="table">
                     <table class="content-table">
                         <tr>
                             <td class="title">{{__("FirstName")}}:</td>
-                            <td><input type="text" name="first_name" placeholder="{{__("First Name")}}"></td>
+                            <td><input type="text" name="first_name" value="{{old('first_name')}}" placeholder="{{__("First Name")}}" required></td>
                             <td class="title">{{__("Last Name")}}:</td>
-                            <td><input type="text" name="last_name" placeholder="{{__("Last Name")}}"></td>
+                            <td><input type="text" name="last_name" value="{{old('last_name')}}" placeholder="{{__("Last Name")}}" required></td>
                         </tr>
                         <tr>
                             <td class="title">{{__("Email")}}:</td>
-                            <td colspan="3"><input type="text" name="email" placeholder="{{__("Email")}}"></td>
+                            <td colspan="3"><input type="text" name="email" value="{{old('email')}}" placeholder="{{__("Email")}}" required></td>
                         </tr>
                         <tr>
                             <td class="title">{{__("Password")}}:</td>
-                            <td colspan="3"><input type="password" name="password" placeholder="{{__("Password")}}"></td>
+                            <td colspan="3" class="d-flex">
+                                <input type="password" name="password" placeholder="{{__("Password")}}" required>
+                                <button type="button" class="input-group-text" onclick="togglePassword(this, '[name=password]')" tabindex="-1">
+                                    <i class="ti ti-eye"></i>
+                                </button>
+                            </td>
                             <td class="title">{{__("Confirm Password")}}:</td>
-                            <td colspan="3"><input type="password" name="confirm" placeholder="{{__("Confirm Password")}}"></td>
+                            <td colspan="3" class="d-flex">
+                                <input type="password" name="password_confirmation" placeholder="{{__("Confirm Password")}}" required>
+                                <button type="button" class="input-group-text" onclick="togglePassword(this, '[name=password_confirmation]')" tabindex="-1">
+                                    <i class="ti ti-eye"></i>
+                                </button>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -61,8 +71,12 @@ z                @csrf
                     <i class="ti ti-edit"></i>
                     <span>{{__("Access")}}</span>
                 </div>
-        
-                <div class="table-responsive">
+                
+                {{-- Existing Roles --}}
+                @php $roles[0] = __('New Role'); @endphp
+                <x-components::forms.select class="mb-3 border border-primary" id="role" name="role" title="{{ __('Role') }}" :options="$roles" :selected="old('role', null)" required />
+                
+                <div class="table-responsive" id="permissions">
                     <table class="table card-table table-vcenter">
                         <thead>
                             <tr>
@@ -91,6 +105,11 @@ z                @csrf
                         </tbody>
                     </table>
                 </div>
+                
+                <button type="submit" class="btn btn-primary p-3 px-5 mx-auto my-3 d-block">
+                    <i class="ti ti-save"></i>
+                    <span>{{__("Submit")}}</span>
+                </button>
             </form>
             {{-- End Form --}}
         </div>
@@ -224,5 +243,21 @@ z                @csrf
             display: block;
         }
     </style>
+@endpush
+@push('scripts')
+    <script>
+        $(document).ready(() => {
+            $("select#role").val() == 0 ? $("#permissions").show() : $("#permissions").hide();
+            $("select#role").on('change', function() {
+                let role = $(this).val();
+                // hide table if role is exist
+                if (role != 0) {
+                    $("#permissions").hide();
+                }else{
+                    $("#permissions").show();
+                }
+            });
+        });
+    </script>
 @endpush
 </x-layouts::dashboard>

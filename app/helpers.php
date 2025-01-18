@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Gate;
+
 if (! function_exists('setting')) {
     /**
      * Get the specified setting value.
@@ -25,5 +27,15 @@ if (! function_exists('secondsToTimeString')) {
         $minutes = floor(($time - ($hours * 3600)) / 60);
         $seconds = $time - ($hours * 3600) - ($minutes * 60);
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
+}
+
+// Check for admin permission
+if (! function_exists('checkAdminPermission')) {
+    function checkAdminPermission($permission) {
+        if (! Gate::allows($permission)) {
+            abort(403);
+        }
+        return true;
     }
 }

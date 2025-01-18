@@ -21,8 +21,11 @@ class AdminController extends Controller
             return explode('.', $item->name)[1];
         });
 
+        $roles = Role::pluck('name', 'id');
+        
         return view('dashboard.admins.index', [
             'permissions' => $permissions,
+            'roles' => $roles,
         ]);
     }
 
@@ -44,14 +47,15 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:125',
+            'last_name' => 'required|string|max:125',
             'email' => 'required|string|email|max:255|unique:admins',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,id',
         ]);
 
         $admin = Admin::create([
-            'name' => $validated['name'],
+            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -85,7 +89,7 @@ class AdminController extends Controller
             'role' => 'required|exists:roles,id',
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255',
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         cache()->flush();
@@ -119,26 +123,36 @@ class AdminController extends Controller
     public function createWithPermissions(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:125', 
+            'last_name' => 'required|string|max:125',
             'email' => 'required|string|email|max:255|unique:admins',
             'password' => 'required|string|min:8|confirmed',
-            'permissions' => 'required|array',
-            'permissions.*' => 'required|exists:permissions,id'
-        ]);
-        $role = Role::create([
-            'name' => Str::random(10),
-            'permissions' => $validated['permissions']
+            'permissions' => 'required_if:role,0|array',
+            'permissions.*' => 'required_if:role,0|exists:permissions,id',
+            'role' => 'required',
         ]);
 
-        $role->syncPermissions($validated['permissions'] ?? []);
-        
+        // Check if role is exist or new
+        // If new create role
+        if($validated['role'] == 0) {
+            $role = Role::create([
+                'name' => Str::random(10),
+                'permissions' => $validated['permissions']
+            ]);
+
+            $role->syncPermissions($validated['permissions'] ?? []);
+        // If role is exist
+        }else{
+            $role = Role::findOrfail($validated['role']);
+        }
+        // Create admin account
         $admin = Admin::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            ''
+            'password' => Hash::make($validated['password'])
         ]);
 
+        // Assign role to admin
         $admin->assignRole($role);
 
         return redirect()->route('dashboard.admins.index')->with('success', __(':resource has been created.', ['resource' => __('Admin')]));
