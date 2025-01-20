@@ -17,6 +17,9 @@ class RoutePermission
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! $this->hasPermissionTo($request->route()->getName())) {
+            abort(403);
+        }
         return $next($request);
     }
 

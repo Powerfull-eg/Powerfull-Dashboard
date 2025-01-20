@@ -106,10 +106,10 @@ return [
             'en' => 'Access Permissions',
             'ar' => 'صلاحيات الدخول',
         ],
-
+        
         'children' => [
             [
-                // 'route' => 'dashboard.profile.edit',
+                'route' => 'dashboard.admins.index',
                 'locales' => [
                     'en' => 'Access Reports',
                     'ar' => 'صلاحيات التقارير',
@@ -117,7 +117,7 @@ return [
             ],
 
             [
-                // 'route' => 'dashboard.roles.index',
+                'route' => 'dashboard.shop-admins.index',
                 'locales' => [
                     'en' => 'Access Merchants',
                     'ar' => 'صلاحيات المتاجر',

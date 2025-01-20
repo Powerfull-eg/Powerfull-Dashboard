@@ -29,13 +29,3 @@ if (! function_exists('secondsToTimeString')) {
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }
-
-// Check for admin permission
-if (! function_exists('checkAdminPermission')) {
-    function checkAdminPermission($permission) {
-        if (! Gate::allows($permission)) {
-            abort(403);
-        }
-        return true;
-    }
-}
