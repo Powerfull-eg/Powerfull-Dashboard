@@ -28,11 +28,11 @@ class UserController extends Controller
         $activeUsers = Operation::with('user')->distinct('user_id')->count();
         $incompleteAutoRequestDurations = [ 1 => "Every day", 7 => "Every Week", 30 => "Every Month", 365 => "Every Year" ];
         $incompleteDuration = Setting::where('key', 'incomplete_auto_request_duration')->first();
-        $incompleteOperations = Operation::where('status', 4)->with('device','user','incompleteOperation')->orderByDesc('updated_at');
-        OperationController::checkForIncompleteOperations($incompleteOperations->get());
-        $incompleteOperations = $incompleteOperations->limit(5)->get();
-
-        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','registerdUsers','activeUsers'));
+        OperationController::checkForIncompleteOperations();
+        $incompleteOperations = Operation::where('status', 4)->with('device','user','incompleteOperation')->orderByDesc('updated_at')->limit(5)->get();
+        $incompleteHistory = IncompleteHistory::with('operation')->orderByDesc('updated_at')->limit(5)->get();
+      
+        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','incompleteHistory','registerdUsers','activeUsers'));
     }
     
     /**

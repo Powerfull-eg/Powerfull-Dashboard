@@ -80,8 +80,7 @@ class BajieController extends \App\Http\Controllers\Controller
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
-                    //"status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
-                    "status"   => 1,
+                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
                 ]);
 
         }
@@ -100,9 +99,8 @@ class BajieController extends \App\Http\Controllers\Controller
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
-                    //"status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
-                    "status"   => 1,
-            ]);
+                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
+                ]);
          }
          
         return response()->json([$response->status(),$response->body()]);
@@ -182,14 +180,14 @@ class BajieController extends \App\Http\Controllers\Controller
                 "returnTime" => $responseBody["data"]["returnTime"],
                 "borrowSlot" => $responseBody["data"]["borrowSlot"],
                 "returnShop"   => $responseBody["data"]["returnShop"],
-                //"status"   => 2,
-                "status"   => 1,
+                "status" => 2
             ]);
         }
         
         return response()->json(["order" => $operation]);
     }
-
+    
+    // get specific device data
     public static function getDeviceData($device_id){
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get("https://developer.chargenow.top/cdb-open-api/v1/rent/cabinet/query?deviceId=$device_id");
         if($response->status() == 20 && json_decode($response->body(),true)["code"] == 0){
