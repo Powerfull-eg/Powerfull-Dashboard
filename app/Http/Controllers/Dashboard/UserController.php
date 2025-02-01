@@ -33,8 +33,9 @@ class UserController extends Controller
         $incompleteOperations = Operation::where('status', 4)->with('device','user','incompleteOperation')->orderByDesc('updated_at');
         OperationController::checkForIncompleteOperations($incompleteOperations->get());
         $incompleteOperations = $incompleteOperations->limit(5)->get();
-
-        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','registerdUsers','activeUsers'));
+        $startDate = $request->startDate ?? null;
+        $endDate = $request->endDate ?? null;
+        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','registerdUsers','activeUsers','startDate','endDate'));
     }
     
     /**

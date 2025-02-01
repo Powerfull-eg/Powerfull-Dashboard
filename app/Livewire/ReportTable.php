@@ -58,6 +58,8 @@ class ReportTable extends Datatable
                         $query->where('name', 'like', '%'.$search.'%');
                     });
                 }),
+            Column::make(__('Shop'),"shop.id")
+            ->format(fn ($id) => view('components.icon', ['icon' => "<a href='" . route("dashboard.reports.shop",$id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a>"])),
             Column::make(__('Service Number'),"sim_number")
                 ->searchable()
                 ->sortable(),
@@ -76,12 +78,12 @@ class ReportTable extends Datatable
             Column::make(__('Total Amount'),"operations")
                 ->format(fn($operations) => $operations->sum('amount'))
                 ->sortable(),
-            Column::make(__('Partnership Share'),"shop.id")
+            Column::make(__('Partnership Share'),"shop.share_percentage")
                 ->sortable()
-                ->format(fn ($share) => 0 . "%"),
-            Column::make(__('Total Partner Share'),"shop.id")
+                ->format(fn ($share) => $share . "%"),
+            Column::make(__('Total Partner Share'),"shop")
                 ->sortable()
-                ->format(fn ($share) => 0 . "%"),
+                ->format(fn ($shop) => intval(($shop->share_percentage / 100) * $shop->operations->sum('amount')) . " EGP"),
             Column::make(__('Export'),"shop.phone"),
             Column::make(__('Send Whatsapp'),"shop.phone")
       ];

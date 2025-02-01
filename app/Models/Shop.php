@@ -56,17 +56,9 @@ class Shop extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     
-     public function operations() : HasManyThrough 
+     public function operations() : HasMany
     {
-        return $this->hasManyThrough(
-            Operation::class, 
-            Device::class,
-            "shop_id",
-            "station_id",
-            "id",
-            "id"
-
-        );
+        return $this->hasMany(Operation::class);
     }
 
     public function logo() : Attribute

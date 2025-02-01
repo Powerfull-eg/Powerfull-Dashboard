@@ -2,6 +2,7 @@
     <x-components::status />
     <x-components::forms.customDatePicker />
     @php
+    $countPerDevice = [];
      foreach($operationsPerDevice as $deviceOperations){
         $countPerDevice[] = count($deviceOperations);
      }

@@ -24,7 +24,7 @@
                 <input type="hidden" name="endDate" value="{{$endDate}}">
                 <button type="submit" class="btn export">{{__("Export PDF")}}</button>
             </form>
-            <form id="excel-form" class="export-form" action="{{route('dashboard.reports.export.excel', $target)}}" method="POST">
+            <form id="excel-form" class="export-form ignore-loader" action="{{route('dashboard.reports.export.excel', $target)}}" method="POST">
                 @csrf
                 <input type="hidden" name="startDate" value="{{$startDate}}">
                 <input type="hidden" name="endDate" value="{{$endDate}}">
@@ -88,51 +88,7 @@
                 justify-content: center;
                 max-height: fit-content;
             }
-            /* Summary Card */
-            .summary-card {
-                position: relative;
-                margin: 20px;
-                margin-top: 25px;
-            }
-            .number-card {
-                position: relative;
-            }
-            .number-card .background {
-                position: absolute;
-                top: -10px;
-                left: -10px;
-                width: 50px;
-                height: 50px;
-                background-color: var(--background-color);
-                border-radius: 10px;
-                transform: rotate(45deg);
-            }
-            .summary-card.middle .number-card .background {
-                background: #eca51c;
-            }
-            .number-card .number {
-                position: absolute;
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: var(--text-color);
-            }
-            .title-card {
-                background: #ddd;
-                color: var(--text-color-2);
-                padding: 1rem;
-                margin-top: 30px;
-                border-radius: 50px;
-                padding-inline-start: 30px;
-                font-weight: 700;
-            }
-            .summary-card hr {
-                background: var(--background-color);
-                height: 3px;
-                opacity: 0.6;
-            }
-            .summary-card.middle hr {
-                background: #ddd !important;
-            }
+            
 
             /* Edit Livewire styles */
             div.livewire-datatable {

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExportExcel;
 use App\Exports\ReportExportExcel;
+use App\Exports\ShopExportExcel;
 use PDF;
 
 class ReportsController extends Controller
@@ -94,6 +95,23 @@ class ReportsController extends Controller
         $shops->summary = $summary;
         return $shops;
     }
+    // get Shop Data
+    private function getShopData(string $id, $startDate = null, $endDate = null){
+        $shop = Shop::find($id);
+        $operations = $startDate? $shop->operations->where('created_at','>=',$startDate) : $shop->operations;
+        $operations = $endDate? $operations->where('created_at','<=',$endDate) : $operations;
+
+        $summary["totalIncome"] = $operations->sum('amount');
+        $summary["totalNetProfit"] = $operations->sum('amount');
+        $summary["totalOperationsOrders"] = $operations->count();
+        $summary["incompletePayments"] = $operations->where('status',4)->count();
+        $summary["totalOperationsHours"] = 0;
+        foreach($operations as $operation){
+            $summary["totalOperationsHours"] += ($operation->returnTime && $operation->borrowTime ? ceil(floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60)) : 0);
+        }
+        $shop->summary = $summary;
+        return $shop;
+    }
 
     // Devices Data
     private function getDevicesData(){
@@ -169,6 +187,17 @@ class ReportsController extends Controller
         return $pdf->stream("$target.pdf");
 
     }
+    // Report Pdf for specific shop
+    public function exportShopPdf($id,Request $request){
+        $view = "dashboard.pdf.shop";
+        $data = $this->getShopData($id,$request->startDate,$request->endDate);
+        $data->startDate = $request->startDate ?? null;
+        $data->endDate = $request->endDate ?? null;
+        $data->operations = $request->startDate ? $data->operations->where('created_at','>=',$request->startDate) : $data->operations;
+        $data->operations = $request->endDate ? $data->operations->where('created_at','<=',$request->endDate) : $data->operations;
+        $pdf = PDF::loadView($view, ['data' => $data]);
+        return $pdf->stream("$data->name-report.pdf");
+    }
 
     public function exportExcel($target) 
     {
@@ -184,5 +213,19 @@ class ReportsController extends Controller
         
         $excel = $target == 'customers' ? UsersExportExcel::class : ReportExportExcel::class;
         return Excel::download(new $excel($data), "$target.xlsx");
+    }
+    // Report Pdf for specific shop
+    public function exportShopExcel($id,Request $request){
+        $data = $this->getShopData($id,$request->startDate,$request->endDate);
+        $excel = ShopExportExcel::class;
+        return Excel::download(new $excel($data,$request->startDate,$request->endDate), "$data->name.xlsx");
+    }
+
+    // Show Device Report
+    public function shopReport(string $id, Request $request){
+        $startDate = $request->startDate ?? null;
+        $endDate = $request->endDate ?? null;
+        $shop = $this->getShopData($id,$startDate,$endDate);
+        return view('dashboard.reports.show-shop',compact('shop','startDate','endDate'));
     }
 }

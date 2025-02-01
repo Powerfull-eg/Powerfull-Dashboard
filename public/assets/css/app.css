@@ -295,3 +295,49 @@ table.content-table tr td.title{
     font-size: 30px;
     font-weight: 600;
 }
+
+/* Summary Card */
+.summary-card {
+    position: relative;
+    margin: 20px;
+    margin-top: 25px;
+}
+.summary-card .number-card {
+    position: relative;
+}
+.summary-card .number-card .background {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    transform: rotate(45deg);
+}
+.summary-card.middle .number-card .background {
+    background: #eca51c;
+}
+.summary-card .number-card .number {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+.summary-card .title-card {
+    background: #ddd;
+    color: var(--text-color-2);
+    padding: 1rem;
+    margin-top: 30px;
+    border-radius: 50px;
+    padding-inline-start: 30px;
+    font-weight: 700;
+}
+.summary-card .summary-card hr {
+    background: var(--background-color);
+    height: 3px;
+    opacity: 0.6;
+}
+.summary-card.middle hr {
+    background: #ddd !important;
+}

@@ -18,6 +18,7 @@ class Operation extends Model
         "station_id",
         "powerbank_id",
         "user_id",
+        "shop_id",
         "card_id",
         "tradeNo",
         "borrowTime",
@@ -68,4 +69,10 @@ class Operation extends Model
     //         get: fn (string $value) => Carbon::parse($value)->subHours(6)->format('Y-m-d\TH:i:s'),
     //     );
     // }
+
+    // Shop Relation 
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
+    }
 }
