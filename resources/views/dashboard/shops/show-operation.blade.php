@@ -172,6 +172,12 @@
                     <input type="hidden" name="endDate" value="{{$endDate}}">
                     <button type="submit" class="btn export">{{__("Export Excel")}}</button>
                 </form>
+                <form id="send-form" class="export-form justify-self-end" action="{{route('dashboard.reports.send-report', $shop->id)}}" method="POST">
+                    @csrf
+                    <input type="hidden" name="startDate" value="{{$startDate}}">
+                    <input type="hidden" name="endDate" value="{{$endDate}}">
+                    <button type="submit" class="btn export">{{__("Send Report")}} &nbsp;<i class="ti ti-brand-whatsapp fs-2"></i></button>
+                </form>
             </div>
         </div>
         @push('styles')

@@ -120,6 +120,8 @@ Route::middleware('auth:admins')->group(function () {
     Route::post('reports/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,"exportShopExcel"])->name('reports.shop.excel');
     Route::post('reports/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportShopPdf'])->name('reports.shop.pdf');
     Route::get('reports/shop/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,'shopReport'])->name('reports.shop');
+    Route::post('reports/send-report/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'sendReport'])->name('reports.send-report');
+
 });
 
 /*

@@ -16,6 +16,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExportExcel;
 use App\Exports\ReportExportExcel;
 use App\Exports\ShopExportExcel;
+use App\Http\Controllers\WhatsappController;
+use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class ReportsController extends Controller
@@ -188,7 +190,7 @@ class ReportsController extends Controller
 
     }
     // Report Pdf for specific shop
-    public function exportShopPdf($id,Request $request){
+    public function exportShopPdf($id,Request $request,$send = false){
         $view = "dashboard.pdf.shop";
         $data = $this->getShopData($id,$request->startDate,$request->endDate);
         $data->startDate = $request->startDate ?? null;
@@ -196,6 +198,12 @@ class ReportsController extends Controller
         $data->operations = $request->startDate ? $data->operations->where('created_at','>=',$request->startDate) : $data->operations;
         $data->operations = $request->endDate ? $data->operations->where('created_at','<=',$request->endDate) : $data->operations;
         $pdf = PDF::loadView($view, ['data' => $data]);
+        if($send){
+            $fileName = "pdf/" . str_replace(' ', "", $data->name) . "-report.pdf"; 
+            Storage::disk('public')->put($fileName, $pdf->output());
+            $url = Storage::url($fileName);
+            return url($url);
+        };
         return $pdf->stream("$data->name-report.pdf");
     }
 
@@ -227,5 +235,17 @@ class ReportsController extends Controller
         $endDate = $request->endDate ?? null;
         $shop = $this->getShopData($id,$startDate,$endDate);
         return view('dashboard.reports.show-shop',compact('shop','startDate','endDate'));
+    }
+
+    // Send Report Via Whatsapp
+    public function sendReport($id,Request $request){
+        $file = $this->exportShopPdf($id,$request,true);
+        $request->merge([
+            "mobile" => Shop::find($id)->phone,
+            "file" => $file,
+        ]);
+        // dd($request->input());
+       $success = WhatsappController::sendFileWithMessage($request);
+        return redirect()->back()->with($success ? 'success' : 'error', $success ? __('File Sent Successfully') : __('Failed to send file'));
     }
 }
