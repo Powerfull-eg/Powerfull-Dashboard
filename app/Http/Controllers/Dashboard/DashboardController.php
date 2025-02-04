@@ -40,7 +40,9 @@ class DashboardController extends Controller
         // Start from last friday
         $operationsPerLastWeek = $operations->where('created_at','>=',now()->isFriday() ? now()->startOfDay() : new Carbon('last friday'))->get();
         $operationsThisMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))));
-        $operationsLastMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m')-1,1,date('Y'))));
+        
+        $operationsLastMonth = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,date('m')-1,1,date('Y'))))
+                                          ->where('created_at','<',date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))));
 
         $data['allOperations'] = $allOperations;
         $data['inCompletedOperations'] = $inCompletedOperations;
@@ -48,15 +50,14 @@ class DashboardController extends Controller
         $data['operationsPerLastWeek'] = $operationsPerLastWeek;
         $data['operationsThisMonth'] = $operationsThisMonth->count();
         $data['operationsLastMonth'] = $operationsLastMonth->count();
+        
         // Get last 3 months operations
         $last3months = [date('m')-3,date('m')-2,date('m')-1];
         foreach($last3months as $key => $month){
             $monthName = date('F',mktime(0,0,0,$month,1,date('Y')));
-            $last3monthsOperations[$monthName] = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,$month,1,date('Y'))));
-            if($key !== count($last3months) - 1){
-                $last3monthsOperations[$monthName] = $last3monthsOperations[$monthName]->where('created_at','<',date("Y-m-d",mktime(0,0,0,$month+1,1,date('Y'))));
-            }
-            $last3monthsOperations[$monthName] = $last3monthsOperations[$monthName]->count();
+            $last3monthsOperations[$monthName] = $operations->where('created_at','>=',date("Y-m-d",mktime(0,0,0,$month,1,date('Y'))))
+                                                            ->where('created_at','<',date("Y-m-d",mktime(0,0,0,$month+1,1,date('Y'))))
+                                                            ->count();
         }
         $data['last3monthsOperations'] = $last3monthsOperations ?? [];
         

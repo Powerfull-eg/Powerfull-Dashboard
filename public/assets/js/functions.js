@@ -359,11 +359,11 @@ function capitalizeFirstLetter(string) {
 $(document).ready(() => {
     $('#page-overlay').addClass('d-none');
 })
-$(document).on('submit', 'form', () => {
+$(document).on('submit', 'form:not(.ignore-loader)', () => {
      showPageLoader();
 });
 
-$(document).on('click', 'a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"]):not(.btn-close)', () => { 
+$(document).on('click', 'a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"]):not(.btn-close):not(.ignore-loader)', () => { 
     showPageLoader();
 });
 

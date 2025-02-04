@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Exports\UsersExportExcel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\BlockedAccount;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Support\Facades\Password;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {

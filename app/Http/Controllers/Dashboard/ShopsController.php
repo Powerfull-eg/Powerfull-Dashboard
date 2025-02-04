@@ -14,8 +14,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
-
 use function Pest\Laravel\json;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ShopExportExcel;
+use PDF;
 
 class ShopsController extends Controller
 {
@@ -52,28 +54,15 @@ class ShopsController extends Controller
     /**
      * Display the Shop Operations.
      */
-    public function operations(string $shop)
+    public function operations(string $shop,Request $request)
     {
         // Date Filter
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-        
-        $shop = Shop::with(['device','operations','gifts','notes'])->find($shop);
-        $this->authorize('view', $shop);
-        $totalAmount = 0;
-        $totalHours = 0;
-        $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();
-        
-        
-        $operations = $startDate || $endDate ? $shop->device->operations->where('created_at','>=',$startDate)->where('created_at','<=',$endDate) : $shop->device->operations;
-        // $operations[] = $endDate ? $shop->device->operations->where('created_at','<=',$endDate) : null;
-        
-        foreach($operations as $operation){
-            $totalAmount += ($operation->amount ?? 0);
-            $totalHours += ($operation->returnTime && $operation->borrowTime ? floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60) : 0);
-        }
+      
+        $shop = $this->getShopData($shop,$startDate,$endDate);
+        return view("dashboard.shops.show-operation",compact('shop','startDate','endDate'));
 
-        return view("dashboard.shops.show-operation",compact('shop','totalAmount','totalHours','totalGifts','startDate','endDate'));
     }
 
     /**
@@ -264,7 +253,52 @@ class ShopsController extends Controller
           }
 
       }
-
       return redirect()->back()->with('success', __("Menu Updated Successfully"));
     }
+
+    // get Shop Data
+    private function getShopData(string $id, $startDate = null, $endDate = null){
+        $shop = Shop::with(['device','operations','gifts','notes'])->find($id);
+        $operations = $startDate? $shop->operations->where('created_at','>=',$startDate) : $shop->operations;
+        $operations = $endDate? $operations->where('created_at','<=',$endDate) : $operations;
+        
+
+        $shop->startDate = $startDate ?? null;
+        $shop->endDate = $endDate ?? null;
+
+        $summary["NumberOfCustomers"] = $operations->pluck('user_id')->unique()->count() . " customer";
+        $summary["NumberOfOperations"] = $operations->count() . " order";
+        $summary["NumberOfOperatingHours"] = 0;
+        foreach($operations as $operation){
+            $summary["NumberOfOperatingHours"] += ($operation->returnTime && $operation->borrowTime ? ceil(floatval((strtotime($operation->returnTime) - strtotime($operation->borrowTime) )/ 60 /60)) : 0);
+        }
+        $summary["NumberOfOperatingHours"] .= " hours"; 
+
+        $summary["totalOperationsAmount"] = $operations->sum('amount') . " EGP";
+        $summary["PartnerSharePercentage"] = $shop->share_percentage. "%";
+        $summary["MerchantShareAmount"] = intval($operations->sum('amount') * ($shop->share_percentage / 100)) . " EGP";
+        
+        $shop->operations = $operations;
+
+        $shop->summary = $summary;
+
+        return $shop;
+    }
+
+    // Report Pdf for specific shop
+    public function exportShopPdf($id,Request $request){
+        $view = "dashboard.pdf.shop";
+        $data = $this->getShopData($id,$request->startDate,$request->endDate);
+        $pdf = PDF::loadView($view, ['data' => $data]);
+        return $pdf->stream("$data->name-report.pdf");
+    }
+
+    // Report Pdf for specific shop
+    public function exportShopExcel($id,Request $request){
+        $data = $this->getShopData($id,$request->startDate,$request->endDate);
+        
+        $excel = ShopExportExcel::class;
+        return Excel::download(new $excel($data,$request->startDate,$request->endDate), "$data->name.xlsx");
+    }
+
 }

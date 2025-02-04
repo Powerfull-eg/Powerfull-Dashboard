@@ -39,11 +39,12 @@
 
         {{-- Customer Table --}}
         <div class="customer-table">
-            <div class="subtitle m-3">
+            <div class="subtitle mx-2 mb-5">
                 <i class="ti ti-search"></i>
                 <span>{{__("Search")}}</span>
             </div>
-            <livewire:users-table />
+            <x-components::forms.customDatePicker />
+            <livewire:users-table start-date="{{$startDate}}" end-date="{{$endDate}}"/>
         </div>
         {{-- Incomplete Payments --}}
         <div class="incomplete-payments">

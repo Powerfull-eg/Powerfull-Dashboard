@@ -30,6 +30,18 @@ class OperationsTable extends Datatable
         return $amount;
     }
     
+    private function orderStatus($status)
+    {
+        $statuses = [
+            0 => ["Ongoing","default"],
+            1 => ["Not Returned","warning"],
+            2 => ["Returned","primary"],
+            3 => ["Returned & Paid","success"],
+            4 => ["Failed Payment","danger"],
+        ];
+
+        return "<span class='btn btn-" . $statuses[$status][1] . "'>" . $statuses[$status][0] . "</span>";
+    }
     //Mount Data
     public function mount($startDate=null, $endDate=null)
     {
@@ -42,7 +54,7 @@ class OperationsTable extends Datatable
     {
         if($this->date[0] && $this->date[1])
         { 
-            return Operation::query()->whereBetween("created_at",$this->date)->orderByDesc("created_at");
+            return Operation::query()->where("created_at",">=",$this->date[0])->where("created_at","<=",$this->date[1])->orderByDesc("created_at");
         }
         elseif($this->date[0] && !$this->date[1])
         {
@@ -85,12 +97,14 @@ class OperationsTable extends Datatable
                 ->format(fn ($time) => $time ? chineseToCairoTime($time) : '-'),
             Column::make('Borrow Slot',"borrowSlot"),
             Column::make('Shop',"device.shop")
-                ->searchUsing(function ($query, $search){
-                    $query->whereHas('device', function($query) use ($search){
-                        $query->where('shop_id', 'like', "%$search%");
-                    });
-                })
+            ->searchUsing(function ($query, $search){
+                $query->whereHas('device', function($query) use ($search){
+                    $query->where('shop_id', 'like', "%$search%");
+                });
+            })
             ->format(fn ($shop) => $shop ? view('components.icon', ['icon' => "<a href='" . route("dashboard.shops.show",$shop->id) . "' class='btn btn-primary' style='width:50px;'><i class='fs-2 ti ti-zoom-exclamation'></i></a> " . $shop->name]) : ''),
+            Column::make(__("Status"),"status")
+                ->format(fn ($status) => $this->orderStatus($status)),
             Column::make('Has Voucher',"id")
                 ->format(fn($id) => $this->voucherAmount($id)),
             Column::make('Net Amount',"amount")

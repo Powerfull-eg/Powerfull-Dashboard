@@ -7,18 +7,21 @@
                 <div class="subheader">{{__('Operations')}}</div>
                 <div class="d-flex align-items-center">
                   <div class="h1 mb-1">{{ intval($data['operationsPerLastWeek']->count())}}</div>
-                  <div class="ms-auto lh-1">{{__('This Week')}}</div>
+                  @php
+                    $strtOfWeek = now()->isFriday() ? now()->startOfDay() : new Carbon\Carbon('last friday');
+                  @endphp
+                  <a class="ms-auto lh-1" href="{{ route('dashboard.operations.index',['startDate' => $strtOfWeek->format('Y-m-d'), 'endDate' => Carbon\Carbon::now()->format('Y-m-d')]) }}">{{__('This Week')}}</a>
                 </div>
                 <div class="d-flex align-items-center justify-content-between mb-1">
                   <div class="h1">{{ intval($data['operationsThisMonth'])}}</div>
-                  <div>{{__('This Month')}}</div>
+                  <a class="lh-1" href="{{ route('dashboard.operations.index',['startDate' => date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))), 'endDate' => Carbon\Carbon::now()->endOfMonth()->format('Y-m-d')]) }}">{{__('This Month')}}</a>
                 </div>
                 <div class="d-flex mb-2">
                   <div>{{__("Conversion Rate")}}</div>
                   <div class="ms-auto">
-                    @if (($data['operationsThisMonth'] > $data['operationsLastMonth'] || $data['operationsThisMonth'] == $data['operationsLastMonth']) && $data['operationsLastMonth'] != 0)
+                    @if ($data['operationsThisMonth'] >= $data['operationsLastMonth'] && $data['operationsLastMonth'] != 0)
                     <span class="text-green d-inline-flex align-items-center lh-1">
-                      {{ intval($data['operationsThisMonth']/$data['operationsLastMonth']) * 100}}%
+                      {{ intval(floatval($data['operationsThisMonth']/$data['operationsLastMonth'] - 1) * 100) }}%
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
                     </span>
                     @else
@@ -49,7 +52,7 @@
                 </div>
                 <div class="d-flex align-items-baseline justify-content-between">
                   <div class="h1 mb-3 me-2">{{ $data['usersThisMonth'] }}</div>
-                  <div>{{__('This Month')}}</div>
+                  <a class="lh-1" href="{{ route('dashboard.users.index',['startDate' => date("Y-m-d",mktime(0,0,0,date('m'),1,date('Y'))), 'endDate' => Carbon\Carbon::now()->endOfMonth()->format('Y-m-d')]) }}">{{__('This Month')}}</a>
                 </div>
                 <div class="me-auto">
                   <span class="text-yellow d-inline-flex align-items-center lh-1">
@@ -89,11 +92,15 @@
               <div class="card-body">
                 <div class="subheader">{{__('Last 3 Months Operations')}}</div>
                   @if (count($data['last3monthsOperations']) > 0)
+                  @php $current = -3; @endphp
                     @foreach ($data['last3monthsOperations'] as $name => $operations)
-                       <div class="d-flex align-items-center justify-content-between mt-3 pb-1" style="border-bottom: 1px solid">
-                        <div>{{ucfirst($name)}}</div>
+                       
+                      <div class="d-flex align-items-center justify-content-between mt-3 pb-1" style="border-bottom: 1px solid">
+                        <a href="{{route('dashboard.operations.index', ['startDate' => date("Y-m-d",mktime(0,0,0,date('m') + $current,1,date('Y'))), 'endDate' => Carbon\Carbon::now()->addMonth($current+1)->format('Y-m-d')])}}">{{ucfirst($name)}}</a>
                         <div>{{intval($operations)}}</div>
                       </div>
+                      
+                      @php $current++; @endphp
                     @endforeach
                   @endif
                 <div id="chart-active-users" class="chart-sm"></div>
@@ -117,9 +124,9 @@
                         <div class="font-weight-medium">
                           {{$data['revenuePerAllOperations']}} {{__("EGP")}}
                         </div>
-                        <div class="text-muted">
+                        <a class="text-muted" href="{{route('dashboard.users.index')}}">
                           {{ $data['inCompletedPaymentOperations']->count() }} {{__('Incompleted Payments')}}
-                        </div>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -140,9 +147,9 @@
                         <div class="font-weight-medium">
                           {{$data['allOperations']->count()}} {{__('Orders')}}
                         </div>
-                        <div class="text-muted">
+                        <a class="text-muted" href="{{route('dashboard.operations.index')}}">
                           {{$data['inCompletedOperations']->count()}} {{__('Incompleted Order')}}
-                        </div>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -163,9 +170,9 @@
                         <div class="font-weight-medium">
                           {{$data['allTickets']}} {{__('Tickets')}}
                         </div>
-                        <div class="text-muted">
+                        <a class="text-muted" href="{{route('dashboard.support.index')}}">
                             {{$data['newTickets']}} {{__('New Tickets')}}
-                        </div>
+                        </a>
                       </div>
                     </div>
                   </div>

@@ -1,7 +1,6 @@
 <x-layouts::dashboard>
     <x-components::status />
     <x-components::forms.customDatePicker />
-    {{-- <x-components::chart :title="__('Devices')" :dataLabels="array_keys($operationsPerDevice)" :dataValues="$countPerDevice" /> --}}
     <div class="header d-flex gap-2 justify-content-between">
         <div class="d-flex align-items-end justify-content-center logo">
             <img src="{{asset('assets/images/machine.png')}}" width="50" class="d-block mb-2 mx-3" alt="contol powerbank">

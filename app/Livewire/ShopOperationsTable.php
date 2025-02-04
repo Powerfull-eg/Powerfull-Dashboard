@@ -86,10 +86,10 @@ class ShopOperationsTable extends Datatable
                 ->sortable()    
                 ->searchable()
                 ->format(fn ($amount) => $amount ? $amount .' '. __("EGP") : __("Free Order")),
-            Column::make(__("Operation Date"),'borrowTime')
+            Column::make(__("Operation Date"),'created_at')
                 ->sortable()
                 ->searchable()
-                ->format(fn ($time) => Carbon::create($time)->toDateString()),
+                ->format(fn ($time) => $time ? $time->format('d M Y') : '-'),
         ];
     }
 
