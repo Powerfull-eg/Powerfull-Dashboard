@@ -92,7 +92,7 @@
                           <i class="ti ti-map-pin"></i>
                           <span>{{__("Merchant") . " ". __("Location")}}</span>
                       </div>
-                      <a href="{{route('dashboard.shops.operations', $shop->id)}}" class="subtitle">
+                      <a href="{{route('dashboard.shops.operations.show', $shop->id)}}" class="subtitle">
                           <i class="ti ti-map-pin"></i>
                           <span>{{__("Operations")}}</span>
                       </a>

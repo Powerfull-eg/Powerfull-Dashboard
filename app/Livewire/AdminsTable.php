@@ -9,7 +9,9 @@ use Redot\LivewireDatatable\Column;
 use Redot\LivewireDatatable\Datatable;
 
 class AdminsTable extends Datatable
-{
+{ 
+    public $type;
+
     /**
      * Create a new component instance.
      */
@@ -18,12 +20,20 @@ class AdminsTable extends Datatable
         $this->perPage = 3;
     }
 
+    //mount data
+    public function mount($type=null)
+    {
+        $this->type = $type;
+    }
+
     /**
      * Query builder.
      */
     public function query(): Builder
     {
-        return Admin::whereNotCurrentAdmin();
+        $admins = new Admin();
+        $admins = $this->type == 'shop' ? $admins->whereHas('shops') : $admins->whereDoesntHave('shops');
+        return $admins->whereNotCurrentAdmin();
     }
 
     /**
@@ -31,7 +41,7 @@ class AdminsTable extends Datatable
      */
     public function columns(): array
     {
-        return [
+        $columns =  [
             Column::make('')
                 ->width('50px')
                 ->resolve(fn ($admin) => view('components.avatar', ['user' => $admin])),
@@ -49,6 +59,13 @@ class AdminsTable extends Datatable
                 ->searchable()
                 ->sortable(),
         ];
+        if($this->type == 'shop'){
+            array_splice($columns, 3, 0, [
+                Column::make('Shop','shops.name')
+                    ->searchable()
+            ]);
+        }
+        return $columns;
     }
 
     /**

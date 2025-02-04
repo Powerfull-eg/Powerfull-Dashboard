@@ -9,18 +9,23 @@
 
         <div class="card-body">
             <div class="mb-3">
-                <x-components::forms.input :title="__('Admin')" :value="$admin->name" disabled />
+                <x-components::forms.input :title="__('Admin')" :value="old('name', $admin->name)" requuired />
             </div>
             <div class="mb-3">
-                <x-components::forms.input type="email" name="email" :title="__('Email address')" :value="$admin->email" required />
+                <x-components::forms.input type="email" name="email" :title="__('Email address')" :value="old('email', $admin->email)" required />
             </div>
 
-            <div class="mb-3">
-                <x-components::forms.input type="password" name="password" :title="__('Password')" required />
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <x-components::forms.input type="password" name="password" :title="__('Password')"/>
+                </div>
+                <div class="col-6">
+                    <x-components::forms.input type="password" name="password_confirmation" :title="__('Confirm Password')"/>
+                </div>
+                <span>{{ __('Leave empty if you don\'t want to change the password') }}</span>
             </div>
             <div class="mb-3">
-                <x-components::forms.select name="role" title="{{ __('Role') }}" :options="$roles" :selected="$admin->roles()->first()?->id"
-                    required />
+                <x-components::forms.select name="role" title="{{ __('Role') }}" :options="$roles" :selected="$admin->roles()->first()?->id" required />
             </div>
         </div>
 
