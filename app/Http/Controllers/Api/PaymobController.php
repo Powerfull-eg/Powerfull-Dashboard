@@ -203,7 +203,7 @@ class PaymobController extends \App\Http\Controllers\Controller
             // successfull operation
             return ["status" => $responseBody["success"] == "true" ? true : false,"payment_id" => $payment->id];
         }
-        return ["status" => true,"payment_id" => null];
+        return ["status" => false,"payment_id" => null];
     }
     // Pay with saved token (MOTO) Callback
     public function motoCallback(Request $request){
