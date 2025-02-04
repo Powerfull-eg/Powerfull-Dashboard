@@ -50,13 +50,16 @@ class OperationController extends Controller
         return $operation;
     }
 
-    public static function checkForIncompleteOperations($operations){
+    public static function checkForIncompleteOperations(){
+        $operations = Operation::where('status',4)->get();
         foreach($operations as $operation){
             if($operation->incompleteOperation) continue; 
 
             IncompleteHistory::create([
                 "operation_id" => $operation->id,
-                "original_amount" => $operation->amount
+                "original_amount" => $operation->amount,
+              	"created_at" => now(),
+              	"updated_at" => now()
             ]);
         }   
         return false;

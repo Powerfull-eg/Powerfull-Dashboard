@@ -32,14 +32,15 @@
                     required />
             </div>
 
-            <div class="mb-3">
-                <x-components::forms.input type="password" name="password" :title="__('Password')" type="password"
-                    placeholder="{{ __('Leave blank if you don\'t want to change it') }}" />
-            </div>
-
-            <div class="mb-3">
-                <x-components::forms.input type="password" name="password_confirmation" :title="__('Confirm Password')"
-                    type="password" placeholder="{{ __('Leave blank if you don\'t want to change it') }}" />
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <x-components::forms.input type="password" name="password" :title="__('Password')" type="password"
+                        placeholder="{{ __('Leave blank if you don\'t want to change it') }}" />
+                </div>
+                <div class="col-6">
+                    <x-components::forms.input type="password" name="password_confirmation" :title="__('Confirm Password')"
+                        type="password" placeholder="{{ __('Leave blank if you don\'t want to change it') }}" />
+                </div>
             </div>
         </div>
 

@@ -59,9 +59,10 @@ class ShopsController extends Controller
         // Date Filter
         $startDate = $request->startDate ?? null;
         $endDate = $request->endDate ?? null;
-
+      
         $shop = $this->getShopData($shop,$startDate,$endDate);
         return view("dashboard.shops.show-operation",compact('shop','startDate','endDate'));
+
     }
 
     /**
@@ -74,6 +75,7 @@ class ShopsController extends Controller
         $endDate = $request->endDate ?? null;
 
         $shop = Shop::with(['device','operations','gifts','notes'])->find($id);
+        $this->authorize('view', $shop);
         $totalAmount = 0;
         $totalHours = 0;
         $totalGifts = $startDate || $endDate ? $shop->gifts->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->count() : $shop->gifts->count();

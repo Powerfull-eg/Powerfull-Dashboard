@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Station;
 use App\Models\VoucherOrder;
 use App\Models\Voucher;
+use App\Jobs\CompleteFailedPayment;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Api\PaymobController;
@@ -31,7 +32,7 @@ class OperationsController extends \App\Http\Controllers\Controller
             $order = Operation::find($request->orderId);
             if($order->returnTime == null) return null;
             $price = new PriceController();
-            $totalAmount = $order->amount ?? $price->calcuatePrice($request);
+            $totalAmount = $order->amount != 0 ? $order->amount : $price->calcuatePrice($request);
             $amount = intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
             $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
             $paymob = new PaymobController();
@@ -42,8 +43,11 @@ class OperationsController extends \App\Http\Controllers\Controller
                 "amount" => $totalAmount,
                 "status" => ($paymentDone["status"] == true ? 3 : 4),
             ]);
+
+            // Add operation to incomplete history
+            ($paymentDone["status"] ? null : CompleteFailedPayment::addIncompletedPaymentToHistory($order,$paymentDone["status"],$paymentDone["status"] == true ? "paid" : null));
+            return $paymentDone["status"];
         
         }catch(\Exception $err){ DB::table('test')->insert(["request" => "Operation Error: " . $err->getmessage()]);}
-    }    
-    
+    }        
 }

@@ -55,4 +55,9 @@ class Admin extends Authenticatable
     {
         $query->where('id', '!=', auth()->id());
     }
+
+    public function shops()
+    {
+        return $this->belongsToMany(Shop::class, 'shops_admins', 'admin_id', 'shop_id');
+    }
 }

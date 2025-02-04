@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Gate;
+
 if (! function_exists('setting')) {
     /**
      * Get the specified setting value.

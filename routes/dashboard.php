@@ -43,7 +43,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('devices/data/{deviceID}', [\App\Http\Controllers\Dashboard\DeviceController::class,"getDeviceData"]);
 
     Route::resource('shops', \App\Http\Controllers\Dashboard\ShopsController::class);
-    Route::get('shops/operations/{id}', [\App\Http\Controllers\Dashboard\ShopsController::class,'operations'])->name('shops.operations');
+    Route::get('shops/operations/{id}', [\App\Http\Controllers\Dashboard\ShopsController::class,'operations'])->name('shops.operations.show');
     Route::post('shops/sync', [\App\Http\Controllers\Dashboard\ShopsController::class,'syncShopData'])->name('shops.sync');
     Route::post('shops/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ShopsController::class,"exportShopExcel"])->name('shops.shop.excel');
     Route::post('shops/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ShopsController::class,'exportShopPdf'])->name('shops.shop.pdf');
@@ -83,6 +83,7 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('roles/update-permissions', [\App\Http\Controllers\Dashboard\RoleController::class, 'updatePermissionsRoute'])->name('roles.update-permissions');
     
     Route::resource('admins', \App\Http\Controllers\Dashboard\AdminController::class)->except(['show']);
+    Route::resource('shop-admins', \App\Http\Controllers\Dashboard\ShopsAdminController::class);
     Route::post('admins/create-with-permissions', [\App\Http\Controllers\Dashboard\AdminController::class, 'createWithPermissions'])->name('admins.create-with-permissions');
 
     Route::get('settings', [\App\Http\Controllers\Dashboard\SettingController::class, 'edit'])->name('settings.edit');

@@ -154,20 +154,20 @@
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach ($incompleteOperations as $operation)
+                        @foreach ($incompleteHistory as $operation)
                         <tr>
                             <td>{{$loop->iteration}}</td>
-                            <td>{{$operation->id}}</td>
-                            <th scope="row">{{$operation->user->fullName}}</th>
-                            <td>{{$operation->device->shop->name}}</td>
-                            <td>{{$operation->device->device_id}}</td>
-                            <td>{{$operation->borrowTime ? chineseToCairoTime($operation->borrowTime) : "-"}}</td>
-                            <td>{{$operation->returnTime ? chineseToCairoTime($operation->returnTime) : "-"}}</td>
-                            <td>{{$operation->returnTime ? secondsToTimeString(Carbon\Carbon::parse($operation->returnTime)->getTimestamp() - Carbon\Carbon::parse($operation->borrowTime)->getTimestamp()) : '-'}}</td>
-                            <td>{{$operation->incompleteOperation->original_amount ? $operation->incompleteOperation->original_amount . ' ' . __('EGP') : '-'}}</td>
-                            <td>{{$operation->incompleteOperation->final_amount ? $operation->incompleteOperation->final_amount . ' ' . __('EGP') : '-'}}</td>
-                            <td>{{$operation->incompleteOperation->status ? $operation->incompleteOperation->status : '-'}}</td>
-                            <td>{{$operation->incompleteOperation->ended_at ? $operation->incompleteOperation->ended_at->format('D, M j, Y') : '-'}}</td>
+                            <td>{{$operation->operation->id}}</td>
+                            <th scope="row">{{$operation->operation->user->fullName}}</th>
+                            <td>{{$operation->operation->device->shop->name}}</td>
+                            <td>{{$operation->operation->device->device_id}}</td>
+                            <td>{{$operation->operation->borrowTime ? chineseToCairoTime($operation->borrowTime) : "-"}}</td>
+                            <td>{{$operation->operation->returnTime ? chineseToCairoTime($operation->returnTime) : "-"}}</td>
+                            <td>{{$operation->operation->returnTime ? secondsToTimeString(Carbon\Carbon::parse($operation->returnTime)->getTimestamp() - Carbon\Carbon::parse($operation->borrowTime)->getTimestamp()) : '-'}}</td>
+                            <td>{{$operation->original_amount ? $operation->original_amount . ' ' . __('EGP') : '-'}}</td>
+                            <td>{{$operation->final_amount ? $operation->final_amount . ' ' . __('EGP') : '-'}}</td>
+                            <td>{{$operation->status ? $operation->status : '-'}}</td>
+                            <td>{{$operation->ended_at ? Carbon\Carbon::parse($operation->ended_at) : '-'}}</td>
                         </tr>
                         @endforeach
                       </tbody>
