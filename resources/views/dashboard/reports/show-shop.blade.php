@@ -11,17 +11,23 @@
         </div>
         {{-- Exports --}}
         <div class="d-flex gap-2 justify-content-end">
-            <form id="pdf-form" class="export-form" action="{{route('dashboard.reports.shop.pdf', $shop->id)}}" method="POST">
+            <form id="pdf-form" class="export-form" action="{{route('dashboard.reports.shop.pdf', $shop->id)}}" method="GET">
                 @csrf
                 <input type="hidden" name="startDate" value="{{$startDate}}">
                 <input type="hidden" name="endDate" value="{{$endDate}}">
                 <button type="submit" class="btn export">{{__("Export PDF")}}</button>
             </form>
-            <form id="excel-form" class="export-form ignore-loader" action="{{route('dashboard.reports.shop.excel', $shop->id)}}" method="POST">
+            <form id="excel-form" class="export-form ignore-loader" action="{{route('dashboard.reports.shop.excel', $shop->id)}}" method="GET">
                 @csrf
                 <input type="hidden" name="startDate" value="{{$startDate}}">
                 <input type="hidden" name="endDate" value="{{$endDate}}">
                 <button type="submit" class="btn export">{{__("Export Excel")}}</button>
+            </form>
+            <form id="send-form" class="export-form justify-self-end" action="{{route('dashboard.reports.send-report', $shop->id)}}" method="GET">
+                @csrf
+                <input type="hidden" name="startDate" value="{{$startDate}}">
+                <input type="hidden" name="endDate" value="{{$endDate}}">
+                <button type="submit" class="btn export">{{__("Send Report")}} &nbsp;<i class="ti ti-brand-whatsapp fs-2"></i></button>
             </form>
         </div>
     </div>

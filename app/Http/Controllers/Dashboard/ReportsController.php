@@ -244,8 +244,8 @@ class ReportsController extends Controller
             "mobile" => Shop::find($id)->phone,
             "file" => $file,
         ]);
-        // dd($request->input());
-       $success = WhatsappController::sendFileWithMessage($request);
+
+        $success = WhatsappController::sendFileWithMessage($request);
         return redirect()->back()->with($success ? 'success' : 'error', $success ? __('File Sent Successfully') : __('Failed to send file'));
     }
 }

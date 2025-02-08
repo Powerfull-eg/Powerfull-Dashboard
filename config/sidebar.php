@@ -111,8 +111,8 @@ return [
             [
                 'route' => 'dashboard.admins.index',
                 'locales' => [
-                    'en' => 'Access Reports',
-                    'ar' => 'صلاحيات التقارير',
+                    'en' => 'Access Admins',
+                    'ar' => 'صلاحيات المشرفين',
                 ],
             ],
 
@@ -121,14 +121,6 @@ return [
                 'locales' => [
                     'en' => 'Access Merchants',
                     'ar' => 'صلاحيات المتاجر',
-                ],
-            ],
-
-            [
-                // 'route' => 'dashboard.admins.index',
-                'locales' => [
-                    'en' => 'Access Selection',
-                    'ar' => 'صلاحيات الإختيار',
                 ],
             ],
         ],

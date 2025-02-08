@@ -45,6 +45,9 @@
                 <div class="col col-6">
                     <x-components::forms.select name="price_id" :options="\App\Models\Price::pluck('name', 'id')" :title="__('Price')" :selected="$shop->price_id" required/>
                 </div>
+                <div class="col col-6">
+                    <x-components::forms.input name="share_percentage" :title="__('Share') . ' (%)'" :value="old('share', $shop->share_percentage)" required />
+                </div>
             </div>
         </div>
 

@@ -84,8 +84,10 @@ class ReportTable extends Datatable
             Column::make(__('Total Partner Share'),"shop")
                 ->sortable()
                 ->format(fn ($shop) => intval(($shop->share_percentage / 100) * $shop->operations->sum('amount')) . " EGP"),
-            Column::make(__('Export'),"shop.phone"),
-            Column::make(__('Send Whatsapp'),"shop.phone")
+            Column::make(__('Export'),"shop.id")
+            ->format(fn ($shop) => view('components.icon', ['icon' => "<a class='btn btn-danger' href='" . route("dashboard.reports.shop.pdf",$shop) . "'><i class='fs-1 ti ti-download'></i></a>"])),
+            Column::make(__('Send Whatsapp'),"shop.id")
+            ->format(fn ($shop) => view('components.icon', ['icon' => "<a class='btn btn-success' href='" . route("dashboard.reports.send-report",$shop) . "'><i class='fs-1 ti ti-brand-whatsapp'></i></a>"])),
       ];
     }
 

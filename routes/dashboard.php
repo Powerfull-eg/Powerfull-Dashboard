@@ -45,8 +45,8 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('shops', \App\Http\Controllers\Dashboard\ShopsController::class);
     Route::get('shops/operations/{id}', [\App\Http\Controllers\Dashboard\ShopsController::class,'operations'])->name('shops.operations.show');
     Route::post('shops/sync', [\App\Http\Controllers\Dashboard\ShopsController::class,'syncShopData'])->name('shops.sync');
-    Route::post('shops/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ShopsController::class,"exportShopExcel"])->name('shops.shop.excel');
-    Route::post('shops/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ShopsController::class,'exportShopPdf'])->name('shops.shop.pdf');
+    Route::get('shops/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ShopsController::class,"exportShopExcel"])->name('shops.shop.excel');
+    Route::get('shops/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ShopsController::class,'exportShopPdf'])->name('shops.shop.pdf');
     
     // Shops Types
     Route::resource('shop-types', \App\Http\Controllers\Dashboard\ShopTypesController::class);
@@ -118,11 +118,10 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('reports', \App\Http\Controllers\Dashboard\ReportsController::class);
     Route::post('reports/export-pdf/{target}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportpdf'])->name('reports.export.pdf');
     Route::post('reports/export-excel/{target}',[\App\Http\Controllers\Dashboard\ReportsController::class,"exportExcel"])->name('reports.export.excel');
-    Route::post('reports/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,"exportShopExcel"])->name('reports.shop.excel');
-    Route::post('reports/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportShopPdf'])->name('reports.shop.pdf');
+    Route::get('reports/export-shop-excel/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,"exportShopExcel"])->name('reports.shop.excel');
+    Route::get('reports/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportShopPdf'])->name('reports.shop.pdf');
     Route::get('reports/shop/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,'shopReport'])->name('reports.shop');
-    Route::post('reports/send-report/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'sendReport'])->name('reports.send-report');
-
+    Route::get('reports/send-report/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'sendReport'])->name('reports.send-report');
 });
 
 /*

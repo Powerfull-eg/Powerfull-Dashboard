@@ -96,7 +96,7 @@
                     @foreach ($data['last3monthsOperations'] as $name => $operations)
                        
                       <div class="d-flex align-items-center justify-content-between mt-3 pb-1" style="border-bottom: 1px solid">
-                        <a href="{{route('dashboard.operations.index', ['startDate' => date("Y-m-d",mktime(0,0,0,date('m') + $current,1,date('Y'))), 'endDate' => Carbon\Carbon::now()->addMonth($current+1)->format('Y-m-d')])}}">{{ucfirst($name)}}</a>
+                        <a href="{{route('dashboard.operations.index', ['startDate' => date("Y-m-d",mktime(0,0,0,date('m') + $current,1,date('Y'))), 'endDate' => date("Y-m-d",mktime(0,0,0,date('m') + $current+1,1,date('Y')))])}}">{{ucfirst($name)}}</a>
                         <div>{{intval($operations)}}</div>
                       </div>
                       

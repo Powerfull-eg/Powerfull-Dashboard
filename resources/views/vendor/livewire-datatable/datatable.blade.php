@@ -1,6 +1,6 @@
 @php $colspan = count($columns) + ($actions ? 1 : 0); @endphp
 
-<div class="card livewire-datatable" @style(['max-height: ' . $maxHeight])>
+<div class="card livewire-datatable" >
     <div class="card-header d-flex justify-content-end gap-2">
         <select class="form-select w-auto" wire:model.live="perPage">
             @foreach ($perPageOptions as $option)
@@ -17,17 +17,11 @@
             </div>
         @endif
 
-        @if ($create)
-            <a class="btn btn-primary" href="{{ route($create) }}">
-                @include('livewire-datatable::icons.plus')
-                <span class="d-none d-md-block ms-2">{{ __('Create') }}</span>
-            </a>
-        @endif
     </div>
 
     <div class="table-responsive">
         <table class="table table-vcenter card-table text-nowrap">
-            <thead @class(['sticky-top' => $fixedHeader])>
+            <thead @class(['sticky-top' => $fixedHeader ?? ''])>
                 <tr>
                     <th>#</th>
                     @foreach ($columns as $column)

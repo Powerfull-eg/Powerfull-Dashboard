@@ -21,6 +21,7 @@ class Shop extends Model
         "name",
         "phone",
         "provider_id",
+        "share_percentage",
         "icon",
         "logo",
         "images",

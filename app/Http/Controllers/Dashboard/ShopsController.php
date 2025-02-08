@@ -117,6 +117,7 @@ class ShopsController extends Controller
             'type_id' => 'numeric|exists:shops_types,id',
             'price_id' => 'required|numeric|exists:prices,id',
             'menu_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'share_percentage' => 'required|numeric|min:0|max:100',
         ]);
         
         $admin = auth('admins')->user()->id;
