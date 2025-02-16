@@ -54,6 +54,13 @@ Route::get('settings', function () {
             ],
         "maintenance" => false,
         'timezone' => 'Africa/Cairo',
+        'appAndroidLink'=> 'https://play.google.com/store/apps/details?id=com.powerfull.app',
+        'appIosLink' => 'https://apps.apple.com/eg/app/powerfull/id6477441692',
+        'appIosVersion' => '1.2.4',
+        'appAndroidVersion' => '1.2.4',
+        'updateMandatory' => '1.2.4',
+        'updateTitle' => 'Update Available',
+        'updateMessage' => 'Update Available',
         ]);
 });
 
