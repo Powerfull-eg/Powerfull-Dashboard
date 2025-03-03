@@ -24,9 +24,14 @@ class AuthController extends \App\Http\Controllers\Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp', 'checkOtp','otpActivate','resetPassword']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp','checkOtpActive', 'checkOtp','otpActivate','resetPassword']]);
     }
-
+    
+    //Check Otp Active
+    public function checkOtpActive(){
+        return response(["otpActive" => env("OTP_ACTIVE")], 200);
+    }
+    
     /**
      * send otp to user
     */

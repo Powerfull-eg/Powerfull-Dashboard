@@ -44,7 +44,7 @@
                 <div class="devices justify-content-evenly row px-2 gap-1 mb-5">
                     @foreach ($shops as $shop)
                     <div class="device col col-12 col-xl-5 me-2 mb-5 d-flex flex-column text-center" style="min-height: 150px" attr-filter="{{$shop->name}} {{$shop->device->device_id ?? ''}}" attr-shop="{{$shop->id}}" attr-device="{{$shop->device ? $shop->device->device_id : ''}}">
-                        <div class="data d-none" shop-data="{{json_encode(["open" => $shop->data->opens_at, "close" => $shop->data->closes_at, "afterMid" => $shop->data->closes_after_midnight ?? 0])}}" ></div>
+                        <div class="data d-none" shop-data="{{json_encode(["open" => $shop->data && $shop->data->opens_at ? $shop->data->opens_at : null, "close" => $shop->data && $shop->data->closes_at ? $shop->data->closes_at : null, "afterMid" => $shop->data && $shop->data->closes_after_midnight ? $shop->data->closes_after_midnight : 0])}}" ></div>
                             <a href="{{route('dashboard.shops.show', $shop->id)}}" class="text-decoration-none">
                             <div class="d-flex justify-content-between gap-1 p-2 position-relative">
                                 <div class="device-data d-flex flex-column">
@@ -61,7 +61,7 @@
                                                 <div class="status open-status" style="min-width: fit-content">
                                                     <i style="color: var(--background-color)" class="ti ti-clock-hour-9"></i>
                                                     <span class="text text-success">Open</span>
-                                                    <span class="fs-6" style="min-width: fit-content">Closing: {{$shop->data->closes_at}}</span>
+                                                    <span class="fs-6" style="min-width: fit-content">Closing: {{ $shop->data && $shop->data->closes_at ? $shop->data->closes_at : '-'}}</span>
                                                 </div>
                                             </div>
                                             <!-- device status -->

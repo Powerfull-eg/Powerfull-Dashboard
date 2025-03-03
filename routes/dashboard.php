@@ -122,6 +122,8 @@ Route::middleware('auth:admins')->group(function () {
     Route::get('reports/export-shop-pdf/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'exportShopPdf'])->name('reports.shop.pdf');
     Route::get('reports/shop/{shop}',[\App\Http\Controllers\Dashboard\ReportsController::class,'shopReport'])->name('reports.shop');
     Route::get('reports/send-report/{shop}', [\App\Http\Controllers\Dashboard\ReportsController::class,'sendReport'])->name('reports.send-report');
+    // Push Notification Routes
+    Route::resource('push-notifications', \App\Http\Controllers\Dashboard\PushNotificationController::class)->except(['show','edit','update']);
 });
 
 /*

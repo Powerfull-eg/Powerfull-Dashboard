@@ -12,14 +12,26 @@ class PushTokensController extends Controller
     public function upsertToken(Request $request)
     {
         // Request => [ userId, device, token ]
-        $token = $request->validate([
+        $validated = $request->validate([
             "token" => "required"
         ]);
 
-        $pushToken = PushToken::updateOrCreate(
-            ['user_id' => $request->userId, 'token' => $token["token"]],
-            ['token' => $token["token"], "device" => $request->device]
-        );
-        return response($pushToken);
+        $pushToken = PushToken::where("token",$validated["token"]);
+
+        if($pushToken->exists()){
+            $pushToken->update([
+               'user_id' => $request->userId ?? ($pushToken->user_id ?? null),
+               'device' => $request->device ?? ($pushToken->device ?? null),
+               'token' => $validated["token"]
+            ]);
+            return response('Token updated successfully');
+        }
+
+        $pushToken = PushToken::create([
+            'user_id' => $request->userId ?? null,
+            'device' => $request->device ?? null,
+            'token' => $validated["token"]
+        ]);
+        return response('Token added successfully');
     }
 }

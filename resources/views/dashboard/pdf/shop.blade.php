@@ -4,6 +4,11 @@
     {{-- <meta charset="UTF-8"> --}}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="{{$data->name . __(' Report')}}">
+    <meta name="description" content="Report for {{$data->name}} shop in specific period">
+    <meta property="og:title" content="{{$data->name . __(' Report')}}">
+    <meta property="og:description" content="Report for {{$data->name}} shop in specific period">
+    <meta property="og:type" content="application/pdf">
     <title>{{__('Users Report')}}</title>
     <style>
         @font-face {

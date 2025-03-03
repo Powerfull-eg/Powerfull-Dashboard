@@ -170,6 +170,15 @@ return [
             ],
         ],
     ],
+    // Push Notification
+    [
+        'icon' => 'ti ti-bell',
+        'route' => 'dashboard.push-notifications.create',
+        'locales' => [
+            'en' => 'Send Push Notification',
+            'ar' => 'إرسال الاشعارات',
+        ],
+    ],
     // Settings
     [
         'icon' => 'ti ti-settings',

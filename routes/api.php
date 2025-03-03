@@ -20,10 +20,13 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
 use App\Http\Controllers\Api\FawryPayController;
 use App\Http\Controllers\GiftController;
+use App\Models\PushNotification;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\PushTokensController;
 use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\Api\ShopsController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PushNotificationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -54,18 +57,22 @@ Route::get('settings', function () {
             ],
         "maintenance" => false,
         'timezone' => 'Africa/Cairo',
-        'appAndroidLink'=> 'https://play.google.com/store/apps/details?id=com.powerfull.app',
+      	'appAndroidLink'=> 'https://play.google.com/store/apps/details?id=com.powerfull.app',
         'appIosLink' => 'https://apps.apple.com/eg/app/powerfull/id6477441692',
-        'appIosVersion' => '1.2.4',
-        'appAndroidVersion' => '1.2.4',
-        'updateMandatory' => '1.2.4',
-        'updateTitle' => 'Update Available',
-        'updateMessage' => 'Update Available',
+        'appIosVersion' => '1.1.0',
+        'updateIosMandatory' => '1.1.0',
+        'appAndroidVersion' => '1.1.5',
+        'updateAndroidMandatory' => '1.1.4',
+        'enUpdateTitle' => 'New Update Available',
+        'enUpdateMessage' => "We've made some exciting improvements to enhance your experience. Update now to enjoy the latest features and performance upgrades!",
+      	'arUpdateTitle' => "!تحديث جديد",
+        'arUpdateMessage' => "لقد أجرينا بعض التحسينات الرائعة لتعزيز تجربتك. قم بالتحديث الآن للاستمتاع بأحدث الميزات وتحسينات الأداء",
         ]);
 });
 
 // Activate Or Deactivate Otp
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
+Route::get('check-otp-activation', [AuthController::class, 'checkOtpActive']);
 // Register
 Route::post('register', [AuthController::class, 'register']);
 Route::post('loginNew', [AuthController::class, 'login']);
@@ -116,7 +123,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
-        
+  	// Notifications
+    Route::resource('push-notifications', PushNotificationController::class);
+
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
         // Save shops
