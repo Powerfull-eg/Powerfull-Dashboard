@@ -51,16 +51,14 @@ class WhatsappController extends Controller
             "message" => "nullable|string",
             "file" => "required",
         ]);
-        
-        $message = isset($validated["message"]) ? $validated["message"] : '';
-        $url = "https://app.arrivewhats.com/api/send?number=2".$validated["mobile"]."&type=media&message=". $message ."&media_url=". $validated["file"] . "&instance_id=". env('ARRIVEWHATS_INSTANCE_ID')."&access_token=". env('ARRIVEWHATS_ACCESS_TOKEN');
-        // dd($url);
-        $response = Http::post($url);
-        $body = json_decode($response->body(), true);
-        if(isset($body["status"]) && $body["status"] == "success"){
-            $success = true;
-        }
-        return $success ?? false;
+        $message = (isset($validated["message"]) ? ($validated["message"] . ' \n')  : '') . $validated['file'];
+
+        $request = new Request();
+        $request->merge([ "mobile" => $validated["mobile"], "message" => $message]);
+        dump($request->message);
+        $response = static::sendTextMessage($request);
+        dd($response);
+        return $response[0];
     }
 
     /**

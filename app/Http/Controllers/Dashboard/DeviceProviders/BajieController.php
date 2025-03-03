@@ -20,7 +20,6 @@ class BajieController extends Controller
         
         $shops = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($url);
         $shops = collect(json_decode($shops->body(),true)['data']);
-        dd($shops);
         $shops = $shops->map(function($shop){
             $data = [
                 "name" => $shop['shopName'],

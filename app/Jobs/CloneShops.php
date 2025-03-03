@@ -35,11 +35,12 @@ class CloneShops implements ShouldQueue
         $shops = [];
         
         foreach($providors as $provider){
-            $shops[] = $provider->controller->getShops();
+          	$class = new $provider->controller;
+            $shops[] = $class->getShops();
         }
-
+      
         // Add Shops and update if exists
-        foreach($shops as $shop){
+        foreach($shops[0] as $shop){
             $existShop = Shop::where('provider_id',$shop['provider_id']);
             if($existShop->count()){
                 $existShop->update($shop);

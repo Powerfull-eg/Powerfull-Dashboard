@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Cache;
 
 trait FirebaseNotify
 {
@@ -31,40 +33,75 @@ trait FirebaseNotify
     /**
      * Notify specific tokens using Firebase New Api.
      */
-    public function notify(string $token, string $title, string $body,array $data = [], bool $validation=false): Response
+    public function notify(string $token, string $title, string $body, string $image = null,array $data = [], bool $validation=false)
     {
-        $fields = [
-            'validate_only' => $validation,
+        $accessToken = $this->getFirebaseAccessToken();
+
+        if (!$accessToken) {
+            return response()->json(['error' => 'Failed to get Firebase access token'], 500);
+        }
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $accessToken, // Important!
+            'Content-Type' => 'application/json',
+        ];
+
+        $payload = [
             'message' => [
-                'name' => $title,
-                'data' => $data,
+                'token' => $token,
                 'notification' => [
                     'title' => $title,
                     'body' => $body,
-                    'image' => $image ?? ''
+                    "image" => $image ?? null,
                 ],
-                // options for android push notificiations
-                // 'android'=> [
-                // ],
-                // options for web sdk push notificiations
-                // 'webpush'=> [
-                // ],
-                // options for apple push notificiations
-                // 'apns' => [
-                // ]
-                'fcm_options' => [
-                    'analytics_label' => $data['analytics_label'] ?? ''
-                ],
-                'token' => $token,
-            ]
+            ],
         ];
 
-        $client = Http::withHeaders([
-            'Content-Type: application/json',
-            'Authorization: key=' . env('FIREBASE_SERVER_KEY'),
-        ]);
-        $url = "https://fcm.googleapis.com/v1/{parent=projects/". env('FIREBASE_PROJECT_NUMBER'). "}/messages:send";
+        $url = "https://fcm.googleapis.com/v1/projects/" . env('FIREBASE_PROJECT_ID') . "/messages:send";
+        
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        if($response->status() != 200 && env('APP_DEBUG') == 'true'){
+            dump($response->body());
+        }
 
-        return $client->post($url, $fields);
+        return $response->status() == 200 ? true : false;
+    }
+
+    function getFirebaseAccessToken()
+    {
+        if (Cache::has('key')) {
+            return Cache::get('firebase_access_token');
+        }
+
+        // Get the service account credentials
+        $serviceAccountPath = storage_path('firebase-admin.json');
+        $credentials = json_decode(file_get_contents($serviceAccountPath), true);
+        $now = time();
+
+        // Create the JWT payload
+        $jwtPayload = [
+            'iss' => $credentials['client_email'],
+            'sub' => $credentials['client_email'],
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'iat' => $now,
+            'exp' => $now + 3600,
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+        ];
+
+        // Sign the JWT using the private key
+        $jwt = JWT::encode($jwtPayload, $credentials['private_key'], 'RS256');
+
+        // Exchange JWT for an access token
+        $response = Http::post("https://oauth2.googleapis.com/token", [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $jwt,
+        ]);
+
+        if ($response->successful()) {
+            Cache::put('firebase_access_token', $response->json()['access_token'], $now + 3600);
+            return $response->json()['access_token'];
+        }
+
+        return null;
     }
 }
