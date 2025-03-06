@@ -80,7 +80,7 @@
                             </tr>
                             <tr>
                                 <td class="title">{{__("Merchant Type")}}:</td>
-                                <td class="text-truncate">{{$shop->data->type ? (app()->getLocale() == 'ar' ? $shop->data->type->type_ar_name : $shop->data->type->type_en_name) :  __("Not Set") }} </td>
+                                <td class="text-truncate">{{$shop->data && $shop->data->type ? (app()->getLocale() == 'ar' ? $shop->data->type->type_ar_name : $shop->data->type->type_en_name) :  __("Not Set") }} </td>
                             </tr>   
                         </table>
                     </div>

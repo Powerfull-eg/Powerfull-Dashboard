@@ -77,8 +77,8 @@ class PushNotificationController extends Controller
             }
         }
 
+        $success = $failed = 0;
         foreach($targets as $target){
-            $success = $failed = 0;
             $data = [
                 'token' => $target->token,
                 'title' => $validated['title'],

@@ -15,7 +15,7 @@ class PushNotificationController extends Controller
     public function index()
     {
         $user = Auth::guard('api')->user();
-        return response()->json([ "notifications" => PushNotification::where('user_id', $user->id)->limit(10)->orderBy('created_at', 'desc')->get(['id', 'title', 'body','image','data','seen','created_at']) ]);
+        return response()->json([ "notifications" => PushNotification::where('user_id', $user->id)->limit(10)->groupBy('body')->orderBy('created_at', 'desc')->get(['id', 'title', 'body','image','data','seen','created_at']) ]);
     }
 
     /**

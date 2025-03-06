@@ -73,26 +73,26 @@
                             <div>
                                 <label for="logo">{{__('Logo')}}</label><span class="text-danger">*</span>
                             </div>
-                            <img class="image-preview img-fluid"  src="{{$shop->data->logo}}" :alt="$shop->name . ' icon'">
-                            <x-components::forms.input id="logo"  name="data_logo" class="image-input d-none" type="file" :value="$shop->data->logo" />
+                            <img class="image-preview img-fluid"  src="{{$shop->data && $shop->data->logo ? $shop->data->logo : $shop->logo}}" :alt="$shop->name . ' icon'">
+                            <x-components::forms.input id="logo"  name="data_logo" class="image-input d-none" type="file" :value="$shop->data && $shop->data->logo ? $shop->data->logo : $shop->logo ?? ''" />
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col col-6">
                             <label for="opens_at">{{__('Opens At')}}</label>
-                            <input type="time" name="opens_at" id="opens_at" value="{{$shop->data->opens_at ?? ''}}" >
+                            <input type="time" name="opens_at" id="opens_at" value="{{$shop->data && $shop->data->opens_at ?? ''}}" >
                         </div>
                         <div class="col col-6">
                             <label for="closes_at">{{__('Closes At')}}</label>
-                            <input type="time" name="closes_at" id="closes_at" value="{{$shop->data->closes_at ?? ''}}">
+                            <input type="time" name="closes_at" id="closes_at" value="{{$shop->data && $shop->data->closes_at ?? ''}}">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col col-6">
-                            <x-components::forms.input name="price" :title="__('Price')" :value="$shop->data->price ?? ''" />
+                            <x-components::forms.input name="price" :title="__('Price')" :value="$shop->data && $shop->data->price ?? ''" />
                         </div>
                         <div class="col col-6">
-                            <x-components::forms.select name="type_id" :options="\App\Models\ShopsType::pluck('type_ar_name', 'id')" :title="__('Type')" :selected="$shop->data->type_id ?? ''" />
+                            <x-components::forms.select name="type_id" :options="\App\Models\ShopsType::pluck('type_ar_name', 'id')" :title="__('Type')" :selected="$shop->data && $shop->data->type_id ?? ''" />
                         </div>
                     </div>
 
