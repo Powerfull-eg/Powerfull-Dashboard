@@ -123,9 +123,11 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
-  	// Notifications
+  	
+    // Notifications
     Route::resource('push-notifications', PushNotificationController::class);
-
+    Route::get('push-notifications-count', [PushNotificationController::class, 'getNotificationCount']);
+    
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
         // Save shops

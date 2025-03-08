@@ -15,7 +15,20 @@ class PushNotificationController extends Controller
     public function index()
     {
         $user = Auth::guard('api')->user();
-        return response()->json([ "notifications" => PushNotification::where('user_id', $user->id)->limit(10)->groupBy('body')->orderBy('created_at', 'desc')->get(['id', 'title', 'body','image','data','seen','created_at']) ]);
+        return response()->json([ "notifications" => PushNotification::where('user_id', $user->id)
+                                     ->selectRaw('MAX(id) as id, 
+                                            title, 
+                                            body, 
+                                            MAX(image) as image, 
+                                            MAX(data) as data, 
+                                            MAX(seen) as seen, 
+                                            MAX(created_at) as created_at
+                                        ')
+                                        ->groupBy('user_id', 'body', 'title') // Group by user_id, body, and title to avoid duplicates
+                                        ->orderBy('created_at', 'desc')
+                                        ->limit(10)
+                                        ->get()
+                                ]);
     }
 
     /**
@@ -42,6 +55,21 @@ class PushNotificationController extends Controller
         //
     }
 
+  
+    /**
+     * Get User's notification not read count.
+     */
+    public function getNotificationCount() {
+        $user = Auth::guard('api')->user()->id;
+        return response()->json([ "count" => PushNotification::where('user_id', $user)->where('seen', 0)
+                                ->selectRaw('MAX(id) as id, 
+                                            title, 
+                                            body')
+                                        ->groupBy('body', 'title') // Group by user_id, body, and title to avoid duplicates
+                                 		->get()->count()
+                                ]);
+    }
+  
     /**
      * Show the form for editing the specified resource.
      */
@@ -56,8 +84,7 @@ class PushNotificationController extends Controller
     public function update(Request $request, string $id)
     {
         $notification = PushNotification::find($id);
-        $notification->seen = 1;
-        $notification->save();
+        PushNotification::where('title',$notification->title)->where('user_id',$notification->user_id)->update(['seen' => 1]);
 
         return response()->json([ "notification" => $notification ]);
     }
