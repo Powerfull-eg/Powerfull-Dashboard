@@ -80,6 +80,29 @@
     @toastifyJs
 
     @stack('scripts')
+
+    {{--  Facebook Script --}}
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : "{{ env('FACEBOOK_CLIENT_ID') }}",
+          cookie     : true,
+          xfbml      : true,
+          version    : "{{ env('FACBOOK_APP_VERSION') }}"
+        });
+  
+        FB.AppEvents.logPageView();   
+  
+      };
+  
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
 </body>
 
 </html>

@@ -65,7 +65,7 @@ class SupportNotification extends Notification
 
         return [
             'body' => $message,
-            'mobile' => $this->user->phone
+            'mobile' => strrpos($this->user->phone, '0',0) === 0 ? $this->user->phone : '0' . $this->user->phone
         ];
     }
 
@@ -80,7 +80,7 @@ class SupportNotification extends Notification
 
         return [
             'body' => $message,
-            'mobile' => $this->user->phone
+            'mobile' => strrpos($this->user->phone, '0',0) === 0 ? $this->user->phone : '0' . $this->user->phone
         ];
     }
 

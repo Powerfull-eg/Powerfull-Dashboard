@@ -26,12 +26,12 @@ class AuthController extends \App\Http\Controllers\Controller
     {
         $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp','checkOtpActive', 'checkOtp','otpActivate','resetPassword']]);
     }
-    
-    //Check Otp Active
+  
+  	// Check Otp Active
     public function checkOtpActive(){
         return response(["otpActive" => env("OTP_ACTIVE")], 200);
     }
-    
+  
     /**
      * send otp to user
     */
@@ -71,13 +71,11 @@ EOT;
                 $whats = $whatsapp->sendTextMessage($otpRequest);
                 $success = SMSController::sendOTP($otpRequest);
                 $success = $success ?? ($whats[0] ? true : false);
-             
             }else{
                 $success = false;
-            }
-            
-            // return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
-            return response()->json([($success ? "Message sent successfully" : "Failed to send message")]);
+            } 
+
+            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
         }
         
         if($request->type && $request->type == "email"){
@@ -197,15 +195,14 @@ EOT;
     {
 
         $validate = $request->validate([
-            "password" => "required",
+            // "password" => "required",
             "fname" => "required|string",
             "lname" => "required|string",
-            "email" => "required",
             "phone" => "required|numeric"
         ]);
         $validate["first_name"] = $validate["fname"];
         $validate["last_name"] = $validate["lname"];
-        $validate["password"] = Hash::make($validate["password"]);
+        $validate["password"] = Hash::make(uniqid());
         $validate["code"] = "+20";
 
         $user = User::create($validate);
@@ -297,7 +294,17 @@ EOT;
      */
     public function authUser()
     {
-        return response()->json(auth()->user());
+        $user = auth()->user();
+        $userData = [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'photo' => $user->avatar ?? '',
+            'cards' => $user->cards ?? []
+        ];
+        return response()->json(["user" => $userData]);
     }
 
 

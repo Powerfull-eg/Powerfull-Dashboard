@@ -71,19 +71,26 @@ class UserController extends \App\Http\Controllers\Controller
     // Get Orders 
     public function getOrders(Request $request){
         $user = Auth::guard('api')->getuser();
-
-        $operations = Operation::where("user_id" , $user["id"])->orderBy('updated_at', 'desc')->get();
-        return response()->json(["orders" => $operations]);
+		$startDate = date('Y-m-d H:i:s', $request->startdate ? intval($request->startdate / 1000) : 0);
+		$endDate = date('Y-m-d H:i:s', $request->enddate ? strtotime('last day of this month 23:59:59', intval($request->enddate  / 1000)) : time());
+		$page = $request->page ?? 1;
+        $limit = $request->limit ?? 10;
+        
+      	$operations = Operation::where("user_id" , $user["id"])->whereBetween('created_at',[$startDate , $endDate]);
+      	$limitedOperations = $operations->limit($limit)->offset($limit * ($page - 1))->orderBy('updated_at', 'desc')->get();
+      	return response()->json(["orders" => $limitedOperations,"count" => $operations->count()]);
     }
 
     // Get Specific Order 
     public function getOrder(Request $request,string $id){
         $user = Auth::guard('api')->getuser();
+
         $operation = Operation::where(["user_id" => $user["id"],"id" => $id])->first();
-                
-        // Handling time for Bajie chinese time 
+      
+         // Handling time for Bajie chinese time 
         $operation->borrowTime = $operation->borrowTime ? date('Y-m-d H:i:s', strtotime($operation->borrowTime) - 6 * 3600) : $operation->borrowTime;
         $operation->returnTime = $operation->returnTime ? date('Y-m-d H:i:s', strtotime($operation->returnTime) - 6 * 3600): $operation->returnTime;
+        
         return response()->json(["order" => $operation]);
     }
     
@@ -115,7 +122,6 @@ class UserController extends \App\Http\Controllers\Controller
         // Update user
         User::find($user->id)->update($data);
         $user = User::find($user->id);
-        
         // get user returned data
         $userData = [
             'id' => $user->id, 

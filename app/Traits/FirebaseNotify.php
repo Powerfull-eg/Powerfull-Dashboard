@@ -54,7 +54,13 @@ trait FirebaseNotify
                     'body' => $body,
                     "image" => $image ?? null,
                 ],
-            ],
+               "android" => [
+                  "notification" => [
+                    "icon" => "ic_launcher",
+                    "color" => "#FF0000" // Optional: Set the icon color
+                  ]
+                ]
+            ]
         ];
 
         $url = "https://fcm.googleapis.com/v1/projects/" . env('FIREBASE_PROJECT_ID') . "/messages:send";

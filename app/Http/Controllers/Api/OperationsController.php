@@ -33,21 +33,21 @@ class OperationsController extends \App\Http\Controllers\Controller
             if($order->returnTime == null) return null;
             $price = new PriceController();
             $totalAmount = $order->amount != 0 ? $order->amount : $price->calcuatePrice($request);
-            $amount = intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
+          	$amount = $order->amount != 0 ? $totalAmount : intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
             $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
             $paymob = new PaymobController();
             $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $paymob->payWithSavedToken($request));
             DB::table('test')->insert(["request" => "Payment: " . json_encode($paymentDone)]);
             $order->update([
                 "payment_id" => $paymentDone["payment_id"],
-                "amount" => $totalAmount,
+                "amount" => $amount,
                 "status" => ($paymentDone["status"] == true ? 3 : 4),
             ]);
-
-            // Add operation to incomplete history
+             // Add operation to incomplete history
             ($paymentDone["status"] ? null : CompleteFailedPayment::addIncompletedPaymentToHistory($order,$paymentDone["status"],$paymentDone["status"] == true ? "paid" : null));
             return $paymentDone["status"];
         
         }catch(\Exception $err){ DB::table('test')->insert(["request" => "Operation Error: " . $err->getmessage()]);}
-    }        
+    }    
+    
 }

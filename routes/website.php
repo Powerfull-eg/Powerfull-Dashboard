@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+//Oauth Redirect
+Route::get('auth/oauth/redirect', [\App\Http\Controllers\Api\Auth\OauthController::class, 'oauthRedirect'])->name('oauth.redirect');
+Route::get('auth/oauth/google/redirect', [\App\Http\Controllers\Api\Auth\OauthController::class, 'oauthGoogleCallback'])->name('oauth.google');
+Route::get('auth/oauth/facebook/redirect', [\App\Http\Controllers\Api\Auth\OauthController::class, 'oauthFacebookCallback'])->name('oauth.facebook');
 
 Route::get('/', function(){ return redirect()->route('dashboard.index'); })->name('index');
-Route::resource('language', \App\Http\Controllers\Website\LanguageController::class)->only(['show']);
+// Route::resource('language', \App\Http\Controllers\Website\LanguageController::class)->only(['show']);
 Route::get('/payment/response', function(){ return  view("payment.paymobPaymentResponse");})->name('payment-response');
 Route::get('/fawry-payment-response', function(){ return  view("payment.fawryPaymentResponse");})->name('fawry-payment-response');
 Route::get('/test', function(){ return  view("payment.test");});

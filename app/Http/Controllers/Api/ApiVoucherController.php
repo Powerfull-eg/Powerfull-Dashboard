@@ -52,4 +52,16 @@ class ApiVoucherController extends \App\Http\Controllers\Controller
         return response()->json(["vouchers" => $vouchers]);
     }
 
+    /**
+     * Show target resource.
+     */
+    public function show(string $id)
+    {
+        $voucher = Voucher::find($id);
+        $user = Auth::guard('api')->user();
+        $usedVoucher = VoucherOrder::where("user_id",$user->id)->where("voucher_id",$voucher->id); 
+        $voucher->used = $usedVoucher->exists() ? 1 : 0;
+        
+        return response()->json(["voucher" => $voucher]);
+    }
 }

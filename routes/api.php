@@ -18,12 +18,14 @@ use App\Http\Controllers\Api\HelpController;
 use App\Http\Controllers\Api\PaymobController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\Api\ApiVoucherController;
+use App\Http\Controllers\Api\AppSettingsController;
+use App\Http\Controllers\Api\Auth\OauthController;
 use App\Http\Controllers\Api\FawryPayController;
 use App\Http\Controllers\GiftController;
 use App\Models\PushNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\PushTokensController;
-use App\Http\Controllers\WhatsappController;
+use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\ShopsController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PushNotificationController;
@@ -46,29 +48,7 @@ Route::get('connection', function () {
 });
 
 // App general settings 
-Route::get('settings', function () {
-    return response()->json([
-        "map" => [
-                "lat" => 30.222656,
-                "lng" => 31.477425,
-                "zoom" => 10,
-                "mapId" => "a55a8dd1e435899e"
-
-            ],
-        "maintenance" => false,
-        'timezone' => 'Africa/Cairo',
-      	'appAndroidLink'=> 'https://play.google.com/store/apps/details?id=com.powerfull.app',
-        'appIosLink' => 'https://apps.apple.com/eg/app/powerfull/id6477441692',
-        'appIosVersion' => '1.1.0',
-        'updateIosMandatory' => '1.1.0',
-        'appAndroidVersion' => '1.1.5',
-        'updateAndroidMandatory' => '1.1.4',
-        'enUpdateTitle' => 'New Update Available',
-        'enUpdateMessage' => "We've made some exciting improvements to enhance your experience. Update now to enjoy the latest features and performance upgrades!",
-      	'arUpdateTitle' => "!تحديث جديد",
-        'arUpdateMessage' => "لقد أجرينا بعض التحسينات الرائعة لتعزيز تجربتك. قم بالتحديث الآن للاستمتاع بأحدث الميزات وتحسينات الأداء",
-        ]);
-});
+Route::get('settings', [AppSettingsController::class, 'index']);
 
 // Activate Or Deactivate Otp
 Route::post('otp-activation', [AuthController::class, 'otpActivate']);
@@ -121,6 +101,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::post('fawry-notifications', [FawryPayController::class, 'fawryNotification']);
     // Vouchers
     Route::get('vouchers', [ApiVoucherController::class, 'index']);
+    Route::get('vouchers/{id}', [ApiVoucherController::class, 'show']);
     // Gifts
     Route::post('gifts', [GiftController::class, 'index']);
   	
@@ -128,6 +109,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'operations'], function () {
     Route::resource('push-notifications', PushNotificationController::class);
     Route::get('push-notifications-count', [PushNotificationController::class, 'getNotificationCount']);
     
+    //Oauth Routes
+    Route::post('update-phone', [OauthController::class, 'updateUserPhone']);
+
     // Shops Route Group
     Route::group(['prefix' => 'shops'], function () {
         // Save shops

@@ -115,7 +115,6 @@ class FawryPayController extends Controller
 
     // Get Iframe Url
     public function getIframeUrl(){
-        $responseUrl = "https://dev.powerfull-eg.com/payment/response";
         $user = Auth::guard('api')->user();
         $merchantCode = env('FAWRY_MERCHANT_CODE');
         $returnUrl = route('website.fawry-payment-response');

@@ -52,7 +52,7 @@ class VoucherController extends Controller
         // percentage
         if($voucher->type === 0 && $this->validateVoucherMinAmount($request->orderAmount,$voucher) == true)
         {
-            $voucherAmount = intval($request->orderAmount * $voucher->value);
+            $voucherAmount = intval($request->orderAmount * $voucher->value / 100);
             $voucherAmount = $this->validateVoucherMaxDiscount($voucherAmount,$voucher) ? $voucherAmount : $voucher->max_discount;
         }
         elseif($voucher->type === 1 && $this->validateVoucherMinAmount($request->orderAmount,$voucher) == true)
