@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Exports\VouchersExport;
+use App\Models\Campaign;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Models\VoucherOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VoucherController extends Controller
 {
@@ -31,18 +35,15 @@ class VoucherController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'code' => 'required',
-            'type' => 'required',
-            'value' => 'required',
-            'user_id' => 'required',
-            'min_amount' => 'required|numeric',
-            'max_discount' => 'required|numeric',
-            'from' => 'required|date',
-            'to' => 'required|date',
+    {   
+        $request->validate([
+            'navigator' => 'required',
         ]);
-        $voucher = Voucher::create($validated);
+        if($request->navigator == 0){
+             $this->createVoucher($request);
+        } else {
+             $this->createCampaign($request);
+        }
         return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
     }
 
@@ -91,5 +92,93 @@ class VoucherController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    // create voucher
+    public function createVoucher(Request $request){
+        $validated = $request->validate([
+            'code' => 'required',
+            'type' => 'required',
+            'value' => 'required',
+            'user_id' => 'required',
+            'min_amount' => 'required|numeric',
+            'max_discount' => 'required|numeric',
+            'multiple_usage' => 'required',
+            'usage_count' => 'numeric',
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        $voucher = Voucher::create($validated);
+        return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
+    }
+
+    // create campaign
+    public function createCampaign(Request $request){
+        $validated = $request->validate([
+            'campaign_name' => 'required|string',
+            'campaign_description' => 'required',
+            'vouchers_count' => 'required|numeric',
+            'type' => 'required',
+            'value' => 'required',
+            'min_amount' => 'required|numeric',
+            'max_discount' => 'required|numeric',
+            'multiple_usage' => 'required',
+            'usage_count' => 'numeric',
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        
+        // create campaign
+        $campaign = Campaign::create([
+            'name' => $validated['campaign_name'],
+            'description' => $validated['campaign_description'],
+            'start_date' => $validated['from'],
+            'end_date' => $validated['to'],
+            'admin_id' => auth()->user()->id,
+        ]); 
+
+        // create vouchers
+        for ($i=0; $i < $validated['vouchers_count']; $i++) {
+            $code = $this->generateAndCheckCode();
+
+            $vouchers[] = Voucher::create([
+                'code' => $code,
+                'type' => $validated['type'],
+                'value' => $validated['value'],
+                'user_id' => 0,
+                'min_amount' => $validated['min_amount'],
+                'max_discount' => $validated['max_discount'],
+                'multiple_usage' => $validated['multiple_usage'],
+                'usage_count' => $validated['usage_count'],
+                'from' => $validated['from'],
+                'to' => $validated['to'],
+                'campaign_id' => $campaign->id,
+            ]);
+        }
+        return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
+    }
+
+    private function generateAndCheckCode(){
+        $code = Str::random(6);
+        $voucher = Voucher::where('code', $code)->first();
+        if ($voucher) {
+            $this->generateAndCheckCode();
+        }
+        return $code;
+    }
+
+    public function ExportCampaignExcel($campaign) {
+        if (!auth()->user()) {
+            abort(403);
+        }
+        $campaign = Campaign::with('vouchers')->find($campaign);
+        $campaign->summary = [];
+        return Excel::download(new VouchersExport($campaign), "$campaign->name - $campaign->start_date.xlsx");
+    }
+
+    // Show Campaign Vouchers
+    public function showCampaign($id){
+        $campaign = Campaign::find($id);
+        return view('dashboard.vouchers.campaign.show',['campaign' => $campaign]);
     }
 }

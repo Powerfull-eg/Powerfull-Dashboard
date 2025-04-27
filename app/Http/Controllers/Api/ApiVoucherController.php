@@ -6,6 +6,7 @@ use App\Models\Voucher;
 use App\Models\VoucherOrder;
 use App\Models\Operation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,29 +27,40 @@ class ApiVoucherController extends \App\Http\Controllers\Controller
      */
     public function index()
     {
-        $user = Auth::guard('api')->getuser();
-        $usedVouchers = VoucherOrder::where("user_id",$user['id'])->pluck("added_at","voucher_id")->toArray(); 
-        $vouchers = Voucher::where("from",'<',now())
-                            ->whereIn("user_id",[0,$user["id"]])
-                            ->get();
-
-        foreach($vouchers as $voucher){
-
-            if(array_key_exists($voucher->id,$usedVouchers))
-            {
-                $voucher["used_at"] = $usedVouchers[$voucher->id];
-                $used[] = $voucher;
-            }
-            elseif($voucher->to < now())
-            { 
-                $expired[] = $voucher; 
-            }
-            else
-            {
-                 $new[] = $voucher; 
+        $user = Auth::guard('api')->user();
+        $allVouchers = Voucher::with('voucherOrder','campaign');
+        $vouchers = [];
+        
+        // used vouchers
+        $usedVouchers = VoucherOrder::where("user_id",$user['id'])->get(); 
+        if(!$usedVouchers->isEmpty()) {
+            foreach($usedVouchers as $voucher){
+                $used[$voucher->id] = Voucher::where("id",$voucher->voucher_id)->first();
+                $used[$voucher->id]['used_at'] = $voucher->added_at;
             }
         }
-        $vouchers = ["new" => $new ?? [], "used" => $used ?? [], "expired" => $expired ?? []];
+        // merge all used vouchers
+        $vouchers['used'] = Arr::flatten($used ?? []);
+
+        
+        // Other vouchers
+        $usedVouchersIds = Arr::map($vouchers['used'],fn($v) => $v->id);
+        foreach($allVouchers->get() as $voucher){
+                // skip if expired
+                if ($voucher->user_id == $user['id'] && $voucher->to < now() && !in_array($voucher->id,$usedVouchersIds)) {
+                    $vouchers['expired'][] = $voucher;
+                    continue;
+                }
+                
+                // skip if usage count already exceeded
+                if ( 
+                    (in_array($voucher->id, $usedVouchersIds) && $voucher->multiple_usage == 1 && $voucher->usage_count <= count(Arr::where($usedVouchersIds, fn($v) => $v == $voucher->id))) 
+                    || $voucher->to < now()
+                    )
+                    continue;
+
+                $vouchers['new'][] = $voucher;
+        }
         return response()->json(["vouchers" => $vouchers]);
     }
 

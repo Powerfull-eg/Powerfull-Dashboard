@@ -23,7 +23,9 @@ class VoucherController extends Controller
             "max_discount" => "required|integer",
             "from" => "required",
             "to" => "required",
-            "image" =>"nullable"
+            "image" =>"nullable",
+            "multiple_usage" => "boolean",
+            "usage_count" => "integer"
         ]);
 
         $voucher = Voucher::create($validated);

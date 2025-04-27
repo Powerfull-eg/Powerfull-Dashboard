@@ -25,18 +25,12 @@ class VouchersUsageTable extends Datatable
         $this->voucherId = $id;
     }
 
-    private function getVocuher(string $id)
-    {
-        $voucher = Voucher::find($id);
-        return $voucher;
-    }
-
     /**
      * Query builder.
      */
     public function query(): Builder
     {
-        return VoucherOrder::query()->where('voucher_id',$this->voucherId);
+        return VoucherOrder::where('voucher_id',$this->voucherId);
     }
 
     /**
@@ -55,7 +49,9 @@ class VouchersUsageTable extends Datatable
                         ->orWhere('last_name', 'like', "%$search%");
                     });
                 }),
-            Column::make(__('Order'), 'order_id')
+            Column::make(__('Code'), 'voucher.code')
+                ->sortable(),
+            Column::make(__('Order'), 'order.id')
                 ->sortable(),
             Column::make(__('Used At'), 'added_at')
                 ->sortable(),

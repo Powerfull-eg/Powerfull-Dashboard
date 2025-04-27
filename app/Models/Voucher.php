@@ -19,7 +19,10 @@ class Voucher extends Model
         "max_discount",
         "from",
         "to",
-        "image"
+        "image",
+        "multiple_usage",
+        "usage_count",
+        "campaign_id"
     ];
 
     public function voucherOrder() : HasMany
@@ -30,5 +33,10 @@ class Voucher extends Model
     public function user() : BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function campaign() : BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 }

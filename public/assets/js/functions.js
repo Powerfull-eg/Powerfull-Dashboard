@@ -371,3 +371,27 @@ function showPageLoader() { $('#page-overlay').removeClass('d-none'); }
 window.addEventListener('pageshow', function (event) {
     if (event.persisted) { $('#page-overlay').addClass('d-none'); }
 });
+
+// navigator
+const navigator = (index) => {
+    $('input[name=navigator]').val(index);
+
+    const navigators = document.querySelectorAll('.navigator');
+    navigators.forEach((navigator, i) => {
+        if (i == index) {
+            navigator.classList.add('active');
+        } else {
+            navigator.classList.remove('active');
+        }
+    })
+
+    const formContainers = document.querySelectorAll('[navigator]');
+    console.log(formContainers);
+    formContainers.forEach((formContainer, i) => {
+        if ($('[navigator]').eq(i).attr('navigator') == index) {
+            formContainer.classList.remove('d-none');
+        } else {
+            formContainer.classList.add('d-none');
+        }
+    })
+}

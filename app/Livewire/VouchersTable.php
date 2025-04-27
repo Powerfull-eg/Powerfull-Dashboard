@@ -25,12 +25,6 @@ class VouchersTable extends Datatable
         }
     }
 
-    private function getUser(string $id)
-    {
-        $user = User::find($id);
-        return $user;
-    }
-
     private function getVocuher(string $id)
     {
         $voucher = Voucher::find($id);
@@ -42,7 +36,7 @@ class VouchersTable extends Datatable
      */
     public function query(): Builder
     {
-        return Voucher::query();
+        return Voucher::where('campaign_id',null);
     }
 
     /**
@@ -51,7 +45,7 @@ class VouchersTable extends Datatable
     public function columns(): array
     {
         return [
-            Column::make('#','id'),
+            Column::make('ID','id'),
             Column::make(__('Code'), 'code')
                 ->searchable()
                 ->sortable(),

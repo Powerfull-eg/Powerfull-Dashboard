@@ -64,7 +64,9 @@ Route::middleware('auth:admins')->group(function () {
     
     /* --------- Vouchers Management --------- */
     Route::resource('vouchers', \App\Http\Controllers\Dashboard\VoucherController::class);
-    
+    Route::get('vouchers/campaign/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"showCampaign"])->name('vouchers.campaign.show');
+    Route::get('vouchers/export-campaign-excel/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"ExportCampaignExcel"])->name('vouchers.campaign.excel');
+
     /* --------- Control Management --------- */
     Route::get('control',function(){ return view('dashboard.control.index'); })->name('control.index');
     Route::resource('powerbank', \App\Http\Controllers\Dashboard\PowerbanksController::class);
