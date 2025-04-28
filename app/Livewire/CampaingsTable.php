@@ -18,7 +18,7 @@ class CampaingsTable extends Datatable
      */
     public function query(): Builder
     {
-        return Campaign::with('vouchers');
+        return Campaign::with('vouchers')->orderByDesc('id');
     }
 
     private function getVocuherValue(string $id)
@@ -71,6 +71,16 @@ class CampaingsTable extends Datatable
                 ->sortable(),
             Column::make(__('Export'), 'id')
             ->format(fn ($id) => view('components.icon', ['icon' => "<a href='" . route("dashboard.vouchers.campaign.excel",$id) . "' class='btn btn-primary ignore-loader' style='width:50px;'><i class='fs-2 ti ti-download'></i></a>"]))
+        ];
+    }
+    /**
+     * Data table actions.
+     */
+    public function actions(): array
+    {
+        return [
+            Action::edit('dashboard.vouchers.campaigns.edit')->can('dashboard.vouchers.campaigns.edit'),
+            Action::delete('dashboard.vouchers.campaigns.destroy')->can('dashboard.vouchers.campaigns.destroy'),
         ];
     }
 }

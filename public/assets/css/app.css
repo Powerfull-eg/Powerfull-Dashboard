@@ -341,3 +341,25 @@ table.content-table tr td.title{
 .summary-card.middle hr {
     background: #ddd !important;
 }
+
+/* Page Navs */
+.page-navs {
+    align-items: center;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: .3rem 3rem;
+    border-radius: 1rem;
+    max-width: 90%;
+    margin: auto 1rem;
+}
+.page-navs div {
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: .5rem 1rem;
+}
+.page-navs div:hover,.page-navs div.active {
+    background: var(--text-color);
+    color: var(--background-color);
+    border-radius: 1rem;
+}

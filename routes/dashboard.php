@@ -66,7 +66,10 @@ Route::middleware('auth:admins')->group(function () {
     Route::resource('vouchers', \App\Http\Controllers\Dashboard\VoucherController::class);
     Route::get('vouchers/campaign/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"showCampaign"])->name('vouchers.campaign.show');
     Route::get('vouchers/export-campaign-excel/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"ExportCampaignExcel"])->name('vouchers.campaign.excel');
-
+    Route::get('vouchers/campaign/edit/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"editCampaign"])->name('vouchers.campaigns.edit');
+    Route::post('vouchers/campaign/update/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"updateCampaign"])->name('vouchers.campaigns.update');
+    Route::delete('vouchers/campaign/delete/{campaign}',[\App\Http\Controllers\Dashboard\VoucherController::class,"deleteCampaign"])->name('vouchers.campaigns.destroy');
+    
     /* --------- Control Management --------- */
     Route::get('control',function(){ return view('dashboard.control.index'); })->name('control.index');
     Route::resource('powerbank', \App\Http\Controllers\Dashboard\PowerbanksController::class);

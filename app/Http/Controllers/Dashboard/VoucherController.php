@@ -78,10 +78,13 @@ class VoucherController extends Controller
             'user_id' => 'required',
             'min_amount' => 'required|numeric',
             'max_discount' => 'required|numeric',
+            'multuple_usage' => 'nullable',
+            'usage_count' => 'nullable|numeric',
             'from' => 'required|date',
             'to' => 'required|date',
         ]);
         $voucher = Voucher::find($id);
+        $validated['usage_count'] = $validated['usage_count'] ?? 0;
         $voucher->update($validated);
         return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Updated Successfully'));
     }
@@ -103,11 +106,12 @@ class VoucherController extends Controller
             'user_id' => 'required',
             'min_amount' => 'required|numeric',
             'max_discount' => 'required|numeric',
-            'multiple_usage' => 'required',
-            'usage_count' => 'numeric',
+            'multiple_usage' => 'nullable',
+            'usage_count' => 'nullable|numeric',
             'from' => 'required|date',
             'to' => 'required|date',
         ]);
+        $validated['usage_count'] = $validated['usage_count'] ?? 0;
         $voucher = Voucher::create($validated);
         return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
     }
@@ -122,8 +126,8 @@ class VoucherController extends Controller
             'value' => 'required',
             'min_amount' => 'required|numeric',
             'max_discount' => 'required|numeric',
-            'multiple_usage' => 'required',
-            'usage_count' => 'numeric',
+            'multiple_usage' => 'nullable',
+            'usage_count' => 'nullable|numeric',
             'from' => 'required|date',
             'to' => 'required|date',
         ]);
@@ -136,7 +140,7 @@ class VoucherController extends Controller
             'end_date' => $validated['to'],
             'admin_id' => auth()->user()->id,
         ]); 
-
+        
         // create vouchers
         for ($i=0; $i < $validated['vouchers_count']; $i++) {
             $code = $this->generateAndCheckCode();
@@ -148,14 +152,14 @@ class VoucherController extends Controller
                 'user_id' => 0,
                 'min_amount' => $validated['min_amount'],
                 'max_discount' => $validated['max_discount'],
-                'multiple_usage' => $validated['multiple_usage'],
-                'usage_count' => $validated['usage_count'],
+                'multiple_usage' => $validated['multiple_usage'] ?? 0,
+                'usage_count' => $validated['usage_count'] ?? 0,
                 'from' => $validated['from'],
                 'to' => $validated['to'],
                 'campaign_id' => $campaign->id,
             ]);
         }
-        return redirect()->route('dashboard.vouchers.index')->with('success',__('Voucher Created Successfully'));
+        return redirect()->route('dashboard.vouchers.index')->with('success',__('Campaign Created Successfully'));
     }
 
     private function generateAndCheckCode(){
@@ -180,5 +184,87 @@ class VoucherController extends Controller
     public function showCampaign($id){
         $campaign = Campaign::find($id);
         return view('dashboard.vouchers.campaign.show',['campaign' => $campaign]);
+    }
+
+    // Edit Campaign 
+    public function editCampaign($id) {
+        $campaign = Campaign::with('vouchers')->find($id);
+        return view('dashboard.vouchers.campaign.edit',['campaign' => $campaign]);
+    }
+
+    // Update Campaign 
+    public function updateCampaign(string $id, Request $request) {
+        $campaign = Campaign::with('vouchers')->find($id);
+
+        $validated = $request->validate([
+            'campaign_name' => 'required|string',
+            'campaign_description' => 'required',
+            'vouchers_count' => 'required|numeric',
+            'type' => 'required',
+            'value' => 'required',
+            'min_amount' => 'required|numeric',
+            'max_discount' => 'required|numeric',
+            'multiple_usage' => 'nullable',
+            'usage_count' => 'nullable|numeric',
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        
+        // update campaign
+        $campaign->update([
+            'name' => $validated['campaign_name'],
+            'description' => $validated['campaign_description'],
+            'start_date' => $validated['from'],
+            'end_date' => $validated['to'],
+            'admin_id' => auth()->user()->id,
+        ]);
+
+        //update exist vouchers
+        foreach($campaign->vouchers as $voucher) {
+            $voucher->update([
+                'code' => $voucher->code,
+                'type' => $validated['type'],
+                'value' => $validated['value'],
+                'user_id' => 0,
+                'min_amount' => $validated['min_amount'],
+                'max_discount' => $validated['max_discount'],
+                'multiple_usage' => $validated['multiple_usage'] ?? 0,
+                'usage_count' => $validated['usage_count'] ?? 0,
+                'from' => $validated['from'],
+                'to' => $validated['to'],
+                'campaign_id' => $campaign->id,
+            ]);
+        }
+
+        // Add extra vouchers
+        if($validated['vouchers_count'] > $campaign->vouchers->count()) {
+            // create vouchers
+            for ($i=0; $i < ($validated['vouchers_count'] - $campaign->vouchers->count()); $i++) {
+                $code = $this->generateAndCheckCode();
+
+                $vouchers[] = Voucher::create([
+                    'code' => $code,
+                    'type' => $validated['type'],
+                    'value' => $validated['value'],
+                    'user_id' => 0,
+                    'min_amount' => $validated['min_amount'],
+                    'max_discount' => $validated['max_discount'],
+                    'multiple_usage' => $validated['multiple_usage'] ?? 0,
+                    'usage_count' => $validated['usage_count'] ?? 0,
+                    'from' => $validated['from'],
+                    'to' => $validated['to'],
+                    'campaign_id' => $campaign->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('dashboard.vouchers.index')->with('success', __("Campaign Updated Successfully"));
+    }
+
+    // Delete Campaign
+    public function deleteCampaign ($id) {
+        $campaign = Campaign::find($id);
+        $campaign->delete();
+        return redirect()->route('dashboard.vouchers.index')->with('success', __("Campaign Deleted Successfully"));
     }
 }

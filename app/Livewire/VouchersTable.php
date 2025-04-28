@@ -36,7 +36,7 @@ class VouchersTable extends Datatable
      */
     public function query(): Builder
     {
-        return Voucher::where('campaign_id',null);
+        return Voucher::where('campaign_id',null)->orderByDesc('id');
     }
 
     /**

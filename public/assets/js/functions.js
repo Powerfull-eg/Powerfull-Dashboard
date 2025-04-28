@@ -375,7 +375,7 @@ window.addEventListener('pageshow', function (event) {
 // navigator
 const navigator = (index) => {
     $('input[name=navigator]').val(index);
-
+    
     const navigators = document.querySelectorAll('.navigator');
     navigators.forEach((navigator, i) => {
         if (i == index) {
@@ -386,7 +386,6 @@ const navigator = (index) => {
     })
 
     const formContainers = document.querySelectorAll('[navigator]');
-    console.log(formContainers);
     formContainers.forEach((formContainer, i) => {
         if ($('[navigator]').eq(i).attr('navigator') == index) {
             formContainer.classList.remove('d-none');
@@ -394,4 +393,9 @@ const navigator = (index) => {
             formContainer.classList.add('d-none');
         }
     })
+}
+
+// Toggle Show/Hide Elements
+const toggleShow = (action = 'show',selector) => {
+    action == 'show' ? $(selector).removeClass('d-none') : $(selector).addClass('d-none');
 }

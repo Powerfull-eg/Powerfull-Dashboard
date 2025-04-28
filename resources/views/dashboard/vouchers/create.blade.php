@@ -1,11 +1,27 @@
 <x-layouts::dashboard>
     <x-components::status />
-    <h2 class="text-center fw-bold mx-auto">{{__('Create New Voucher')}}</h2>
+    <div class="d-flex justify-content-center mx-auto gap-3 fs-1 fw-bold page-navs">
+        <div class="navigator active" onclick="navigator(0)">{{__('Vouchers')}}</div>
+        <div class="navigator" onclick="navigator(1)">{{__('Campaigns')}}</div>
+    </div>
+
     <form action="{{route('dashboard.vouchers.store')}}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="mb-3">
+    <input type="hidden" name="navigator" value="0">
+    {{-- Campaign Data --}}
+    <div class="mb-3" navigator=1>
+        <x-components::forms.input name="campaign_name" :placeholder="__('Campaign Name')" :title="__('Name')" :value="old('campaign_name')" />
+    </div>
+    <div class="mb-3" navigator=1>
+        <x-components::forms.textarea name="campaign_description" :title="__('Description')" :placeholder="__('Campaign Description')" :value="old('campaign_description')" />
+    </div>
+    <div class="mb-3" navigator=1>
+        <x-components::forms.input name="vouchers_count" type='number' :title="__('Vouchers Count')" :placeholder="__('Add amount of vouchers')" :value="old('vouchers_count')" />
+    </div>
+
+    <div class="mb-3" navigator=0>
         <label class="form-label">{{__('Code')}}</label>
-        <input type="text" class="form-control" name="code" required value="{{old('code')}}" placeholder="Enter {{__('Code')}}" />
+        <input type="text" class="form-control" name="code"  value="{{old('code')}}" placeholder="Enter {{__('Code')}}" />
         <div class="btn btn-success my-2" role="" onclick="generatecode()">{{__('Generate Code')}}</div>
     </div>
     <div class="mb-3">
@@ -26,15 +42,15 @@
         <input type="number" class="form-control" name="value" required value="{{old('value')}}" placeholder="Enter {{__('Value')}}" />
     </div>
     {{-- Users --}}
-    <div class="mb-3">
-        <label class="d-flex justify-content-evenly form-label">{{__('Target User')}}</label>
+    <div class="mb-3" navigator=0>
+        <label class="d-flex justify-content-start form-label">{{__('Target User')}}</label>
         <div class="form-selectgroup">
             <label class="form-selectgroup-item flex-fill">
-                <input type="radio" name="user_id" required value="0" class="form-selectgroup-input select-user" {{old('user_id') == 0 ? 'checked' : ''}} />
+                <input type="radio" name="user_id" onclick="toggleShow('hide','.users')" value="0" class="form-selectgroup-input select-user" {{old('user_id') == 0 ? 'checked' : ''}} />
                 <span class="form-selectgroup-label">{{ __('All Users') }}</span>
             </label>
             <label class="form-selectgroup-item flex-fill">
-                <input type="radio" name="user_id" custom-user onclick="toggleUserSelect(this)" value="{{old('user_id') != 0 ? old('user_id')  : ''}}" class="form-selectgroup-input select-user" {{old('user_id') != 0 ? 'checked' : ''}} />
+                <input type="radio" name="user_id" custom-user onclick="toggleShow('show','.users')" value="{{old('user_id') != 0 ? old('user_id')  : ''}}" class="form-selectgroup-input select-user" {{old('user_id') != 0 ? 'checked' : ''}} />
                 <span class="form-selectgroup-label">{{ __('Specific User') }}</span>
             </label>
             <div class="mx-2 {{old('user_id') == 0 ? 'd-none' : ''}} users">
@@ -47,6 +63,14 @@
             </div>
         </div>
     </div>
+    {{-- Multiple Usage --}}
+    <div class="mb-3">
+        <x-components::forms.switch-checkbox required name="multiple_usage" :title="__('Multiple Usage')" :value="old('multiple_usage')" />
+    </div>
+    <div class="mb-3 d-none usage_count">
+        <x-components::forms.input name="usage_count" :placeholder="__('Add No of usage voucher')" :title="__('Usage Count')" :value="old('usage_count')" />
+    </div>
+
     <div class="mb-3">
         <label class="form-label">{{__('Min Amount')}} ({{__('EGP')}})</label>
         <input type="number" class="form-control" name="min_amount" required value="{{old('min_amount')}}" placeholder="Enter {{__('Min Amount')}}" />
@@ -78,11 +102,7 @@
                 userId = select.value;
                 document.querySelector("[custom-user]").value = userId;
             }
-            // hide specific user selection on un select
-            const toggleUserSelect = (selector) => {
-                const usersContainer = document.querySelector('.users');
-                usersContainer.classList.toggle('d-none');
-            }
+
             // generate code
             const generatecode = () => {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -93,6 +113,23 @@
                 }
                 document.querySelector('input[name=code]').value = code;
             }
+
+            $(document).ready(() => {
+                @if (old('navigator') == 1)
+                    navigator(1);
+                @else
+                    navigator(0);
+                @endif
+
+                $("[name=multiple_usage]").on("change",() => {
+                    if ($("[name=multiple_usage]").is(':checked')) {
+                        $(".usage_count").removeClass('d-none');
+                    } else {
+                        $(".usage_count").addClass('d-none');
+                    }
+                });
+            });
+
         </script>
     @endpush
     @push('styles')
