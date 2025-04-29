@@ -1,4 +1,4 @@
-@props(['title' => null, 'id' => uniqid('checkbox-'),'onchange' => null])
+@props(['title' => null, 'id' => uniqid('checkbox-'),'onchange' => null, 'checked' => false])
 
 @php
     $name = $attributes->get('name') ?? false;
@@ -15,7 +15,7 @@
         @endif
         
         <label class="switch">
-            <input type="checkbox" name="{{ $name }}" id="{{ $id }}" onchange="{{ $onchange }}">
+            <input type="checkbox" name="{{ $name }}" id="{{ $id }}" onchange="{{ $onchange }} " {{ $checked ? 'checked' : '' }} class="form-check-input">
             <span class="slider round"></span>
         </label>
     </div>

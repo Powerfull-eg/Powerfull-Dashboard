@@ -31,11 +31,11 @@
         <label class="d-flex justify-content-evenly form-label">{{__('Target User')}}</label>
         <div class="form-selectgroup">
             <label class="form-selectgroup-item flex-fill">
-                <input type="radio" name="user_id" value="0" class="form-selectgroup-input select-user" {{$voucher->user_id == 0 ? 'checked' : ''}} />
+                <input type="radio" name="user_id" value="0" onclick="toggleShow('hide','.users')" class="form-selectgroup-input select-user" {{$voucher->user_id == 0 ? 'checked' : ''}} />
                 <span class="form-selectgroup-label">{{ __('All Users') }}</span>
             </label>
             <label class="form-selectgroup-item flex-fill">
-                <input type="radio" name="user_id" custom-user onclick="toggleUserSelect(this)" value="{{$voucher->user_id != 0 ? $voucher->user_id  : ''}}" class="form-selectgroup-input select-user" {{$voucher->user_id != 0 ? 'checked' : ''}} />
+                <input type="radio" name="user_id" custom-user onclick="toggleShow('show','.users')" value="{{$voucher->user_id != 0 ? 'checked'  : ''}}" class="form-selectgroup-input select-user" />
                 <span class="form-selectgroup-label">{{ __('Specific User') }}</span>
             </label>
             <div class="mx-2 {{$voucher->user_id == 0 ? 'd-none' : ''}} users">
@@ -47,6 +47,13 @@
                 </select>
             </div>
         </div>
+    </div>
+    {{-- Multiple Usage --}}
+    <div class="mb-3">
+        <x-components::forms.switch-checkbox required name="multiple_usage" :title="__('Multiple Usage')" :value="old('multiple_usage',$voucher->multiple_usage)" :checked="$voucher->multiple_usage ? true : false" />
+    </div>
+    <div class="mb-3 {{ $voucher->multiple_usage ? '' : 'd-none' }} usage_count">
+        <x-components::forms.input name="usage_count" :placeholder="__('Add No of usage voucher')" :title="__('Usage Count')" :value="old('usage_count',$voucher->usage_count)" />
     </div>
     <div class="mb-3">
         <label class="form-label">{{__('Min Amount')}} ({{__('EGP')}})</label>
@@ -79,11 +86,7 @@
                 userId = select.value;
                 document.querySelector("[custom-user]").value = userId;
             }
-            // hide specific user selection on un select
-            const toggleUserSelect = (selector) => {
-                const usersContainer = document.querySelector('.users');
-                usersContainer.classList.toggle('d-none');
-            }
+            
             // generate code
             const generatecode = () => {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -94,6 +97,14 @@
                 }
                 document.querySelector('input[name=code]').value = code;
             }
+
+            $("[name=multiple_usage]").on("change",() => {
+                    if ($("[name=multiple_usage]").is(':checked')) {
+                        $(".usage_count").removeClass('d-none');
+                    } else {
+                        $(".usage_count").addClass('d-none');
+                    }
+                });
         </script>
     @endpush
     @push('styles')
