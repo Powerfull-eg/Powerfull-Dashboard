@@ -15,6 +15,7 @@ class Setting extends Model
     protected $fillable = [
         'key',
         'value',
+        'app_settings',
     ];
 
     /**

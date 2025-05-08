@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SMSController;
 use App\Http\Controllers\WhatsappController;
+use App\Models\Setting;
 
 class AuthController extends \App\Http\Controllers\Controller
 {
+    private $isOtpActive;
+
     /**
      * Create a new AuthController instance.
      *
@@ -25,11 +28,12 @@ class AuthController extends \App\Http\Controllers\Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register', 'checkEmail', 'checkPhone', 'googleLogin', 'otp','checkOtpActive', 'checkOtp','otpActivate','resetPassword']]);
+        $this->isOtpActive = Setting::where("key", "otp")->first()->value ? true : false;
     }
   
   	// Check Otp Active
     public function checkOtpActive(){
-        return response(["otpActive" => env("OTP_ACTIVE")], 200);
+        return response(["otpActive" => $this->isOtpActive], 200);
     }
   
     /**
@@ -60,7 +64,7 @@ class AuthController extends \App\Http\Controllers\Controller
     Your Powerfull Verification OTP is $randomNumber. 
     Please don't share it with anyone.
 EOT;
-        if(env("OTP_ACTIVE")){
+        if($this->isOtpActive){
             $otpRequest = new Request();
             $otpRequest->merge(["mobile" => "0" . $validate["phone"], "message" => $message, "language" => 2,"otp" => $randomNumber]);
             // $whatsapp = $validate["phone"] ? WhatsappController::sendTextMessage($otpRequest) : false;
@@ -223,10 +227,10 @@ EOT;
             'phone' => 'required_without:email',
             // 'password' => ['required']
         ];
-        if(!env("OTP_ACTIVE")) $validations["password"] = 'required';
+        if(!$this->isOtpActive) $validations["password"] = 'required';
         $validate = $request->validate($validations);
         
-        if(env("OTP_ACTIVE")){
+        if($this->isOtpActive){
             $user = User::where('phone',$request->phone)->first();
             $token = Auth::guard('api')->login($user);
         }else{

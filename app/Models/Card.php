@@ -16,7 +16,8 @@ class Card extends Model
         "card_number",
         "card_type",
         "identifier_token",
-        "paymob_response",
+        "gateway_response",
+        "gateway"
     ];
     
     public function user(): BelongsTo
