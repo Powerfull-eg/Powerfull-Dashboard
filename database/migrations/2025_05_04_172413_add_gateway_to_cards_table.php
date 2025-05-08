@@ -13,15 +13,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('cards', function (Blueprint $table) {
-            $table->renameColumn("paymob_response", "gateway_response");
-        });
-    
-        Schema::table('cards', function (Blueprint $table) {
             $table->string("gateway")->nullable()->after("card_number");
+            $table->longText("gateway_response")->nullable()->after("card_number");
         });
 
+        DB::table('cards')->update([
+            'gateway_response' => DB::raw('paymob_response')
+        ]);
+
+        Schema::table('cards', function (Blueprint $table) {
+            $table->dropColumn('paymob_response');
+        });
+    
+
         DB::table('cards')->update(['gateway' => 'paymob']);
-        DB::table('settings')->create(['key' => 'payment_gateway', 'value' => 'paymob']);
+        DB::table('settings')->updateOrInsert(['key' => 'payment_gateway'],['key' => 'payment_gateway', 'value' => 'paymob']);
     }
 
     /**
@@ -30,10 +36,16 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('cards', function (Blueprint $table) {
-            $table->renameColumn("gateway_response", "paymob_response");
-
+            $table->longText("paymob_response")->nullable()->after("card_number");
             $table->dropColumn("gateway");
+        });
 
+        DB::table('cards')->update([
+            'paymob_response' => DB::raw('gateway_response')
+        ]);
+
+        Schema::table('cards', function (Blueprint $table) {
+            $table->dropColumn('gateway_response');
         });
     }
 };
