@@ -119,7 +119,7 @@ class FawryPayController extends Controller
         $merchantCode = env('FAWRY_MERCHANT_CODE');
         $returnUrl = route('website.fawry-payment-response');
         $endpoint = "https://atfawry.fawrystaging.com/atfawry/plugin/card-token?accNo=$merchantCode&customerProfileId=$user->id&returnUrl=$returnUrl";
-        return $endpoint;
+        return ["link" => $endpoint];
     }
 
     // Fawry notifcation url

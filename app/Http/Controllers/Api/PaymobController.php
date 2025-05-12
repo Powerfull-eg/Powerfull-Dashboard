@@ -109,6 +109,7 @@ class PaymobController extends \App\Http\Controllers\Controller
     
     // return iframe for user for 1st payment
     public function getIframeUrl(Request $request){
+        $request->amount = $request->amount < 10 ? 10 : $request->amount;
         $paymentToken = $this->getCardPaymentKey($request,false);
         if(!$paymentToken) return null;
        

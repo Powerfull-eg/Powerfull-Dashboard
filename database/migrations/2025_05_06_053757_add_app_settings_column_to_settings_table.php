@@ -25,6 +25,7 @@ return new class extends Migration
                 ],
             "maintenance" => false,
             'timezone' => 'Africa/Cairo',
+            'bundle_id'=> 'com.powerfull.app',
             'appAndroidLink'=> 'https://play.google.com/store/apps/details?id=com.powerfull.app',
             'appIosLink' => 'https://apps.apple.com/eg/app/powerfull/id6477441692',
             'appIosVersion' => '1.1.0',

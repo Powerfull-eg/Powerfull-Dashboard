@@ -55,6 +55,10 @@
             
             {{-- Application Settings --}}
 
+            <div class="mb-3 d-none" navigator=1>
+                <x-components::forms.input name="bundle_id" :title="__('Bundle ID')"  value="{{ setting('bundle_id') }}" />
+            </div>
+
             {{-- Map --}}
             <div class="mb-3 d-none" navigator=1>
                 <div class="d-flex gap-3 flex-wrap">
