@@ -72,6 +72,7 @@ class SettingController extends Controller
     private function updateAppSettings(Request $request)
     {
         $this->app_settings = $request->validate([
+            'bundle_id' => 'required|string',
             'map_lat' => 'required|numeric',
             'map_lng' => 'required|numeric',
             'map_zoom' => 'required|numeric',
