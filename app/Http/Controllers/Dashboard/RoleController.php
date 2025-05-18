@@ -8,9 +8,35 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class RoleController extends Controller
 {
+    private $allowedPermissions;
+    private $forcedPermissions = ['dashboard.index'];
+
+    private function getAllowedPermissions() {
+        $this->allowedPermissions = [];
+        
+        $permissions = Permission::all()->groupBy(function ($item, $key) {
+            $notAllowedPermissions = ["impersonate",'language', 'index','memos', 'qr-code'];
+            foreach($notAllowedPermissions as $permission){
+                if(Str::contains($item->name, $permission, true)){
+                    return false;
+                }
+            }
+            return explode('.', $item->name)[1];
+        });
+
+        foreach ($permissions as $key => $value) {
+            if ($key == 0) continue; 
+            $this->allowedPermissions[$key] = $value->pluck('name', 'id')->toArray();
+        }
+        
+        return $this->allowedPermissions;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -24,12 +50,18 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::all()->groupBy(function ($item, $key) {
-            return explode('.', $item->name)[1];
-        });
+        $permissions = $this->getAllowedPermissions();
+        $translatePermissions = [
+            'index' => __('Main Page'),
+            'create' => __('Create Page'),
+            'show' => __('Show Page'),
+            'edit' => __('Edit Page'),
+            'destroy' => __('Delete'),
+        ];
 
         return view('dashboard.roles.create', [
             'permissions' => $permissions,
+            'translatePermissions' => $translatePermissions
         ]);
     }
 
@@ -43,6 +75,10 @@ class RoleController extends Controller
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['required', 'exists:permissions,id'],
         ]);
+        
+        $validated['permissions'] = array_merge($validated['permissions'], Arr::map($this->forcedPermissions, function($value, $key) {
+            return Permission::where('name', $value)->first()->id;
+        }));
 
         $role = Role::create($validated);
 
@@ -57,13 +93,19 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::all()->groupBy(function ($item, $key) {
-            return explode('.', $item->name)[1];
-        });
+        $permissions = $this->getAllowedPermissions();
+        $translatePermissions = [
+            'index' => __('Main Page'),
+            'create' => __('Create Page'),
+            'show' => __('Show Page'),
+            'edit' => __('Edit Page'),
+            'destroy' => __('Delete'),
+        ];
 
         return view('dashboard.roles.edit', [
             'role' => $role,
             'permissions' => $permissions,
+            'translatePermissions' => $translatePermissions
         ]);
     }
 
@@ -77,6 +119,10 @@ class RoleController extends Controller
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['required', 'exists:permissions,id'],
         ]);
+
+        $validated['permissions'] = array_merge($validated['permissions'], Arr::map($this->forcedPermissions, function($value, $key) {
+            return Permission::where('name', $value)->first()->id;
+        }));
 
         $role->update($validated);
         cache()->flush(); // Clear cache to refresh permissions

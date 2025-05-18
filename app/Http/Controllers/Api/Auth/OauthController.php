@@ -107,20 +107,33 @@ class OauthController extends Controller
     // Authenticate Facebook Callback
     public function oauthFacebookCallback(Request $request) {
         $appBundleId = setting('bundle_id');
-
         try {
             $facebookUser = Socialite::driver('facebook')->stateless()->user();
 
+          	if(!$facebookUser->getEmail() || !$facebookUser->getName()) {
+              return redirect("$appBundleId://oauth_callback?error=failed_to_get_user",401);
+            }
+          
             $user = User::where('email', $facebookUser->getEmail())->first();
+          	$requestPhone = true;
+          	$name = explode(' ',$facebookUser->getName());
+			$first_name = isset($name[0]) ? $name[0] : "Dummy";
+          	$last_name = isset($name[count($name) - 1]) ? $name[count($name) - 1] : "User";
 
             if (!$user) {
+              	$requestPhone = true;
                 $user = User::create([
-                    'name' => $facebookUser->getName(),
+                  	'first_name' => $first_name,
+                	'last_name' => $first_name,
                     'email' => $facebookUser->getEmail(),
-                    'google_id' => $facebookUser->getId(),
-                    'password' => bcrypt(uniqid()), // Not used but required if using Laravel auth
+                    'facebook' => $facebookUser->getId(),
+                    'password' => bcrypt(uniqid()),
                 ]);
+            } else {
+            	if($user->phone) { $requestPhone = false; }
             }
+			
+          	if($requestPhone == true) return redirect("$appBundleId://oauth_callback?requestPhone=true&email=".$user->email);
 
             // Generate JWT Token
             $token = JWTAuth::fromUser($user);

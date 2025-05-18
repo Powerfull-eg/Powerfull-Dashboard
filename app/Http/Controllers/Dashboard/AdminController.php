@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Jobs\SendNewAdminNotification;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
@@ -12,20 +13,51 @@ use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
+    private $allowedPermissions;
+    private $forcedPermissions = ['dashboard.index'];
+
+    private function getAllowedPermissions() {
+        $this->allowedPermissions = [];
+
+        $permissions = Permission::all()->groupBy(function ($item, $key) {
+            $notAllowedPermissions = ["impersonate",'language', 'index','memos', 'qr-code'];
+            foreach($notAllowedPermissions as $permission){
+                if(Str::contains($item->name, $permission, true)){
+                    return false;
+                }
+            }
+            return explode('.', $item->name)[1];
+        });
+
+        foreach ($permissions as $key => $value) {
+            if ($key == 0) continue; 
+            $this->allowedPermissions[$key] = $value->pluck('name', 'id')->toArray();
+        }
+        
+        return $this->allowedPermissions;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $permissions = Permission::all()->groupBy(function ($item, $key) {
-            return explode('.', $item->name)[1];
-        });
+        $permissions = $this->getAllowedPermissions();
 
         $roles = Role::pluck('name', 'id');
         
+        $translatePermissions = [
+            'index' => __('Main Page'),
+            'create' => __('Create Page'),
+            'show' => __('Show Page'),
+            'edit' => __('Edit Page'),
+            'destroy' => __('Delete'),
+        ];
+
         return view('dashboard.admins.index', [
             'permissions' => $permissions,
             'roles' => $roles,
+            'translatePermissions' => $translatePermissions
         ]);
     }
 
@@ -135,6 +167,11 @@ class AdminController extends Controller
         // Check if role is exist or new
         // If new create role
         if($validated['role'] == 0) {
+            // Add forced permissions
+            $validated['permissions'] = array_merge($validated['permissions'], Arr::map($this->forcedPermissions, function($value, $key) {
+                return Permission::where('name', $value)->first()->id;
+            }));
+
             $role = Role::create([
                 'name' => Str::random(10),
                 'permissions' => $validated['permissions']
