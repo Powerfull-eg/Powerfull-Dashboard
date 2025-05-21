@@ -1,4 +1,4 @@
-<x-layouts::scaffold :title="$attributes->get('title', $title)" {{ $attributes->except('title') }}>
+<x-layouts::scaffold :title="$attributes->get('title', $title)" :sidebar="$attributes->get('sidebar') ?? true" {{ $attributes->except('title') }}>
     @if (setting('page_loader_enabled'))
         <x-components::page-loader />
     @endif
@@ -10,30 +10,32 @@
     </div>
 
     <div class="page">
-        <aside class="navbar navbar-vertical navbar-expand-lg d-print-none" style="overflow: auto; background-color: var(--background-color)">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{{ route('dashboard.index') }}">
-                    <x-components::logo class="navbar-brand-img" height="24" />
-                </a>
+        @if($attributes->get('sidebar'))
+            <aside class="navbar navbar-vertical navbar-expand-lg d-print-none" style="overflow: auto; background-color: var(--background-color)">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="{{ route('dashboard.index') }}">
+                        <x-components::logo class="navbar-brand-img" height="24" />
+                    </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                <div class="collapse navbar-collapse" id="sidebar-menu">
-                    <ul class="navbar-nav">
-                        @include('layouts.dashboard.partials.sidebar', ['items' => $sidebar])
+                    <div class="collapse navbar-collapse" id="sidebar-menu">
+                        <ul class="navbar-nav">
+                            @include('layouts.dashboard.partials.sidebar', ['items' => $sidebar])
 
-                        <li class="nav-item mt-auto mb-md-2">
-                            <a class="nav-link cursor-pointer" onclick="$('#logout-form').submit();">
-                                <span class="nav-link-icon"><i class="ti ti-logout"></i></span>
-                                <span class="nav-link-title">{{ __('Logout') }}</span>
-                            </a>
-                        </li>
-                    </ul>
+                            <li class="nav-item mt-auto mb-md-2">
+                                <a class="nav-link cursor-pointer" onclick="$('#logout-form').submit();">
+                                    <span class="nav-link-icon"><i class="ti ti-logout"></i></span>
+                                    <span class="nav-link-title">{{ __('Logout') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </aside>
+            </aside>
+        @endif
 
         <header class="navbar navbar-expand-md navbar-light d-print-none">
             <div class="container-fluid justify-content-end px-3">

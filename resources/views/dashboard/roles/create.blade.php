@@ -29,12 +29,12 @@
                             <td>{{ Str::title($key) }}</td>
                             <td>
                                 <div class="form-selectgroup">
-                                    @foreach ($values as $permission)
-                                        <label class="form-selectgroup-item">
-                                            <input type="checkbox" name="permissions[]" value="{{ $permission->id }}"
-                                                class="form-selectgroup-input" @checked(in_array($permission->id, old('permissions', [])))>
+                                    @foreach ($values as $id => $name)
+                                    <label class="form-selectgroup-item">
+                                            <input type="checkbox" name="permissions[]" value="{{ $id }}"
+                                                class="form-selectgroup-input" @checked(in_array($id, old('permissions', [])))>
                                             <span class="form-selectgroup-label">
-                                                {{ Str::title(Arr::last(explode('.', $permission->name))) }}
+                                                {{ $translatePermissions[Str::lower(Arr::last(explode('.', $name) ))] ?? __(Str::title(Arr::last(explode('.', $name)))) }}
                                             </span>
                                         </label>
                                     @endforeach

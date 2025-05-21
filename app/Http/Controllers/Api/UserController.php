@@ -77,8 +77,9 @@ class UserController extends \App\Http\Controllers\Controller
         $limit = $request->limit ?? 10;
         
       	$operations = Operation::where("user_id" , $user["id"])->whereBetween('created_at',[$startDate , $endDate]);
+      	$count = $operations->count();
       	$limitedOperations = $operations->limit($limit)->offset($limit * ($page - 1))->orderBy('updated_at', 'desc')->get();
-      	return response()->json(["orders" => $limitedOperations,"count" => $operations->count()]);
+      	return response()->json(["orders" => $limitedOperations,"count" => $count]);
     }
 
     // Get Specific Order 

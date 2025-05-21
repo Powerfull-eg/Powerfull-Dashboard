@@ -33,9 +33,10 @@ class PaymobController extends \App\Http\Controllers\Controller
         $response = HTTP::post($url,[
               "auth_token"=> "$token",
               "delivery_needed" => "false",
-              "amount_cents" => ($request->amount * 100),
+              "amount_cents" => ($request->amount ?? 1 * 100),
               "currency" => "EGP"
         ]);
+
         $responseBody = json_decode($response->body(),true);
         return $responseBody["id"] ? [$responseBody["id"],$token]: null;
     }
@@ -108,6 +109,7 @@ class PaymobController extends \App\Http\Controllers\Controller
     
     // return iframe for user for 1st payment
     public function getIframeUrl(Request $request){
+        $request->amount = $request->amount < 10 ? 10 : $request->amount;
         $paymentToken = $this->getCardPaymentKey($request,false);
         if(!$paymentToken) return null;
        
@@ -124,7 +126,7 @@ class PaymobController extends \App\Http\Controllers\Controller
                 ($card->trashed() ? $card->restore(): '');
                 $card->update([
                     "identifier_token" => $request->input("obj.token"),
-                    "paymob_response" => json_encode($request->input())
+                    "gateway_response" => json_encode($request->input())
                     ]);
             }else{
                 Card::create([
@@ -132,7 +134,8 @@ class PaymobController extends \App\Http\Controllers\Controller
                     "card_number" => $request->input("obj.masked_pan"),
                     "card_type" => $request->input("obj.card_subtype"),
                     "identifier_token" => $request->input("obj.token"),
-                    "paymob_response" => json_encode($request->input())
+                    "gateway_response" => json_encode($request->input()),
+                    "gateway" => "paymob"
                 ]);
             }
           
@@ -142,7 +145,7 @@ class PaymobController extends \App\Http\Controllers\Controller
             $payment = Payment::where("payment_order_id",$request->input('obj.order.id'))->first();
             $payment->update(["response_data" => $request->input('obj'),"type" => "ADD-CARD"]);
             $paymobOrderId = $payment->payment_order_id;
-            $card = Card::where("paymob_response","LIKE","%\"order_id\":\"$paymobOrderId\"%")->first();
+            $card = Card::where("gateway_response","LIKE","%\"order_id\":\"$paymobOrderId\"%")->first();
             
               try
                 {
@@ -175,11 +178,12 @@ class PaymobController extends \App\Http\Controllers\Controller
     // }
     
     // Pay with saved token (MOTO)
-    public function payWithSavedToken(Request $request){
+    public function payWithSavedToken($order){
         // Request => [ Amount, userId, cardId ]
+        $request = request()->merge(["amount" => $order->amount,"userId" => $order->user_id,"cardId" => $order->card_id]);
         $paymentToken = $this->getCardPaymentKey($request);
         if(!$paymentToken) return null;
-        $card = Card::find($request->input("cardId"));
+        $card = Card::find($order->card_id);
         
         $url = "https://accept.paymobsolutions.com/api/acceptance/payments/pay";
         $response = HTTP::post($url,[

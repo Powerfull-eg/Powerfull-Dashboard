@@ -17,26 +17,24 @@ use Illuminate\Support\Facades\DB;
 class OperationsController extends \App\Http\Controllers\Controller
 {
     // Check for vouchers
-    private function checkForVocuher(int $orderAmount,Request $request){
-        $voucherOrder = VoucherOrder::where("order_id",$request->orderId)->first();
+    private function checkForVocuher(int $orderAmount,$orderId){
+        $voucherOrder = VoucherOrder::where("order_id",$orderId)->first();
         if($voucherOrder == null) return 0;
-        $request->merge(["orderAmount" => $orderAmount,"voucher_id" => $voucherOrder->voucher_id]);
         $voucher = new VoucherController;
-        return $voucher->claculateVoucher($request);
+        return $voucher->claculateVoucher($voucherOrder->voucher_id,$orderAmount);
     }
 
     // Proccess Payment for completed orders
-    public function completePayment(Request $request){
+    public function completePayment($order){
         // Request => [ orderId ]
         try{
-            $order = Operation::find($request->orderId);
             if($order->returnTime == null) return null;
             $price = new PriceController();
-            $totalAmount = $order->amount != 0 ? $order->amount : $price->calcuatePrice($request);
-          	$amount = $order->amount != 0 ? $totalAmount : intval($totalAmount - $this->checkForVocuher($totalAmount,$request));
-            $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
-            $paymob = new PaymobController();
-            $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $paymob->payWithSavedToken($request));
+            $totalAmount = $order->amount != 0 ? $order->amount : $price->calcuatePrice($order);
+          	$amount = $order->amount != 0 ? $totalAmount : intval($totalAmount - $this->checkForVocuher($totalAmount,$order->id));
+            // $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
+            $payment = new PaymentController();
+            $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $payment->payWithSavedToken($order));
             DB::table('test')->insert(["request" => "Payment: " . json_encode($paymentDone)]);
             $order->update([
                 "payment_id" => $paymentDone["payment_id"],

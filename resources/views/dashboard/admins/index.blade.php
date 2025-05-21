@@ -74,9 +74,9 @@
                 
                 {{-- Existing Roles --}}
                 @php $roles[0] = __('New Role'); @endphp
-                <x-components::forms.select class="mb-3 border border-primary" id="role" name="role" title="{{ __('Role') }}" :options="$roles" :selected="old('role', null)" required />
+                <x-components::forms.select class="mb-3 border border-primary" id="role" name="role" title="{{ __('Role') }}" :options="$roles" onchange="$(this).val() == 0 ? navigator(0) : navigator(1);" :selected="old('role', null)" required />
                 
-                <div class="table-responsive" id="permissions">
+                <div class="table-responsive" id="permissions" navigator="0">
                     <table class="table card-table table-vcenter">
                         <thead>
                             <tr>
@@ -91,10 +91,10 @@
                                     <td class="access-title text-truncate title"><span>{{ Str::title($key) }}</span></td>
                                     <td>
                                         <div class="d-flex gap-3">
-                                            @foreach ($values as $permission)
+                                            @foreach ($values as $id => $name)
                                                 <label class="d-flex flex-column gap-3">
-                                                    <span> {{ Str::title(Arr::last(explode('.', $permission->name))) }} </span>
-                                                    <input type="checkbox" name="permissions[]" value="{{ $permission->id }}" @checked(in_array($permission->id, old('permissions', [])))>
+                                                    {{ $translatePermissions[Str::lower(Arr::last(explode('.', $name) ))] ?? __(Str::title(Arr::last(explode('.', $name)))) }}
+                                                    <input type="checkbox" name="permissions[]" value="{{$id}}" @checked(in_array($id, old('permissions', [])))>
                                                     <span class="custom-checkbox"></span>
                                                 </label>
                                             @endforeach
@@ -243,21 +243,5 @@
             display: block;
         }
     </style>
-@endpush
-@push('scripts')
-    <script>
-        $(document).ready(() => {
-            $("select#role").val() == 0 ? $("#permissions").show() : $("#permissions").hide();
-            $("select#role").on('change', function() {
-                let role = $(this).val();
-                // hide table if role is exist
-                if (role != 0) {
-                    $("#permissions").hide();
-                }else{
-                    $("#permissions").show();
-                }
-            });
-        });
-    </script>
 @endpush
 </x-layouts::dashboard>

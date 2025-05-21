@@ -20,7 +20,10 @@ class DashboardController extends Controller
     public function __invoke()
     {
         $data = $this->indexData();
-        return view('dashboard.index',compact('data'));
+        $admin = auth('admins')->user();
+        $roles = $admin->getRoleNames()->toArray();
+        $adminType = count($roles) && !$admin->hasRole('shopAdmin') ? 'personnel' : ($admin->hasRole('shopAdmin') ? 'shopAdmin' : 'superAdmin');
+        return view('dashboard.index',['data' => $data, 'adminType' => $adminType]);
     }
 
     private function indexData() : array

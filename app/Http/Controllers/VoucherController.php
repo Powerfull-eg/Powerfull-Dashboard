@@ -47,17 +47,17 @@ class VoucherController extends Controller
     }
 
     // calculate voucher amount
-    public function claculateVoucher(Request $request){
+    public function claculateVoucher($voucher,$amount){
         // Request => [int orderAmount, voucher_id]
         $voucherAmount = 0;
-        $voucher = Voucher::find($request->voucher_id);
+        $voucher = Voucher::find($voucher);
         // percentage
-        if($voucher->type === 0 && $this->validateVoucherMinAmount($request->orderAmount,$voucher) == true)
+        if($voucher->type === 0 && $this->validateVoucherMinAmount($amount,$voucher) == true)
         {
-            $voucherAmount = intval($request->orderAmount * $voucher->value / 100);
+            $voucherAmount = intval($amount * $voucher->value / 100);
             $voucherAmount = $this->validateVoucherMaxDiscount($voucherAmount,$voucher) ? $voucherAmount : $voucher->max_discount;
         }
-        elseif($voucher->type === 1 && $this->validateVoucherMinAmount($request->orderAmount,$voucher) == true)
+        elseif($voucher->type === 1 && $this->validateVoucherMinAmount($amount,$voucher) == true)
         {
             $voucherAmount = $voucher->value;
         }

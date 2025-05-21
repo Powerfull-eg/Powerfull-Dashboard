@@ -92,9 +92,9 @@ class PriceController extends Controller
     }
     
     // Calculate Price
-    public function calcuatePrice(Request $request)
+    public function calcuatePrice($order)
     {
-        $order = Operation::with('device')->find($request->orderId);
+        $order = Operation::with('device')->find($order->id);
         $priceData = $order->device->shop->price;
 
         $totalTime = (strtotime($order->returnTime) - strtotime($order->borrowTime));

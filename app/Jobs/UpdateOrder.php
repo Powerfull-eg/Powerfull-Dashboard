@@ -61,8 +61,7 @@ class UpdateOrder implements ShouldQueue
         if(!$order) return;
         try{
             $actions = new OperationsController();
-            $request = new Request(['orderId' => $order->id]);
-            $actions->completePayment($request);
+            $actions->completePayment($order);
         }catch(\Exception $err){ 
             DB::table('test')->insert(["request" => "UpdateOrder catches: ".$err->getmessage()]);
         }

@@ -119,7 +119,7 @@ class FawryPayController extends Controller
         $merchantCode = env('FAWRY_MERCHANT_CODE');
         $returnUrl = route('website.fawry-payment-response');
         $endpoint = "https://atfawry.fawrystaging.com/atfawry/plugin/card-token?accNo=$merchantCode&customerProfileId=$user->id&returnUrl=$returnUrl";
-        return $endpoint;
+        return ["link" => $endpoint];
     }
 
     // Fawry notifcation url
@@ -155,7 +155,6 @@ class FawryPayController extends Controller
         $merchant_sec_key =  env('FAWRY_SECURITY_CODE'); // For the sake of demonstration
         $amount = $request->amount;
       	$returnUrl = url('api/fawry-notification');
-      // merchantCode + merchantRefNum + customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format 10.00) + cardToken + cvv + returnUrl + secureKey
         $signature = hash('sha256' ,  $this->merchantCode . $merchantRefNum . $user->id .$payment_method . $amount . $request->cardToken . $request->cvv. $returnUrl . $merchant_sec_key);
         
         // Send Request
@@ -190,8 +189,6 @@ class FawryPayController extends Controller
             	'enable3DS' => true
             ]);
             return $response->body();
-        
-
     }
 
     // Get User Saved Tokens
