@@ -50,7 +50,6 @@ class ShopsAdminController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->input());
         $validated = $request->validate([
            "first_name" => "required|string|max:125",
            "last_name" => "required|string|max:125",

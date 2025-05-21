@@ -18,11 +18,11 @@ class ShopsAdmin extends Model
 
     public function admin()
     {
-        return $this->belongsToMany(Admin::class, 'admins', 'id', 'admin_id');
+        return $this->hasMany(Admin::class, 'id', 'admin_id');
     }
 
     public function shop()
     {
-        return $this->belongsToMany(Shop::class, 'shops', 'id', 'shop_id');
+        return $this->hasMany(Shop::class, 'id', 'shop_id');
     }
 }

@@ -76,6 +76,10 @@ class RoleController extends Controller
             'permissions.*' => ['required', 'exists:permissions,id'],
         ]);
         
+        if(in_array($validated['name'], ['superAdmin', 'shopAdmin'] )) {
+            return redirect()->route('dashboard.roles.index')->with('error', __('Role name not allowed'));
+        }
+
         $validated['permissions'] = array_merge($validated['permissions'], Arr::map($this->forcedPermissions, function($value, $key) {
             return Permission::where('name', $value)->first()->id;
         }));
@@ -119,6 +123,10 @@ class RoleController extends Controller
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['required', 'exists:permissions,id'],
         ]);
+        
+        if(in_array($validated['name'], ['superAdmin', 'shopAdmin']) && !in_array($role->name, ['superAdmin', 'shopAdmin'])) {
+            return redirect()->route('dashboard.roles.index')->with('error', __('Role name not allowed'));
+        }
 
         $validated['permissions'] = array_merge($validated['permissions'], Arr::map($this->forcedPermissions, function($value, $key) {
             return Permission::where('name', $value)->first()->id;

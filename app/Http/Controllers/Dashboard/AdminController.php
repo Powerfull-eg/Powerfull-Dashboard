@@ -66,7 +66,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('name', 'id');
+        $roles = Role::whereNot('name', 'superAdmin')->whereNot('name', 'shopAdmin')->pluck('name', 'id');
 
         return view('dashboard.admins.create', [
             'roles' => $roles,
@@ -104,7 +104,7 @@ class AdminController extends Controller
      */
     public function edit(Admin $admin)
     {
-        $roles = Role::pluck('name', 'id');
+        $roles = Role::whereNot('name', 'superAdmin')->whereNot('name', 'shopAdmin')->pluck('name', 'id');
 
         return view('dashboard.admins.edit', [
             'admin' => $admin,
