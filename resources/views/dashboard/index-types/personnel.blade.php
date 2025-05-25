@@ -1,4 +1,4 @@
-<x-layouts::dashboard sidebar="true" title="Home">
+<x-layouts::dashboard title="Home">
     <div class="container-xl">
         <div class="row row-deck row-cards">
           <div class="col-sm-6 col-lg-3">

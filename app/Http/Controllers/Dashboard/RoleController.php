@@ -20,7 +20,7 @@ class RoleController extends Controller
         $this->allowedPermissions = [];
         
         $permissions = Permission::all()->groupBy(function ($item, $key) {
-            $notAllowedPermissions = ["impersonate",'language', 'index','memos', 'qr-code'];
+            $notAllowedPermissions = ["impersonate",'language','memos', 'qr-code'];
             foreach($notAllowedPermissions as $permission){
                 if(Str::contains($item->name, $permission, true)){
                     return false;

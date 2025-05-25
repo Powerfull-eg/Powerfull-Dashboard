@@ -26,6 +26,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        // Date Filter
+        $startDate = $request->startDate ?? null;
+        $endDate = $request->endDate ?? null;
+
         $registerdUsers = User::count();
         $activeUsers = Operation::with('user')->distinct('user_id')->count();
         $incompleteAutoRequestDurations = [ 1 => "Every day", 7 => "Every Week", 30 => "Every Month", 365 => "Every Year" ];
@@ -34,7 +38,7 @@ class UserController extends Controller
         $incompleteOperations = Operation::where('status', 4)->with('device','user','incompleteOperation')->orderByDesc('updated_at')->limit(5)->get();
         $incompleteHistory = IncompleteHistory::with('operation')->orderByDesc('updated_at')->limit(5)->get();
       
-        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','incompleteHistory','registerdUsers','activeUsers'));
+        return view('dashboard.users.index', compact('incompleteAutoRequestDurations', 'incompleteDuration','incompleteOperations','incompleteHistory','registerdUsers','activeUsers','startDate','endDate'));
     }
     
     /**

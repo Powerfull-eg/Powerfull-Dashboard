@@ -10,7 +10,7 @@
     </div>
 
     <div class="page">
-        @if($attributes->get('sidebar'))
+        @if($attributes->get('sidebar') !== false)
             <aside class="navbar navbar-vertical navbar-expand-lg d-print-none" style="overflow: auto; background-color: var(--background-color)">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{{ route('dashboard.index') }}">

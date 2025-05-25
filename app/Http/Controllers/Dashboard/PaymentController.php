@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Http\Controllers\Api\FawryPayController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\OperationsController;
+use App\Http\Controllers\Api\PaymobController;
 use App\Models\Operation;
 use App\Models\Payment;
 use App\Models\Refund;
@@ -11,6 +13,17 @@ use App\Models\Setting;
 
 class PaymentController extends Controller
 {
+    public $gatways = [
+        'fawry' => FawryPayController::class,
+        'paymob' => PaymobController::class
+    ];
+    
+    public $defaultGatway;
+
+    public function __construct(){
+        $this->defaultGatway = Setting::where("key","payment_gateway")->first()->value;
+    }
+
     public function requestFailedPayments($order = null){
        $actions = new OperationsController();
        $request = new Request();
@@ -94,17 +107,22 @@ class PaymentController extends Controller
             'operation_id' => 'required|exists:operations,id',
             'amount' => 'required|numeric|min:1',
         ]);
-        dd($request->all());
-        $operation = Operation::findOrFail($request->operation_id); 
+        
+        $operation = Operation::find($request->operation_id);
+        if(!$operation) {
+            return redirect()->back()->with("error",__("Order :id not found",["id" => $request->operation_id]));
+        }
+
         $payment = $operation->payment_id ? Payment::find($operation->payment_id) : null;
         if(!$payment) {
             return redirect()->back()->with("error",__("Order :id isn't paid yet",["id" => $operation->id]));
         }
         
         $provider = $payment ? $payment->provider : null;
-        // static payment temporary
-        $controller = new \App\Http\Controllers\Api\PaymobController();
-        $refund = $controller->refund($request->operation_id,$request->amount);
+        $controller = $this->gatways[$provider ?? $this->defaultGatway];
+
+        $refund = (new $controller())->refund($request->amount,$request->operation_id);
+        
         // Failed refund
         if(!$refund) return redirect()->back()->with("error",__("Order :id amount refund failed",["id" => $operation->id]));
         
@@ -114,6 +132,7 @@ class PaymentController extends Controller
             "amount" => $request->amount,
             "reason" => $request->reason ?: null,
         ]);
+        
         // Update operation amount
         $operation->update(["amount" => ($request->amount - $operation->amount <= 0 ? 0 : $operation->amount - $request->amount)]);
         

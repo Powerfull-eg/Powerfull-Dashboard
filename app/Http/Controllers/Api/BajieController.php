@@ -110,7 +110,6 @@ class BajieController extends \App\Http\Controllers\Controller
         $deviceListUrl = "https://developer.chargenow.top/cdb-open-api/v1/cabinet/getAllDevice";
         $deviceList = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($deviceListUrl);
         
-        
         $devicesInfo= array();
         foreach(json_decode($deviceList,true)["data"] as $deviceData){
             $device = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get("https://developer.chargenow.top/cdb-open-api/v1/rent/cabinet/query?deviceId=".$deviceData["pCabinetid"]);

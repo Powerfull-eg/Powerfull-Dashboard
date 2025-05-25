@@ -111,7 +111,7 @@ class UserController extends \App\Http\Controllers\Controller
                     "first_name" => "string|nullable",
                     "last_name"  => "string|nullable",
                     "email"      => "email|nullable",
-                    "phone"      => "numeric|nullable",
+                    "phone"      => "numeric|nullable|unique:users,phone,".$user->id."|min:10",
                     "password"   => "nullable",
         ]);
         
