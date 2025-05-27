@@ -74,12 +74,12 @@ EOT;
                 $whatsapp = new WhatsappController();
                 $whats = $whatsapp->sendTextMessage($otpRequest);
                 $success = SMSController::sendOTP($otpRequest);
-                $success = $success ?? ($whats[0] ? true : false);
+                $success = $success == true ? $success : ($whats[0] ? true : false);
             }else{
                 $success = false;
             } 
 
-            return response()->json([($success ? "Message sent successfully" : "Failed to send message")],($success ? 200 : 401));
+            return response()->json([($success == true ? "Message sent successfully" : "Failed to send message")],($success == true ? 200 : 401));
         }
         
         if($request->type && $request->type == "email"){
