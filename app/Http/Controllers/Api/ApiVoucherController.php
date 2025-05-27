@@ -29,7 +29,7 @@ class ApiVoucherController extends \App\Http\Controllers\Controller
     {
         $user = Auth::guard('api')->user();
         $allVouchers = Voucher::with('voucherOrder','campaign');
-        $vouchers = [];
+        $vouchers = ['used' => [], 'expired' => [], 'other' => []];
         
         // used vouchers
         $usedVouchers = VoucherOrder::where("user_id",$user['id'])->get(); 
