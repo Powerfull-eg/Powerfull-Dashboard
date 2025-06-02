@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "dashboard" middleware group. Make something great!
 |
 */
+    Route::get('/test', function() { return "test"});
 
 Route::middleware('auth:admins')->group(function () {
     // Route::get('/test', [App\Jobs\CompleteFailedPayment::class,'handle']);
