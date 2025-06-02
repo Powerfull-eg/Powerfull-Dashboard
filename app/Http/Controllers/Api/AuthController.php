@@ -46,7 +46,7 @@ class AuthController extends \App\Http\Controllers\Controller
         if ($this->checkPhone($request)->original == 1) {
             $user = User::where("phone", $request->phone)->first();
         }
-        return response(["UserExist" => $user ? true : false, "name" => $user->first_name ?? null,"otpActive" => setting("otp")], 200);
+        return response(["UserExist" => $user ? true : false, "name" => $user->first_name ?? null,"otpActive" => $this->isOtpActive], 200);
     } 
     /**
      * send otp to user
