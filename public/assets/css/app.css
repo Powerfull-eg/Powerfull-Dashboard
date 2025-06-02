@@ -340,7 +340,6 @@ table.content-table tr td.title{
 }
 .summary-card.middle hr {
     background: #ddd !important;
-<<<<<<< HEAD
 }
 
 /* Page Navs */
@@ -363,6 +362,4 @@ table.content-table tr td.title{
     background: var(--text-color);
     color: var(--background-color);
     border-radius: 1rem;
-=======
->>>>>>> 343389c (init project)
 }

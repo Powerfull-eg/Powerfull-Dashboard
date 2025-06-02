@@ -370,7 +370,6 @@ $(document).on('click', 'a:not([target="_blank"]):not([href^="#"]):not([href^="j
 function showPageLoader() { $('#page-overlay').removeClass('d-none'); }
 window.addEventListener('pageshow', function (event) {
     if (event.persisted) { $('#page-overlay').addClass('d-none'); }
-<<<<<<< HEAD
 });
 
 // navigator
@@ -400,6 +399,3 @@ const navigator = (index) => {
 const toggleShow = (action = 'show',selector) => {
     action == 'show' ? $(selector).removeClass('d-none') : $(selector).addClass('d-none');
 }
-=======
-});
->>>>>>> 343389c (init project)
