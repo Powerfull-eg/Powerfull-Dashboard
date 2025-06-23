@@ -26,18 +26,15 @@ class PaymentController extends Controller
 
     public function requestFailedPayments($order = null){
        $actions = new OperationsController();
-       $request = new Request();
        if(!$order){
            $orders = Operation::where("status",4)->get();
             foreach($orders as $order){
-                $request->merge(["orderId" => $order->id]);
-                $actions->completePayment($request);
+                $actions->completePayment($order);
             }
             return $orders;
        }
        $order = Operation::find($order);
-       $request->merge(["orderId" => $order->id]);
-       $actions->completePayment($request);
+       $actions->completePayment($order);
        return $order;
     }
 

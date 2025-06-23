@@ -32,6 +32,7 @@ class OperationsController extends \App\Http\Controllers\Controller
             $price = new PriceController();
             $totalAmount = $order->amount != 0 ? $order->amount : $price->calcuatePrice($order);
           	$amount = $order->amount != 0 ? $totalAmount : intval($totalAmount - $this->checkForVocuher($totalAmount,$order->id));
+            $order->amount = $amount;
             // $request->merge(['amount' => $amount, "userId" => $order->user_id, "cardId"=>$order->card_id]);
             $payment = new PaymentController();
             $paymentDone =  ($amount <= 0 ? ["status" => true,"payment_id"=> "0"] : $payment->payWithSavedToken($order));
