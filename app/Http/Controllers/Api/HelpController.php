@@ -51,7 +51,7 @@ class HelpController extends \App\Http\Controllers\Controller
                 $url = route("dashboard.support.edit", $ticket->id);
                 $notificationMessage = "لديك طلب تواصل جديد من $user->fullName" . "\r\n" . $url;
                 $whatsRequest = new Request();
-                $whatsRequest->merge(["mobile" => "01069170097", "message" => $notificationMessage]);
+                $whatsRequest->merge(["mobile" => "01004554635", "message" => $notificationMessage]);
                 $whatsapp = new WhatsappController();
                 $whats = $whatsapp->sendTextMessage($whatsRequest);
         }
