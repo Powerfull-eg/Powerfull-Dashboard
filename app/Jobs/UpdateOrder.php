@@ -49,7 +49,7 @@ class UpdateOrder implements ShouldQueue
                     "returnTime" => $responseBody["data"]["returnTime"],
                     "borrowSlot" => $responseBody["data"]["borrowSlot"],
                     "returnShop"   => $responseBody["data"]["returnShop"],
-                    "status" => 2
+                    "status" => 4
                 ]);
             }
         }
