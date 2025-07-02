@@ -79,7 +79,7 @@ class BajieController extends \App\Http\Controllers\Controller
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
-                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
+                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 4 : 1,
                 ]);
 
         }
@@ -98,7 +98,7 @@ class BajieController extends \App\Http\Controllers\Controller
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
-                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 2 : 1,
+                    "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 4 : 1,
                 ]);
          }
          
