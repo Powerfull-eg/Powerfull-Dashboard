@@ -57,7 +57,7 @@ class OperationController extends Controller
 
             IncompleteHistory::create([
                 "operation_id" => $operation->id,
-                "original_amount" => $operation->amount,
+                "original_amount" => $operation->amount ?? 0,
               	"created_at" => now(),
               	"updated_at" => now()
             ]);
