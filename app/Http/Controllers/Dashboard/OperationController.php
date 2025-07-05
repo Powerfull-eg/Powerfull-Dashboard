@@ -9,6 +9,7 @@ use App\Models\IncompleteHistory;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Request as FacadesRequest;
+use App\Http\Controllers\PriceController;
 
 class OperationController extends Controller
 {
@@ -54,10 +55,12 @@ class OperationController extends Controller
         $operations = Operation::where('status',4)->get();
         foreach($operations as $operation){
             if($operation->incompleteOperation) continue; 
+            $price = new PriceController();
+            $amount = $operation->amount && $operation->amount > 0 ? $operation->amount : $price->calcuatePrice($operation);
 
             IncompleteHistory::create([
                 "operation_id" => $operation->id,
-                "original_amount" => $operation->amount,
+                "original_amount" => $amount,
               	"created_at" => now(),
               	"updated_at" => now()
             ]);
