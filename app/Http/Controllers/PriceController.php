@@ -97,6 +97,8 @@ class PriceController extends Controller
         $order = Operation::with('device')->find($order->id);
         $priceData = $order->device->shop->price;
 
+        if(!$order->returnTime || $priceData) return 0;
+
         $totalTime = (strtotime($order->returnTime) - strtotime($order->borrowTime));
         $timeWithoutFree = $totalTime - ($priceData->free_time * 60);
         if($timeWithoutFree <= 0) return 0; 

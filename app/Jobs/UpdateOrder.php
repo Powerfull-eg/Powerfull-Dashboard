@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\OperationsController;
+use App\Http\Controllers\PriceController;
 
 class UpdateOrder implements ShouldQueue
 {
@@ -43,13 +44,17 @@ class UpdateOrder implements ShouldQueue
             $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($url);
             $responseBody = json_decode($response->body(),true);
             if($responseBody['code'] == 0 && $responseBody["data"]["borrowStatus"] == 3){
-                Operation::where("id",$order->id)->update([
+                $operation = Operation::where("id",$order->id);
+                $price = new PriceController();
+                $price = $price->calcuatePrice($operation->first());
+                $operation->update([
                     "powerbank_id" => $responseBody["data"]["batteryId"],
                     "borrowTime" => $responseBody["data"]["borrowTime"],
                     "returnTime" => $responseBody["data"]["returnTime"],
                     "borrowSlot" => $responseBody["data"]["borrowSlot"],
                     "returnShop"   => $responseBody["data"]["returnShop"],
-                    "status" => 4
+                    "status" => 4,
+                    "amount" => $price
                 ]);
             }
         }

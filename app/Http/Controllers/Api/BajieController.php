@@ -12,6 +12,8 @@ use Illuminate\Support\Sleep;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\GiftController;
+use App\Http\Controllers\PriceController;
+
 class BajieController extends \App\Http\Controllers\Controller
 {
         public function __construct()
@@ -73,13 +75,17 @@ class BajieController extends \App\Http\Controllers\Controller
         
         // Handle Rent & Return operation
         if($responseBody["code"] == 0){
-                Operation::where("tradeNo",$responseBody["data"]["orderId"])->update([
+            $operation = Operation::where("tradeNo",$responseBody["data"]["orderId"]);
+            $price = new PriceController();
+            $price = $price->calcuatePrice($operation->first());
+            $operation->update([
                     "powerbank_id" => $responseBody["data"]["batteryId"],
                     "borrowSlot"   => $responseBody["data"]["borrowSlot"],
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
                     "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 4 : 1,
+                    "amount"   => $price
                 ]);
 
         }
@@ -92,13 +98,17 @@ class BajieController extends \App\Http\Controllers\Controller
         $response = Http::withBasicAuth(env("BAJIE_API_USERNAME"), env("BAJIE_API_PASSWORD"))->get($url);
         $responseBody =json_decode($response->body(),true);
         if($responseBody["code"] == 0){
-            Operation::where("tradeNo",$responseBody["data"]["orderId"])->update([
+            $operation = Operation::where("tradeNo",$responseBody["data"]["orderId"]);
+            $price = new PriceController();
+            $price = $price->calcuatePrice($operation->first());
+            $operation->update([
                     "powerbank_id" => $responseBody["data"]["batteryId"],
                     "borrowSlot"   => $responseBody["data"]["borrowSlot"],
                     "borrowTime"   => $responseBody["data"]["borrowTime"],
                     "returnTime"   => $responseBody["data"]["returnTime"] ?? null,
                     "returnShop"   => $responseBody["data"]["returnShop"] ?? null,
                     "status"   => $responseBody["data"]["borrowStatus"] == 3 ? 4 : 1,
+                    "amount"   => $price
                 ]);
          }
          
@@ -172,13 +182,16 @@ class BajieController extends \App\Http\Controllers\Controller
         $responseBody = json_decode($response->body(),true);
         
         if($response->status() == 200 && $responseBody['code'] == 0 && $responseBody["data"]["borrowStatus"] == 3){
+            $price = new PriceController();
+            $price = $price->calcuatePrice($operation);
             $operation->update([
                 "powerbank_id" => $responseBody["data"]["batteryId"],
                 "borrowTime" => $responseBody["data"]["borrowTime"],
                 "returnTime" => $responseBody["data"]["returnTime"],
                 "borrowSlot" => $responseBody["data"]["borrowSlot"],
                 "returnShop"   => $responseBody["data"]["returnShop"],
-                "status" => 2
+                "status" => 4,
+                "amount" => $price
             ]);
         }
         
